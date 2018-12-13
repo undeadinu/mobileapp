@@ -22,7 +22,9 @@ namespace Toggl.Foundation.Tests.Interactors.Workspace
                 Action tryingToConstructWithNull = () => new RunBackgroundSyncInteractor(
                     useSyncManager ? SyncManager : null,
                     useAnalyticsService ? AnalyticsService : null,
-                    userStopwatchProvider ? StopwatchProvider : null
+                    userStopwatchProvider ? StopwatchProvider : null,
+                    DataSource, // tmp
+                    TimeService // tmp
                 );
 
                 tryingToConstructWithNull.Should().Throw<ArgumentNullException>();
@@ -35,7 +37,7 @@ namespace Toggl.Foundation.Tests.Interactors.Workspace
 
             public TheExecuteMethod()
             {
-                interactor = new RunBackgroundSyncInteractor(SyncManager, AnalyticsService, StopwatchProvider);
+                interactor = new RunBackgroundSyncInteractor(SyncManager, AnalyticsService, StopwatchProvider, DataSource, TimeService);
             }
 
             [Fact, LogIfTooSlow]
