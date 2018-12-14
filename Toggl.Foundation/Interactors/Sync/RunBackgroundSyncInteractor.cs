@@ -42,6 +42,7 @@ namespace Toggl.Foundation.Interactors
         public IObservable<SyncOutcome> Execute()
         {
             var syncTimeStopwatch = stopwatchProvider.Create(MeasuredOperation.BackgroundSync);
+            syncTimeStopwatch.Start();
             var systemStopwatch = new Stopwatch();
             systemStopwatch.Start();
             analyticsService.BackgroundSyncStarted.Track();
