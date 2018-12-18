@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using MvvmCross.Commands;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.Services;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 
@@ -13,6 +14,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class OutdatedAppViewModel : MvxViewModel
     {
+        private readonly IRxActionFactory rxActionFactory;
+
         public UIAction OpenWebsite { get; }
 
         public UIAction UpdateApp { get; }
@@ -21,14 +24,16 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private readonly IBrowserService browserService;
 
-        public OutdatedAppViewModel(IBrowserService browserService)
+        public OutdatedAppViewModel(IBrowserService browserService, IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(browserService, nameof(browserService));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.browserService = browserService;
+            this.rxActionFactory = rxActionFactory;
 
-            UpdateApp = UIAction.FromAction(updateApp);
-            OpenWebsite = UIAction.FromAction(openWebsite);
+            UpdateApp = rxActionFactory.FromAction(updateApp);
+            OpenWebsite = rxActionFactory.FromAction(openWebsite);
         }
 
         private void openWebsite()

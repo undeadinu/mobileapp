@@ -51,6 +51,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Reports
         private readonly IDialogService dialogService;
         private readonly IIntentDonationService intentDonationService;
         private readonly IStopwatchProvider stopwatchProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private readonly ReportsCalendarViewModel calendarViewModel;
 
@@ -153,7 +154,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Reports
                                 IDialogService dialogService,
                                 IIntentDonationService intentDonationService,
                                 ISchedulerProvider schedulerProvider,
-                                IStopwatchProvider stopwatchProvider)
+                                IStopwatchProvider stopwatchProvider,
+                                IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
@@ -164,6 +166,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Reports
             Ensure.Argument.IsNotNull(intentDonationService, nameof(intentDonationService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
             Ensure.Argument.IsNotNull(stopwatchProvider, nameof(stopwatchProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.timeService = timeService;
             this.navigationService = navigationService;
@@ -173,6 +176,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Reports
             this.dialogService = dialogService;
             this.intentDonationService = intentDonationService;
             this.stopwatchProvider = stopwatchProvider;
+            this.rxActionFactory = rxActionFactory;
 
             calendarViewModel = new ReportsCalendarViewModel(timeService, dialogService, dataSource, intentDonationService);
 
@@ -190,7 +194,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Reports
             StartDate = startDateSubject.AsObservable().AsDriver(schedulerProvider);
             EndDate = endDateSubject.AsObservable().AsDriver(schedulerProvider);
 
-            SelectWorkspace = UIAction.FromAsync(selectWorkspace);
+            SelectWorkspace = rxActionFactory.FromAsync(selectWorkspace);
 
             WorkspaceNameObservable = workspaceSubject
                 .Select(workspace => workspace?.Name ?? string.Empty)

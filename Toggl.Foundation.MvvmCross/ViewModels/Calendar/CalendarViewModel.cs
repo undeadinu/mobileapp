@@ -43,6 +43,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
         private readonly IPermissionsService permissionsService;
         private readonly IMvxNavigationService navigationService;
         private readonly IStopwatchProvider stopwatchProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private readonly ISubject<bool> shouldShowOnboardingSubject;
         private readonly CompositeDisposable disposeBag = new CompositeDisposable();
@@ -77,7 +78,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
             ISchedulerProvider schedulerProvider,
             IPermissionsService permissionsService,
             IMvxNavigationService navigationService,
-            IStopwatchProvider stopwatchProvider)
+            IStopwatchProvider stopwatchProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
@@ -91,6 +93,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(permissionsService, nameof(permissionsService));
             Ensure.Argument.IsNotNull(stopwatchProvider, nameof(stopwatchProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
@@ -103,6 +106,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
             this.navigationService = navigationService;
             this.permissionsService = permissionsService;
             this.stopwatchProvider = stopwatchProvider;
+            this.rxActionFactory = rxActionFactory;
 
             var isCompleted = onboardingStorage.CompletedCalendarOnboarding();
             shouldShowOnboardingSubject = new BehaviorSubject<bool>(!isCompleted);
@@ -118,20 +122,19 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
                 .Current
                 .Select(preferences => preferences.TimeOfDayFormat);
 
-            GetStarted = UIAction.FromAsync(getStarted);
-
-            OnItemTapped = InputAction<CalendarItem>.FromAsync(handleCalendarItem);
+            GetStarted = rxActionFactory.FromAsync(getStarted);
+            OnItemTapped = rxActionFactory.FromAsync<CalendarItem>(handleCalendarItem);
 
             SettingsAreVisible = onboardingObservable
                 .SelectMany(_ => permissionsService.CalendarPermissionGranted)
                 .DistinctUntilChanged();
 
-            SelectCalendars = UIAction.FromAsync(() => selectUserCalendars(false), SettingsAreVisible);
+            SelectCalendars = rxActionFactory.FromAsync(() => selectUserCalendars(false), SettingsAreVisible);
 
-            OnDurationSelected = InputAction<(DateTimeOffset StartTime, TimeSpan Duration)>.FromAsync(
+            OnDurationSelected = rxActionFactory.FromAsync<(DateTimeOffset StartTime, TimeSpan Duration)>(
                 tuple => durationSelected(tuple.StartTime, tuple.Duration));
 
-            OnUpdateTimeEntry = InputAction<CalendarItem>.FromAsync(updateTimeEntry);
+            OnUpdateTimeEntry = rxActionFactory.FromAsync<CalendarItem>(updateTimeEntry);
 
             CalendarItems = new ObservableGroupedOrderedCollection<CalendarItem>(
                 indexKey: item => item.StartTime,

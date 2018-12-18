@@ -135,6 +135,7 @@ namespace Toggl.Giskard
                     .WithPermissionsService(permissionsService)
                     .WithAccessRestrictionStorage(settingsStorage)
                     .WithErrorHandlingService(new ErrorHandlingService(navigationService, settingsStorage))
+                    .WithRxActionFactory(new RxActionFactory(schedulerProvider))
                     .Build();
 
             foundation.RevokeNewUserIfNeeded().Initialize();

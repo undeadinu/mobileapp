@@ -8,6 +8,7 @@ using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Interactors;
+using Toggl.Foundation.Services;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
@@ -23,6 +24,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
         private readonly ISchedulerProvider schedulerProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private readonly Subject<bool> isLoading = new Subject<bool>();
 
@@ -37,21 +39,24 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IInteractorFactory interactorFactory,
             IMvxNavigationService navigationService,
             IAccessRestrictionStorage accessRestrictionStorage,
-            ISchedulerProvider schedulerProvider)
+            ISchedulerProvider schedulerProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(accessRestrictionStorage, nameof(accessRestrictionStorage));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.dataSource = dataSource;
             this.accessRestrictionStorage = accessRestrictionStorage;
             this.navigationService = navigationService;
             this.interactorFactory = interactorFactory;
+            this.rxActionFactory = rxActionFactory;
 
-            CreateWorkspaceWithDefaultName = UIAction.FromAsync(createWorkspaceWithDefaultName);
-            TryAgain = UIAction.FromAsync(tryAgain);
+            CreateWorkspaceWithDefaultName = rxActionFactory.FromAsync(createWorkspaceWithDefaultName);
+            TryAgain = rxActionFactory.FromAsync(tryAgain);
             IsLoading = isLoading.AsDriver(onErrorJustReturn: false, schedulerProvider: schedulerProvider);
         }
 

@@ -15,6 +15,7 @@ using TimeEntry = Toggl.Foundation.Models.TimeEntry;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.DataSources;
 using System.Reactive.Subjects;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Multivac.Extensions;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -24,7 +25,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class SuggestionsViewModelTest : BaseViewModelTests<SuggestionsViewModel>
         {
             protected override SuggestionsViewModel CreateViewModel()
-                => new SuggestionsViewModel(DataSource, InteractorFactory, OnboardingStorage, SuggestionProviderContainer, SchedulerProvider);
+                => new SuggestionsViewModel(DataSource, InteractorFactory, OnboardingStorage, SuggestionProviderContainer, SchedulerProvider, RxActionFactory);
 
             protected override void AdditionalViewModelSetup()
             {
@@ -50,17 +51,19 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useContainer,
                 bool useOnboardingStorage,
                 bool useInteractorFactory,
-                bool useSchedulerProvider)
+                bool useSchedulerProvider,
+                bool useRxActionFactory)
             {
                 var container = useContainer ? SuggestionProviderContainer : null;
                 var dataSource = useDataSource ? DataSource : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
                 var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new SuggestionsViewModel(dataSource, interactorFactory, onboardingStorage, container,
-                        schedulerProvider);
+                        schedulerProvider, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -221,7 +224,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var suggestion = createSuggestion();
                 await ViewModel.Initialize();
 
-                await ViewModel.StartTimeEntry.Execute(suggestion);
+                ViewModel.StartTimeEntry.Execute(suggestion);
+                TestScheduler.Start();
 
                 InteractorFactory.Received().StartSuggestion(suggestion);
             }
@@ -234,7 +238,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 InteractorFactory.StartSuggestion(Arg.Any<Suggestion>()).Returns(mockedInteractor);
                 await ViewModel.Initialize();
 
-                await ViewModel.StartTimeEntry.Execute(suggestion);
+                ViewModel.StartTimeEntry.Execute(suggestion);
+                TestScheduler.Start();
 
                 await mockedInteractor.Received().Execute();
             }
@@ -250,8 +255,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(Observable.Return(timeEntry));
                 await ViewModel.Initialize();
 
-                await ViewModel.StartTimeEntry.Execute(suggestion);
-                await ViewModel.StartTimeEntry.Execute(suggestion);
+                var auxObservable = TestScheduler.CreateObserver<Unit>();
+                Observable.Concat(
+                        Observable.Defer(() => ViewModel.StartTimeEntry.Execute(suggestion)),
+                        Observable.Defer(() => ViewModel.StartTimeEntry.Execute(suggestion))
+                    )
+                    .Subscribe(auxObservable);
+                TestScheduler.Start();
 
                 InteractorFactory.Received(2).StartSuggestion(suggestion);
             }
@@ -262,8 +272,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var suggestion = createSuggestion();
                 await ViewModel.Initialize();
 
-                await ViewModel.StartTimeEntry.Execute(suggestion);
-                await ViewModel.StartTimeEntry.Execute(suggestion);
+                var auxObservable = TestScheduler.CreateObserver<Unit>();
+                Observable.Concat(
+                        Observable.Defer(() => ViewModel.StartTimeEntry.Execute(suggestion)),
+                        Observable.Defer(() => ViewModel.StartTimeEntry.Execute(suggestion))
+                    )
+                    .Subscribe(auxObservable);
+                TestScheduler.Start();
 
                 OnboardingStorage.Received().SetTimeEntryContinued();
             }

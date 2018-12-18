@@ -35,7 +35,7 @@ namespace Toggl.Daneel.ViewControllers.Settings
                 .DisposedBy(DisposeBag);
 
             CloseButton.Rx()
-                .BindAction(ViewModel.Close(Unit.Default))
+                .BindAction(ViewModel.Close)
                 .DisposedBy(DisposeBag);
         }
     }

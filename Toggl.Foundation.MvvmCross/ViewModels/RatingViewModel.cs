@@ -27,6 +27,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IOnboardingStorage onboardingStorage;
         private readonly IMvxNavigationService navigationService;
         private readonly ISchedulerProvider schedulerProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private readonly BehaviorSubject<bool?> impressionSubject = new BehaviorSubject<bool?>(null);
         private readonly ISubject<bool> isFeedbackSuccessViewShowing = new Subject<bool>();
@@ -55,7 +56,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IAnalyticsService analyticsService,
             IOnboardingStorage onboardingStorage,
             IMvxNavigationService navigationService,
-            ISchedulerProvider schedulerProvider)
+            ISchedulerProvider schedulerProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
@@ -64,6 +66,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
@@ -72,6 +75,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.onboardingStorage = onboardingStorage;
             this.navigationService = navigationService;
             this.schedulerProvider = schedulerProvider;
+            this.rxActionFactory = rxActionFactory;
 
             Impression = impressionSubject.AsDriver(this.schedulerProvider);
 
@@ -89,7 +93,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             IsFeedbackSuccessViewShowing = isFeedbackSuccessViewShowing.AsDriver(this.schedulerProvider);
 
-            PerformMainAction = UIAction.FromAsync(performMainAction);
+            PerformMainAction = rxActionFactory.FromAsync(performMainAction);
         }
 
         public void CloseFeedbackSuccessView()
@@ -156,9 +160,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             if (impressionIsPositive)
             {
                 ratingService.AskForRating();
-                /* 
+                /*
                  * We can't really know whether the user has actually rated.
-                 * We only know that we presented the rating view (iOS) 
+                 * We only know that we presented the rating view (iOS)
                  * or navigated to the market (Android).
                 */
                 trackSecondStepOutcome(

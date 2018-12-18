@@ -11,7 +11,7 @@
         android:textSize="12sp"
         android:textAllCaps="true"  
         android:letterSpacing="0.04"
-        android:text="Working on these?"
+        android:text="@string/SuggestionsText"
         android:textColor="@color/defaultText"
         android:fontFamily="sans-serif-medium"
         android:layout_marginTop="16dp"

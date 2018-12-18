@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Input;
 using Android.Runtime;
+using Toggl.Foundation;
 using Toggl.Giskard.TemplateSelectors;
 
 namespace Toggl.Giskard.Adapters
@@ -17,7 +18,7 @@ namespace Toggl.Giskard.Adapters
         }
 
         protected override string SuggestingItemText
-            => $"Create tag \"{Text.Trim()}\"";
+            => $"{Resources.CreateTag} \"{Text.Trim()}\"";
 
         protected override ICommand GetClickCommand(int viewType) => 
             viewType == SelectTagsTemplateSelector.CreateEntity ? CreateCommand : ItemClick;

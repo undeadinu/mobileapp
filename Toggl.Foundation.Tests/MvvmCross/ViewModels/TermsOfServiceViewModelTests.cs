@@ -14,7 +14,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             : BaseViewModelTests<TermsOfServiceViewModel>
         {
             protected override TermsOfServiceViewModel CreateViewModel()
-                => new TermsOfServiceViewModel(BrowserService);
+                => new TermsOfServiceViewModel(BrowserService, RxActionFactory);
         }
 
         public sealed class TheConstructor : TermsOfServiceViewModelTest
@@ -22,12 +22,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Theory, LogIfTooSlow]
             [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
-                bool useBrowserService)
+                bool useBrowserService,
+                bool useRxActionFactory)
             {
                 var browserService = useBrowserService ? BrowserService : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new TermsOfServiceViewModel(browserService);
+                    () => new TermsOfServiceViewModel(browserService, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -41,7 +43,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async void OpensTermsOfService()
             {
-                await ViewModel.ViewTermsOfService.Execute();
+                ViewModel.ViewTermsOfService.Execute();
+                TestScheduler.Start();
 
                 BrowserService.Received().OpenUrl(termsOfServiceUrl);
             }
@@ -54,7 +57,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async void OpensPrivacyPolicy()
             {
-                await ViewModel.ViewPrivacyPolicy.Execute();
+                ViewModel.ViewPrivacyPolicy.Execute();
+                TestScheduler.Start();
 
                 BrowserService.Received().OpenUrl(privacyPolicyUrl);
             }

@@ -49,7 +49,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                             DialogService,
                                             IntentDonationService,
                                             SchedulerProvider,
-                                            StopwatchProvider);
+                                            StopwatchProvider,
+                                            RxActionFactory);
             }
 
             protected async Task Initialize()
@@ -86,7 +87,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                         bool useDialogService,
                                                         bool useIntentDonationService,
                                                         bool useSchedulerProvider,
-                                                        bool useStopwatchProvider)
+                                                        bool useStopwatchProvider,
+                                                        bool useRxActionFactory)
             {
                 var timeService = useTimeService ? TimeService : null;
                 var reportsProvider = useDataSource ? DataSource : null;
@@ -97,6 +99,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var intentDonationService = useIntentDonationService ? IntentDonationService : null;
                 var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
                 var stopwatchProvider = useStopwatchProvider ? StopwatchProvider : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new ReportsViewModel(reportsProvider,
@@ -107,7 +110,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                dialogService,
                                                intentDonationService,
                                                schedulerProvider,
-                                               stopwatchProvider);
+                                               stopwatchProvider,
+                                               rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -588,7 +592,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DialogService.Select(Arg.Any<string>(), Arg.Any<IEnumerable<(string, IThreadSafeWorkspace)>>(), Arg.Any<int>())
                     .Returns(Observable.Return(mockWorkspace));
 
-                await ViewModel.SelectWorkspace.Execute();
+                ViewModel.SelectWorkspace.Execute();
+                TestScheduler.Start();
 
                 await ReportsProvider.Received().GetProjectSummary(Arg.Is(mockWorkspace.Id), Arg.Any<DateTimeOffset>(),
                     Arg.Any<DateTimeOffset>());
@@ -607,9 +612,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.Initialize();
 
-                await ViewModel.SelectWorkspace.Execute();
-
+                ViewModel.SelectWorkspace.Execute();
                 TestScheduler.Start();
+
                 observer.Messages.AssertEqual(
                     ReactiveTest.OnNext(1, ""),
                     ReactiveTest.OnNext(2, mockWorkspace.Name)
@@ -623,7 +628,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DialogService.Select(Arg.Any<string>(), Arg.Any<IEnumerable<(string, IThreadSafeWorkspace)>>(), Arg.Any<int>())
                     .Returns(Observable.Return<IThreadSafeWorkspace>(null));
 
-                await ViewModel.SelectWorkspace.Execute();
+                ViewModel.SelectWorkspace.Execute();
+                TestScheduler.Start();
 
                 await ReportsProvider.DidNotReceive().GetProjectSummary(Arg.Any<long>(), Arg.Any<DateTimeOffset>(),
                     Arg.Any<DateTimeOffset>());
@@ -638,7 +644,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DialogService.Select(Arg.Any<string>(), Arg.Any<IEnumerable<(string, IThreadSafeWorkspace)>>(), Arg.Any<int>())
                     .Returns(Observable.Return<IThreadSafeWorkspace>(mockWorkspace));
 
-                await ViewModel.SelectWorkspace.Execute();
+                ViewModel.SelectWorkspace.Execute();
+                TestScheduler.Start();
 
                 await ReportsProvider.DidNotReceive().GetProjectSummary(Arg.Any<long>(), Arg.Any<DateTimeOffset>(),
                     Arg.Any<DateTimeOffset>());
@@ -732,9 +739,10 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 prepareWorkspace(isProEnabled: false);
 
                 await ViewModel.Initialize();
-                await ViewModel.SelectWorkspace.Execute();
 
+                ViewModel.SelectWorkspace.Execute();
                 TestScheduler.Start();
+
                 isEnabledObserver.Messages.Last().Value.Value.Should().BeFalse();
             }
 
@@ -744,9 +752,10 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 prepareWorkspace(isProEnabled: true);
 
                 await ViewModel.Initialize();
-                await ViewModel.SelectWorkspace.Execute();
 
+                ViewModel.SelectWorkspace.Execute();
                 TestScheduler.Start();
+
                 isEnabledObserver.Messages.Last().Value.Value.Should().BeTrue();
             }
 

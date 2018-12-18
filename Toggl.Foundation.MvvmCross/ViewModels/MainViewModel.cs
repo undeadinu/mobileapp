@@ -55,6 +55,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IMvxNavigationService navigationService;
         private readonly IIntentDonationService intentDonationService;
         private readonly IAccessRestrictionStorage accessRestrictionStorage;
+        private readonly IRxActionFactory rxActionFactory;
 
         private readonly RatingViewExperiment ratingViewExperiment;
         private readonly CompositeDisposable disposeBag = new CompositeDisposable();
@@ -110,7 +111,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IIntentDonationService intentDonationService,
             IAccessRestrictionStorage accessRestrictionStorage,
             ISchedulerProvider schedulerProvider,
-            IStopwatchProvider stopwatchProvider)
+            IStopwatchProvider stopwatchProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
@@ -126,6 +128,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(suggestionProviders, nameof(suggestionProviders));
             Ensure.Argument.IsNotNull(intentDonationService, nameof(intentDonationService));
             Ensure.Argument.IsNotNull(accessRestrictionStorage, nameof(accessRestrictionStorage));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.dataSource = dataSource;
             this.userPreferences = userPreferences;
@@ -137,12 +140,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.intentDonationService = intentDonationService;
             this.accessRestrictionStorage = accessRestrictionStorage;
             this.stopwatchProvider = stopwatchProvider;
+            this.rxActionFactory = rxActionFactory;
 
             TimeService = timeService;
 
-            SuggestionsViewModel = new SuggestionsViewModel(dataSource, interactorFactory, onboardingStorage, suggestionProviders, schedulerProvider);
-            RatingViewModel = new RatingViewModel(timeService, dataSource, ratingService, analyticsService, onboardingStorage, navigationService, SchedulerProvider);
-            TimeEntriesViewModel = new TimeEntriesViewModel(dataSource, interactorFactory, analyticsService, SchedulerProvider);
+            SuggestionsViewModel = new SuggestionsViewModel(dataSource, interactorFactory, onboardingStorage, suggestionProviders, schedulerProvider, rxActionFactory);
+            RatingViewModel = new RatingViewModel(timeService, dataSource, ratingService, analyticsService, onboardingStorage, navigationService, SchedulerProvider, rxActionFactory);
+            TimeEntriesViewModel = new TimeEntriesViewModel(dataSource, interactorFactory, analyticsService, SchedulerProvider, rxActionFactory);
 
             LogEmpty = TimeEntriesViewModel.Empty.AsDriver(SchedulerProvider);
             TimeEntriesCount = TimeEntriesViewModel.Count.AsDriver(SchedulerProvider);
@@ -241,15 +245,15 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 TimeService.SignificantTimeChangeObservable.SelectUnit())
                 .AsDriver(SchedulerProvider);
 
-            Refresh = UIAction.FromAsync(refresh);
-            OpenReports = UIAction.FromAsync(openReports);
-            OpenSettings = UIAction.FromAsync(openSettings);
-            OpenSyncFailures = UIAction.FromAsync(openSyncFailures);
-            SelectTimeEntry = InputAction<long>.FromAsync(timeEntrySelected);
-            DeleteTimeEntry = InputAction<TimeEntryViewModel>.FromObservable(deleteTimeEntry);
-            ContinueTimeEntry = InputAction<TimeEntryViewModel>.FromObservable(continueTimeEntry);
-            StartTimeEntry = InputAction<bool>.FromAsync(startTimeEntry, IsTimeEntryRunning.Invert());
-            StopTimeEntry = InputAction<TimeEntryStopOrigin>.FromAsync(stopTimeEntry, IsTimeEntryRunning);
+            Refresh = rxActionFactory.FromAsync(refresh);
+            OpenReports = rxActionFactory.FromAsync(openReports);
+            OpenSettings = rxActionFactory.FromAsync(openSettings);
+            OpenSyncFailures = rxActionFactory.FromAsync(openSyncFailures);
+            SelectTimeEntry = rxActionFactory.FromAsync<long>(timeEntrySelected);
+            DeleteTimeEntry = rxActionFactory.FromObservable<TimeEntryViewModel>(deleteTimeEntry);
+            ContinueTimeEntry = rxActionFactory.FromObservable<TimeEntryViewModel>(continueTimeEntry);
+            StartTimeEntry = rxActionFactory.FromAsync<bool>(startTimeEntry, IsTimeEntryRunning.Invert());
+            StopTimeEntry = rxActionFactory.FromAsync<TimeEntryStopOrigin>(stopTimeEntry, IsTimeEntryRunning);
 
             switch (urlNavigationAction)
             {

@@ -24,7 +24,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class SendFeedbackViewModelTest : BaseViewModelTests<SendFeedbackViewModel>
         {
             protected override SendFeedbackViewModel CreateViewModel()
-                => new SendFeedbackViewModel(NavigationService, InteractorFactory, DialogService, SchedulerProvider);
+                => new SendFeedbackViewModel(NavigationService, InteractorFactory, DialogService, SchedulerProvider, RxActionFactory);
         }
 
         public sealed class TheConstructor : SendFeedbackViewModelTest
@@ -35,16 +35,18 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useNavigationService,
                 bool useInteractorFactory,
                 bool useDialogService,
-                bool useSchedulerProvider
+                bool useSchedulerProvider,
+                bool useRxActionFactory
             )
             {
                 var navigationService = useNavigationService ? NavigationService : null;
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
                 var dialogService = useDialogService ? DialogService : null;
                 var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters = ()
-                    => new SendFeedbackViewModel(navigationService, interactorFactory, dialogService, schedulerProvider);
+                    => new SendFeedbackViewModel(navigationService, interactorFactory, dialogService, schedulerProvider, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -235,7 +237,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 ViewModel.FeedbackText.OnNext(string.Empty);
 
-                await ViewModel.Close.Execute();
+                ViewModel.Close.Execute();
 
                 TestScheduler.Start();
                 await NavigationService.Received().Close(ViewModel, false);
@@ -246,7 +248,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 ViewModel.FeedbackText.OnNext(feedbackText.Get);
 
-                ViewModel.Close.Execute().Wait();
+                ViewModel.Close.Execute();
 
                 TestScheduler.Start();
                 DialogService.Received().ConfirmDestructiveAction(Arg.Any<ActionType>());
@@ -258,7 +260,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DialogService.ConfirmDestructiveAction(Arg.Any<ActionType>()).Returns(Observable.Return(true));
                 ViewModel.FeedbackText.OnNext(feedbackText.Get);
 
-                ViewModel.Close.Execute().Wait();
+                ViewModel.Close.Execute();
 
                 TestScheduler.Start();
                 NavigationService.Received().Close(ViewModel, false);
@@ -270,7 +272,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DialogService.ConfirmDestructiveAction(Arg.Any<ActionType>()).Returns(Observable.Return(false));
                 ViewModel.FeedbackText.OnNext(feedbackText.Get);
 
-                ViewModel.Close.Execute().Wait();
+                ViewModel.Close.Execute();
 
                 TestScheduler.Start();
                 NavigationService.DidNotReceive().Close(Arg.Any<IMvxViewModelResult<bool>>(), Arg.Any<bool>());
@@ -280,7 +282,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheErrorViewTappedAction : SendFeedbackViewModelTest
         {
             [Fact]
-            public async Task HidesTheErrorView()
+            public void HidesTheErrorView()
             {
                 var observer = TestScheduler.CreateObserver<Exception>();
                 InteractorFactory.SendFeedback(Arg.Any<string>())
@@ -289,8 +291,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.FeedbackText.OnNext("some feedback");
                 ViewModel.Error.Subscribe(observer);
 
-                await ViewModel.Send.Execute();
-                await ViewModel.DismissError.Execute();
+                ViewModel.Send.Execute();
+                ViewModel.DismissError.Execute();
 
                 TestScheduler.Start();
                 observer.Messages.Last().Value.Value.Should().BeNull();
@@ -307,14 +309,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Execute()
                     .Returns(Observable.Return(Unit.Default));
 
-                await ViewModel.Send.Execute();
+                ViewModel.Send.Execute();
 
                 TestScheduler.Start();
                 await NavigationService.Received().Close(ViewModel, true);
             }
 
             [Fact]
-            public async Task ShowsErrorWhenSendingFeedbackFails()
+            public void ShowsErrorWhenSendingFeedbackFails()
             {
                 var observer = TestScheduler.CreateObserver<Exception>();
                 ViewModel.FeedbackText.OnNext("feedback");
@@ -324,7 +326,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(Observable.Throw<Unit>(expectedException));
                 ViewModel.Error.Subscribe(observer);
 
-                await ViewModel.Send.Execute();
+                ViewModel.Send.Execute();
 
                 TestScheduler.Start();
                 observer.Messages.Last().Value.Value.Should().Be(expectedException);

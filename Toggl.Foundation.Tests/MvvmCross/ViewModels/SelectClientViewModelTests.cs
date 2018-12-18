@@ -24,7 +24,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 = SelectClientParameters.WithIds(10, null);
 
             protected override SelectClientViewModel CreateViewModel()
-               => new SelectClientViewModel(InteractorFactory, NavigationService, SchedulerProvider);
+               => new SelectClientViewModel(InteractorFactory, NavigationService, SchedulerProvider, RxActionFactory);
 
             protected List<IThreadSafeClient> GenerateClientList() =>
                 Enumerable.Range(1, 10).Select(i =>
@@ -43,14 +43,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useInteractorFactory,
                 bool useNavigationService,
-                bool useSchedulerProvider)
+                bool useSchedulerProvider,
+                bool useRxActionFactory)
             {
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new SelectClientViewModel(interactorFactory, navigationService, schedulerProvider);
+                    () => new SelectClientViewModel(interactorFactory, navigationService, schedulerProvider, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -134,7 +136,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 await ViewModel.Initialize();
 
-                await ViewModel.Close.Execute();
+                ViewModel.Close.Execute();
+                TestScheduler.Start();
 
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), Arg.Any<long?>());
@@ -145,7 +148,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 await ViewModel.Initialize();
 
-                await ViewModel.Close.Execute();
+                ViewModel.Close.Execute();
+                TestScheduler.Start();
 
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), null);
@@ -170,6 +174,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.Initialize();
 
                 ViewModel.SelectClient.Execute(client);
+                TestScheduler.Start();
 
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), Arg.Any<long?>());
@@ -181,6 +186,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.Initialize();
 
                 ViewModel.SelectClient.Execute(client);
+                TestScheduler.Start();
 
                 await NavigationService.Received().Close(
                     Arg.Is(ViewModel),
@@ -196,7 +202,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var newClient = new SelectableClientCreationViewModel("Some name of the client");
                 ViewModel.Prepare(Parameters);
 
-                await ViewModel.SelectClient.Execute(newClient);
+                ViewModel.SelectClient.Execute(newClient);
+                TestScheduler.Start();
 
                 await InteractorFactory
                     .Received()
@@ -214,7 +221,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 await ViewModel.Initialize();
 
-                await ViewModel.SelectClient.Execute(new SelectableClientCreationViewModel(name));
+                ViewModel.SelectClient.Execute(new SelectableClientCreationViewModel(name));
+                TestScheduler.Start();
 
                 await InteractorFactory
                     .Received()
@@ -235,7 +243,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(Observable.Return(clients));
                 await ViewModel.Initialize();
 
-                await ViewModel.SetFilterText.Execute("0");
+                ViewModel.SetFilterText.Execute("0");
+                TestScheduler.Start();
 
                 ViewModel.Clients.Count().Should().Equals(1);
             }
@@ -250,7 +259,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.Initialize();
 
                 var nonExistingClientName = "Some none existing name";
-                await ViewModel.SetFilterText.Execute(nonExistingClientName);
+                ViewModel.SetFilterText.Execute(nonExistingClientName);
+                TestScheduler.Start();
 
                 ViewModel.Clients.First().First().Name.Should().Equals(nonExistingClientName);
                 ViewModel.Clients.First().First().Should().BeOfType<SelectableClientCreationViewModel>();
@@ -272,7 +282,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare(Parameters);
 
                 await ViewModel.Initialize();
-                await ViewModel.SetFilterText.Execute(name);
+                ViewModel.SetFilterText.Execute(name);
+                TestScheduler.Start();
 
                 var receivedClients = await ViewModel.Clients.FirstAsync();
                 receivedClients.First().Should().NotBeOfType<SelectableClientCreationViewModel>();
@@ -287,7 +298,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(Observable.Return(clients));
                 await ViewModel.Initialize();
 
-                await ViewModel.SetFilterText.Execute(clients.First().Name);
+                ViewModel.SetFilterText.Execute(clients.First().Name);
+                TestScheduler.Start();
 
                 ViewModel.Clients.First().First().Should().NotBeOfType<SelectableClientCreationViewModel>();
             }

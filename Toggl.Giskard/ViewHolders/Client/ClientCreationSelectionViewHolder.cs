@@ -2,6 +2,7 @@ using System;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.ViewModels;
 
 namespace Toggl.Giskard.ViewHolders
@@ -25,7 +26,7 @@ namespace Toggl.Giskard.ViewHolders
 
         protected override void UpdateView()
         {
-            creationTextView.Text = $"Create client \"{Item.Name.Trim()}\"";
+            creationTextView.Text = $"{Resources.CreateClient} \"{Item.Name.Trim()}\"";
         }
     }
 }

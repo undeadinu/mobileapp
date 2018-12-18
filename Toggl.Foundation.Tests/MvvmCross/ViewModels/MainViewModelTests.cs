@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FsCheck.Xunit;
 using Microsoft.Reactive.Testing;
+using MvvmCross.Binding.Extensions;
 using NSubstitute;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
@@ -31,6 +32,7 @@ using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Xunit;
 using static Toggl.Foundation.Helper.Constants;
+using Notification = System.Reactive.Notification;
 using ThreadingTask = System.Threading.Tasks.Task;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -57,7 +59,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     IntentDonationService,
                     AccessRestrictionStorage,
                     SchedulerProvider,
-                    StopwatchProvider);
+                    StopwatchProvider,
+                    RxActionFactory);
 
                 vm.Prepare();
 
@@ -101,7 +104,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useIntentDonationService,
                 bool useAccessRestrictionStorage,
                 bool useSchedulerProvider,
-                bool useStopwatchProvider)
+                bool useStopwatchProvider,
+                bool useRxActionFactory)
             {
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
@@ -117,6 +121,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
                 var accessRestrictionStorage = useAccessRestrictionStorage ? AccessRestrictionStorage : null;
                 var stopwatchProvider = useStopwatchProvider ? StopwatchProvider : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new MainViewModel(
@@ -133,7 +138,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         intentDonationService,
                         accessRestrictionStorage,
                         schedulerProvider,
-                        stopwatchProvider);
+                        stopwatchProvider,
+                        rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -240,8 +246,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 UserPreferences.IsManualModeEnabled.Returns(isInManualMode);
 
-                await ViewModel.StartTimeEntry.Execute(useDefaultMode);
+                ViewModel.StartTimeEntry.Execute(useDefaultMode);
 
+                TestScheduler.Start();
                 await NavigationService.Received()
                    .Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(Arg.Any<StartTimeEntryParameters>());
             }
@@ -255,14 +262,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 UserPreferences.IsManualModeEnabled.Returns(isInManualMode);
 
-                await ViewModel.StartTimeEntry.Execute(useDefaultMode);
+                ViewModel.StartTimeEntry.Execute(useDefaultMode);
 
+                TestScheduler.Start();
                 var expected = isInManualMode == useDefaultMode
                     ? Resources.ManualTimeEntryPlaceholder
                     : Resources.StartTimeEntryPlaceholder;
-                NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
+                await NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
                     Arg.Is<StartTimeEntryParameters>(parameter => parameter.PlaceholderText == expected)
-                ).Wait();
+                );
             }
 
             [Theory, LogIfTooSlow]
@@ -274,8 +282,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 UserPreferences.IsManualModeEnabled.Returns(isInManualMode);
 
-                await ViewModel.StartTimeEntry.Execute(useDefaultMode);
+                ViewModel.StartTimeEntry.Execute(useDefaultMode);
 
+                TestScheduler.Start();
                 var expected = isInManualMode == useDefaultMode
                     ? TimeSpan.FromMinutes(DefaultTimeEntryDurationForManualModeInMinutes)
                     : (TimeSpan?)null;
@@ -295,8 +304,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 TimeService.CurrentDateTime.Returns(date);
                 UserPreferences.IsManualModeEnabled.Returns(isInManualMode);
 
-                await ViewModel.StartTimeEntry.Execute(useDefaultMode);
+                ViewModel.StartTimeEntry.Execute(useDefaultMode);
 
+                TestScheduler.Start();
                 var expected = isInManualMode == useDefaultMode
                     ? date.Subtract(TimeSpan.FromMinutes(DefaultTimeEntryDurationForManualModeInMinutes))
                     : date;
@@ -314,19 +324,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 subject.OnNext(timeEntry);
                 TestScheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
 
-                Action tryingToExecuteWhenThereIsARunningTimeEntry =
-                    () => ViewModel.StartTimeEntry.Execute(useDefaultMode).Wait();
+                var observer = TestScheduler.CreateObserver<Unit>();
+                ViewModel.StartTimeEntry.Execute(useDefaultMode)
+                    .Subscribe(observer);
+                TestScheduler.Start();
 
-                tryingToExecuteWhenThereIsARunningTimeEntry.Should().Throw<RxActionNotEnabledException>();
+                observer.Messages.Count.Should().Be(1);
+                observer.Messages.Last().Value.Exception.Should().BeEquivalentTo(new RxActionNotEnabledException());
             }
 
             [Theory, LogIfTooSlow]
             [InlineData(true)]
             [InlineData(false)]
-            public async ThreadingTask MarksTheActionButtonTappedForOnboardingPurposes(bool useDefaultMode)
+            public void MarksTheActionButtonTappedForOnboardingPurposes(bool useDefaultMode)
             {
-                await ViewModel.StartTimeEntry.Execute(useDefaultMode);
+                ViewModel.StartTimeEntry.Execute(useDefaultMode);
 
+                TestScheduler.Start();
                 OnboardingStorage.Received().StartButtonWasTapped();
             }
 
@@ -340,8 +354,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 subject.OnNext(null);
                 TestScheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
 
-                await ViewModel.StartTimeEntry.Execute(useDefaultMode);
+                ViewModel.StartTimeEntry.Execute(useDefaultMode);
 
+                TestScheduler.Start();
                 OnboardingStorage.DidNotReceive().SetNavigatedAwayFromMainViewAfterStopButton();
             }
 
@@ -358,8 +373,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 subject.OnNext(null);
                 TestScheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
 
-                await ViewModel.StartTimeEntry.Execute(useDefaultMode);
+                ViewModel.StartTimeEntry.Execute(useDefaultMode);
 
+                TestScheduler.Start();
                 OnboardingStorage.Received().SetNavigatedAwayFromMainViewAfterStopButton();
             }
         }
@@ -371,30 +387,33 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 ViewModel.Initialize().Wait();
 
-                await ViewModel.OpenSettings.Execute();
+                ViewModel.OpenSettings.Execute();
 
+                TestScheduler.Start();
                 await NavigationService.Received().Navigate<SettingsViewModel>();
             }
 
             [Fact, LogIfTooSlow]
-            public async ThreadingTask MarksTheActionBeforeStopButtonForOnboardingPurposes()
+            public void MarksTheActionBeforeStopButtonForOnboardingPurposes()
             {
                 OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(false));
                 ViewModel.Initialize().Wait();
 
-                await ViewModel.OpenSettings.Execute();
+                ViewModel.OpenSettings.Execute();
 
+                TestScheduler.Start();
                 OnboardingStorage.DidNotReceive().SetNavigatedAwayFromMainViewAfterStopButton();
             }
 
             [Fact, LogIfTooSlow]
-            public async ThreadingTask MarksTheActionAfterStopButtonForOnboardingPurposes()
+            public void MarksTheActionAfterStopButtonForOnboardingPurposes()
             {
                 OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(true));
                 ViewModel.Initialize().Wait();
 
-                await ViewModel.OpenSettings.Execute();
+                ViewModel.OpenSettings.Execute();
 
+                TestScheduler.Start();
                 OnboardingStorage.Received().SetNavigatedAwayFromMainViewAfterStopButton();
             }
         }
@@ -411,13 +430,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(false));
                 ViewModel.Initialize().Wait();
 
-                await ViewModel.OpenReports.Execute();
+                ViewModel.OpenReports.Execute();
 
+                TestScheduler.Start();
                 await NavigationService.Received().Navigate<ReportsViewModel>();
             }
 
             [Fact, LogIfTooSlow]
-            public async ThreadingTask MarksTheActionBeforeStopButtonForOnboardingPurposes()
+            public void MarksTheActionBeforeStopButtonForOnboardingPurposes()
             {
                 const long workspaceId = 10;
                 var workspace = Substitute.For<IThreadSafeWorkspace>();
@@ -426,13 +446,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(false));
                 ViewModel.Initialize().Wait();
 
-                await ViewModel.OpenReports.Execute();
+                ViewModel.OpenReports.Execute();
 
+                TestScheduler.Start();
                 OnboardingStorage.DidNotReceive().SetNavigatedAwayFromMainViewAfterStopButton();
             }
 
             [Fact, LogIfTooSlow]
-            public async ThreadingTask MarksTheActionAfterStopButtonForOnboardingPurposes()
+            public void MarksTheActionAfterStopButtonForOnboardingPurposes()
             {
                 const long workspaceId = 10;
                 var workspace = Substitute.For<IThreadSafeWorkspace>();
@@ -441,8 +462,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(true));
                 ViewModel.Initialize().Wait();
 
-                await ViewModel.OpenReports.Execute();
+                ViewModel.OpenReports.Execute();
 
+                TestScheduler.Start();
                 OnboardingStorage.Received().SetNavigatedAwayFromMainViewAfterStopButton();
             }
         }
@@ -454,8 +476,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 ViewModel.Initialize().Wait();
 
-                await ViewModel.OpenSyncFailures.Execute();
+                ViewModel.OpenSyncFailures.Execute();
 
+                TestScheduler.Start();
                 await NavigationService.Received().Navigate<SyncFailuresViewModel>();
             }
         }
@@ -480,24 +503,27 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var date = DateTimeOffset.UtcNow;
                 TimeService.CurrentDateTime.Returns(date);
 
-                await ViewModel.StopTimeEntry.Execute(TimeEntryStopOrigin.Deeplink);
+                ViewModel.StopTimeEntry.Execute(TimeEntryStopOrigin.Deeplink);
 
+                TestScheduler.Start();
                 await InteractorFactory.Received().StopTimeEntry(date, TimeEntryStopOrigin.Deeplink).Execute();
             }
 
             [Fact, LogIfTooSlow]
             public async ThreadingTask InitiatesPushSync()
             {
-                await ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
+                ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
 
+                TestScheduler.Start();
                 await DataSource.SyncManager.Received().PushSync();
             }
 
             [Fact, LogIfTooSlow]
-            public async ThreadingTask MarksTheActionForOnboardingPurposes()
+            public void MarksTheActionForOnboardingPurposes()
             {
-                await ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
+                ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
 
+                TestScheduler.Start();
                 OnboardingStorage.Received().StopButtonWasTapped();
             }
 
@@ -509,9 +535,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Execute()
                     .Returns(Observable.Throw<IThreadSafeTimeEntry>(new Exception()));
 
-                Action stopTimeEntry = () => ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>()).Wait();
+                var observer = TestScheduler.CreateObserver<Unit>();
+                ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>())
+                    .Subscribe(observer);
+                TestScheduler.Start();
 
-                stopTimeEntry.Should().Throw<Exception>();
+                observer.Messages.Count().Should().Be(1);
+                observer.Messages.Last().Value.Kind.Should().Be(NotificationKind.OnError);
                 await DataSource.SyncManager.DidNotReceive().PushSync();
             }
 
@@ -521,23 +551,30 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 subject.OnNext(null);
                 TestScheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
 
-                Func<ThreadingTask> tryingToStopWhenThereAreNoEntriesRunning = async () =>
-                   await ViewModel.StopTimeEntry.Execute(TimeEntryStopOrigin.Manual);
+                var observer = TestScheduler.CreateObserver<Unit>();
+                ViewModel.StopTimeEntry.Execute(TimeEntryStopOrigin.Manual)
+                    .Subscribe(observer);
+                TestScheduler.Start();
 
-                tryingToStopWhenThereAreNoEntriesRunning.Should().Throw<RxActionNotEnabledException>();
+                observer.Messages.Count.Should().Be(1);
+                observer.Messages.Last().Value.Exception.Should().BeEquivalentTo(new RxActionNotEnabledException());
+
                 await InteractorFactory.DidNotReceive().StopTimeEntry(Arg.Any<DateTimeOffset>(), Arg.Any<TimeEntryStopOrigin>()).Execute();
             }
 
             [Fact, LogIfTooSlow]
-            public async ThreadingTask ShouldDonateStopTimerIntent()
+            public void ShouldDonateStopTimerIntent()
             {
                 var secondTimeEntry = Substitute.For<IThreadSafeTimeEntry>();
 
-                await ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
+                ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
+                TestScheduler.Start();
+                TestScheduler.Stop();
                 subject.OnNext(secondTimeEntry);
                 TestScheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
-                await ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
+                ViewModel.StopTimeEntry.Execute(Arg.Any<TimeEntryStopOrigin>());
 
+                TestScheduler.Start();
                 IntentDonationService.Received().DonateStopCurrentTimeEntry();
             }
         }

@@ -181,7 +181,7 @@ namespace Toggl.Giskard.Activities
 
         private void onNavigateBack(object sender, Toolbar.NavigationClickEventArgs e)
         {
-            ViewModel.Close().Execute();
+            ViewModel.Close.Execute();
         }
 
         public override void Finish()

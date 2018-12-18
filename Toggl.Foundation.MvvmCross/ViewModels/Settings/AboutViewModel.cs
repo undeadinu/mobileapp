@@ -7,6 +7,7 @@ using Toggl.Multivac.Extensions;
 using System;
 using System.Reactive;
 using System.Reactive.Threading.Tasks;
+using Toggl.Foundation.Services;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
@@ -14,19 +15,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     public sealed class AboutViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService navigationService;
+        private readonly IRxActionFactory rxActionFactory;
 
         public UIAction OpenPrivacyPolicyView { get; private set; }
         public UIAction OpenTermsOfServiceView { get; private set; }
         public UIAction OpenLicensesView { get; private set; }
 
-        public AboutViewModel(IMvxNavigationService navigationService)
+        public AboutViewModel(IMvxNavigationService navigationService, IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
-            this.navigationService = navigationService;
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
-            OpenPrivacyPolicyView = UIAction.FromAsync(openPrivacyPolicyView);
-            OpenTermsOfServiceView = UIAction.FromAsync(openTermsOfServiceView);
-            OpenLicensesView = UIAction.FromAsync(openLicensesView);
+            this.navigationService = navigationService;
+            this.rxActionFactory = rxActionFactory;
+
+            OpenPrivacyPolicyView = rxActionFactory.FromAsync(openPrivacyPolicyView);
+            OpenTermsOfServiceView = rxActionFactory.FromAsync(openTermsOfServiceView);
+            OpenLicensesView = rxActionFactory.FromAsync(openLicensesView);
         }
 
         private Task openPrivacyPolicyView()

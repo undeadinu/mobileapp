@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using MvvmCross.Navigation;
 using Toggl.Foundation.Interactors;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Settings;
@@ -15,18 +16,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
     public sealed class SelectUserCalendarsViewModel : SelectUserCalendarsViewModelBase
     {
         private readonly IMvxNavigationService navigationService;
+        private readonly IRxActionFactory rxActionFactory;
 
         public UIAction Done { get; private set; }
 
         public SelectUserCalendarsViewModel(
             IUserPreferences userPreferences,
             IInteractorFactory interactorFactory,
-            IMvxNavigationService navigationService)
-            : base(userPreferences, interactorFactory)
+            IMvxNavigationService navigationService,
+            IRxActionFactory rxActionFactory
+            )
+            : base(userPreferences, interactorFactory, rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.navigationService = navigationService;
+            this.rxActionFactory = rxActionFactory;
         }
 
         public override Task Initialize()
@@ -37,7 +43,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
                     .DistinctUntilChanged()
                 : Observable.Return(true);
 
-            Done = UIAction.FromAsync(done, enabledObservable);
+            Done = rxActionFactory.FromAsync(done, enabledObservable);
 
             return base.Initialize();
         }

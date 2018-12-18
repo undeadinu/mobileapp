@@ -7,6 +7,7 @@ using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Settings;
@@ -18,6 +19,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
     {
         private readonly IPermissionsService permissionsService;
         private readonly IUserPreferences userPreferences;
+        private readonly IRxActionFactory rxActionFactory;
 
         public bool PermissionGranted { get; private set; }
 
@@ -26,8 +28,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
         public CalendarSettingsViewModel(
             IUserPreferences userPreferences,
             IInteractorFactory interactorFactory,
-            IPermissionsService permissionsService)
-            : base(userPreferences, interactorFactory)
+            IPermissionsService permissionsService,
+            IRxActionFactory rxActionFactory)
+            : base(userPreferences, interactorFactory, rxActionFactory)
         {
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
             Ensure.Argument.IsNotNull(permissionsService, nameof(permissionsService));
@@ -35,7 +38,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
             this.userPreferences = userPreferences;
             this.permissionsService = permissionsService;
 
-            RequestAccess = UIAction.FromAction(requestAccess);
+            RequestAccess = rxActionFactory.FromAction(requestAccess);
 
             SelectCalendar
                 .Elements

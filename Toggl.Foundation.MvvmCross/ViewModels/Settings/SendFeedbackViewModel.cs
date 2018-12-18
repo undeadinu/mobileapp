@@ -7,6 +7,7 @@ using MvvmCross.ViewModels;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Services;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 
@@ -18,6 +19,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IDialogService dialogService;
         private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
+        private readonly IRxActionFactory rxActionFactory;
 
         // Internal States
         private readonly ISubject<bool> isLoadingSubject = new BehaviorSubject<bool>(false);
@@ -47,23 +49,26 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IMvxNavigationService navigationService,
             IInteractorFactory interactorFactory,
             IDialogService dialogService,
-            ISchedulerProvider schedulerProvider)
+            ISchedulerProvider schedulerProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.dialogService = dialogService;
             this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
+            this.rxActionFactory = rxActionFactory;
 
             IsFeedbackEmpty = isEmptyObservable.DistinctUntilChanged().AsDriver(schedulerProvider);
             SendEnabled = sendingIsEnabledObservable.DistinctUntilChanged().AsDriver(schedulerProvider);
 
-            Close = UIAction.FromObservable(cancel);
-            DismissError = UIAction.FromAction(dismissError);
-            Send = UIAction.FromObservable(sendFeedback, sendingIsEnabledObservable);
+            Close = rxActionFactory.FromObservable(cancel);
+            DismissError = rxActionFactory.FromAction(dismissError);
+            Send = rxActionFactory.FromObservable(sendFeedback, sendingIsEnabledObservable);
 
             IsLoading = isLoadingSubject.AsDriver(false, schedulerProvider);
             Error = currentErrorSubject.AsDriver(default(Exception), schedulerProvider);

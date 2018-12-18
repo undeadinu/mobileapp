@@ -994,5 +994,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("Calendar", resourceCulture);
             }
         }
+        
+        public static string CreateClient {
+            get {
+                return ResourceManager.GetString("CreateClient", resourceCulture);
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Foundation.MvvmCross.Extensions;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 
@@ -24,6 +25,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IInteractorFactory interactorFactory;
         private readonly IAnalyticsService analyticsService;
         private readonly ISchedulerProvider schedulerProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
         private DurationFormat durationFormat;
@@ -44,17 +46,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public TimeEntriesViewModel (ITogglDataSource dataSource,
                                      IInteractorFactory interactorFactory,
                                      IAnalyticsService analyticsService,
-                                     ISchedulerProvider schedulerProvider)
+                                     ISchedulerProvider schedulerProvider,
+                                     IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.dataSource = dataSource;
             this.interactorFactory = interactorFactory;
             this.analyticsService = analyticsService;
             this.schedulerProvider = schedulerProvider;
+            this.rxActionFactory = rxActionFactory;
 
             TimeEntries = new ObservableGroupedOrderedCollection<TimeEntryViewModel>(
                 indexKey: t => t.Id,
@@ -63,8 +68,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 descending: true
             );
 
-            DelayDeleteTimeEntry = InputAction<TimeEntryViewModel>.FromAction(delayDeleteTimeEntry);
-            CancelDeleteTimeEntry = UIAction.FromAction(cancelDeleteTimeEntry);
+            DelayDeleteTimeEntry = rxActionFactory.FromAction<TimeEntryViewModel>(delayDeleteTimeEntry);
+            CancelDeleteTimeEntry = rxActionFactory.FromAction(cancelDeleteTimeEntry);
 
             ShouldShowUndo = showUndoSubject.AsObservable().AsDriver(schedulerProvider);
         }

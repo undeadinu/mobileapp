@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.Extensions;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Settings;
@@ -17,22 +18,27 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
     {
         private readonly IMvxNavigationService navigationService;
         private readonly IUserPreferences userPreferences;
+        private readonly IRxActionFactory rxActionFactory;
 
         public int SelectedOptionIndex { get; private set; }
 
         public IList<CalendarNotificationsOption> AvailableOptions { get; }
 
         public InputAction<CalendarNotificationsOption> SelectOption { get; }
+        public UIAction Close { get; }
 
         public UpcomingEventsNotificationSettingsViewModel(
             IMvxNavigationService navigationService,
-            IUserPreferences userPreferences)
+            IUserPreferences userPreferences,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.navigationService = navigationService;
             this.userPreferences = userPreferences;
+            this.rxActionFactory = rxActionFactory;
 
             this.AvailableOptions = new List<CalendarNotificationsOption>
             {
@@ -45,7 +51,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
                 CalendarNotificationsOption.OneHour
             };
 
-            SelectOption = InputAction<CalendarNotificationsOption>.FromAction(onSelectOption);
+            SelectOption = rxActionFactory.FromAction<CalendarNotificationsOption>(onSelectOption);
+            Close = rxActionFactory.FromAsync(() => navigationService.Close(this, Unit.Default));
         }
 
         public override async Task Initialize()

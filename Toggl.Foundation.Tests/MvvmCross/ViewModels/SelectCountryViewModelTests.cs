@@ -7,6 +7,7 @@ using FluentAssertions;
 using FsCheck;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac.Models;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class SelectCountryViewModelTest : BaseViewModelTests<SelectCountryViewModel>
         {
             protected override SelectCountryViewModel CreateViewModel()
-                => new SelectCountryViewModel(NavigationService);
+                => new SelectCountryViewModel(NavigationService, RxActionFactory);
 
             protected List<ICountry> GenerateCountriesList() =>
                 Enumerable.Range(1, 10).Select(i =>
@@ -32,11 +33,17 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheConstructor : SelectCountryViewModelTest
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfTheArgumentIsNull()
+            [Theory, LogIfTooSlow]
+            [ConstructorData]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useNavigationService,
+                bool useRxActionFactory)
             {
+                var navigationService = useNavigationService ? NavigationService : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
+
                 Action tryingToConstructWithEmptyParameters =
-                    () => new SelectCountryViewModel(null);
+                    () => new SelectCountryViewModel(navigationService, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -49,7 +56,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task AddsAllCountriesToTheListOfSuggestions()
             {
                 var countries = GenerateCountriesList();
-                
+
                 ViewModel.Prepare(10);
 
                 await ViewModel.Initialize();
@@ -100,8 +107,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 var selectableCountry = new SelectableCountryViewModel(country, true);
 
-                await ViewModel.SelectCountry.Execute(selectableCountry);
+                ViewModel.SelectCountry.Execute(selectableCountry);
 
+                TestScheduler.Start();
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), country.Id);
             }

@@ -127,6 +127,7 @@ namespace Toggl.Foundation.Tests
                 var suggestionProviderContainer = Substitute.For<ISuggestionProviderContainer>();
                 var privateSharedStorageService = Substitute.For<IPrivateSharedStorageService>();
                 var automaticSyncingService = Substitute.For<IAutomaticSyncingService>();
+                var rxActionFactory = Substitute.For<IRxActionFactory>();
 
                 Action tryingToConstructWithValidParameters = () =>
                     TogglFoundation

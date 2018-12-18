@@ -293,6 +293,32 @@ namespace Toggl.Foundation.Tests.Login
 
                 result.Should().NotBeNull();
             }
+
+            [Fact, LogIfTooSlow]
+            public void DoesNotEmitTheDataSourceWhenUserIsNotLoggedIn()
+            {
+                var observer = Substitute.For<IObserver<ITogglDataSource>>();
+                var observable = Observable.Throw<IDatabaseUser>(new InvalidOperationException());
+                Database.User.Single().Returns(observable);
+                UserAccessManager.UserLoggedIn.Subscribe(observer);
+
+                UserAccessManager.GetDataSourceIfLoggedIn();
+
+                observer.DidNotReceive().OnNext(Arg.Any<ITogglDataSource>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public void EmitsTheDataSourceWhenUserIsLoggedIn()
+            {
+                var observer = Substitute.For<IObserver<ITogglDataSource>>();
+                var observable = Observable.Return<IDatabaseUser>(FoundationUser.Clean(User));
+                Database.User.Single().Returns(observable);
+                UserAccessManager.UserLoggedIn.Subscribe(observer);
+
+                UserAccessManager.GetDataSourceIfLoggedIn();
+
+                observer.Received().OnNext(Arg.Any<ITogglDataSource>());
+            }
         }
 
         public sealed class TheSignUpMethod : UserAccessManagerTest

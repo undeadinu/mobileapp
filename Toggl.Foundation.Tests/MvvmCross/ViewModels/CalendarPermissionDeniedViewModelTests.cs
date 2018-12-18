@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
+using Toggl.Foundation.Tests.Generators;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -15,20 +16,24 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             : BaseViewModelTests<CalendarPermissionDeniedViewModel>
         {
             protected override CalendarPermissionDeniedViewModel CreateViewModel()
-                => new CalendarPermissionDeniedViewModel(PermissionsService);
+                => new CalendarPermissionDeniedViewModel(PermissionsService, RxActionFactory);
         }
 
         public sealed class TheConstructor : CalendarPermissionDeniedViewModelTest
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfAnyOfTheArgumentsIsNull()
+            [Theory, LogIfTooSlow]
+            [ConstructorData]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool usePermissionsService,
+                bool useRxActionFactory)
             {
                 Action tryingToConstructWithEmptyParameters =
-                    () => new CalendarPermissionDeniedViewModel(null);
+                    () => new CalendarPermissionDeniedViewModel(
+                        usePermissionsService ? PermissionsService : null,
+                        useRxActionFactory ? RxActionFactory : null
+                    );
 
-                tryingToConstructWithEmptyParameters
-                    .Should()
-                    .Throw<ArgumentNullException>();
+                tryingToConstructWithEmptyParameters.Should().Throw<ArgumentNullException>();
             }
         }
 
@@ -37,7 +42,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact]
             public async Task OpensAppSettings()
             {
-                await ViewModel.EnableAccess.Execute(Unit.Default);
+                ViewModel.EnableAccess.Execute();
 
                 PermissionsService.Received().OpenAppSettings();
             }

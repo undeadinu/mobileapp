@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels.Hints;
+using Toggl.Foundation.Services;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant;
 using Xunit;
@@ -37,7 +38,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     AnalyticsService,
                     OnboardingStorage,
                     NavigationService,
-                    SchedulerProvider);
+                    SchedulerProvider,
+                    RxActionFactory);
         }
 
         public sealed class TheConstructor : RatingViewModelTest
@@ -51,7 +53,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useAnalyticsService,
                 bool useOnboardingStorage,
                 bool useNavigationService,
-                bool useSchedulerProvider)
+                bool useSchedulerProvider,
+                bool useRxActionFactory)
             {
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
@@ -60,6 +63,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new RatingViewModel(
@@ -69,7 +73,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         analyticsService,
                         onboardingStorage,
                         navigationService,
-                        schedulerProvider);
+                        schedulerProvider,
+                        rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -202,7 +207,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 [Fact, LogIfTooSlow]
                 public async Task HidesTheViewModel()
                 {
-                    await ViewModel.PerformMainAction.Execute();
+                    ViewModel.PerformMainAction.Execute();
+                    TestScheduler.Start();
 
                     NavigationService.Received().ChangePresentation(
                         Arg.Is<ToggleRatingViewVisibilityHint>(hint => hint.ShouldHide == true)
@@ -217,7 +223,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 [Fact, LogIfTooSlow]
                 public async Task PerformsTheCorrectAction()
                 {
-                    await ViewModel.PerformMainAction.Execute();
+                    ViewModel.PerformMainAction.Execute();
+                    TestScheduler.Start();
 
                     EnsureCorrectActionWasPerformed();
                 }
@@ -225,7 +232,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 [Fact, LogIfTooSlow]
                 public async Task TracksTheAppropriateEventWithTheExpectedParameter()
                 {
-                    await ViewModel.PerformMainAction.Execute();
+                    ViewModel.PerformMainAction.Execute();
+                    TestScheduler.Start();
 
                     AnalyticsService
                         .UserFinishedRatingViewSecondStep
@@ -236,7 +244,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 [Fact, LogIfTooSlow]
                 public async Task TracksTheCorrectEvent()
                 {
-                    await ViewModel.PerformMainAction.Execute();
+                    ViewModel.PerformMainAction.Execute();
+                    TestScheduler.Start();
 
                     ExpectedEvent.Received().Track();
                 }
@@ -244,7 +253,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 [Fact, LogIfTooSlow]
                 public async Task StoresTheAppropriateRatingViewOutcomeAndTime()
                 {
-                    await ViewModel.PerformMainAction.Execute();
+                    ViewModel.PerformMainAction.Execute();
+                    TestScheduler.Start();
 
                     OnboardingStorage
                         .Received()
@@ -284,7 +294,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 [Fact, LogIfTooSlow]
                 public async Task DoesNothing()
                 {
-                    await ViewModel.PerformMainAction.Execute();
+                    ViewModel.PerformMainAction.Execute();
+                    TestScheduler.Start();
 
                     RatingService.DidNotReceive().AskForRating();
                 }

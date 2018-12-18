@@ -23,6 +23,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
         private readonly IPermissionsService permissionsService;
         private readonly IUserPreferences userPreferences;
         private readonly ISchedulerProvider schedulerProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         public IObservable<bool> PermissionGranted;
         public IObservable<string> UpcomingEvents;
@@ -35,18 +36,21 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
             IBackgroundService backgroundService,
             IPermissionsService permissionsService,
             IUserPreferences userPreferences,
-            ISchedulerProvider schedulerProvider)
+            ISchedulerProvider schedulerProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(backgroundService, nameof(backgroundService));
             Ensure.Argument.IsNotNull(permissionsService, nameof(permissionsService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.navigationService = navigationService;
             this.permissionsService = permissionsService;
             this.userPreferences = userPreferences;
             this.schedulerProvider = schedulerProvider;
+            this.rxActionFactory = rxActionFactory;
 
             PermissionGranted = backgroundService.AppResumedFromBackground
                 .SelectUnit()
@@ -60,8 +64,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Settings
                 .DistinctUntilChanged()
                 .AsDriver(schedulerProvider);
 
-            RequestAccess = UIAction.FromAction(requestAccess);
-            OpenUpcomingEvents = UIAction.FromAsync(openUpcomingEvents);
+            RequestAccess = rxActionFactory.FromAction(requestAccess);
+            OpenUpcomingEvents = rxActionFactory.FromAsync(openUpcomingEvents);
         }
 
         private void requestAccess()

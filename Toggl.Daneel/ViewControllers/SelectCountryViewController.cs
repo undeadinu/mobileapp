@@ -36,7 +36,7 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(DisposeBag);
 
             CloseButton.Rx()
-                .BindAction(ViewModel.Close())
+                .BindAction(ViewModel.Close)
                 .DisposedBy(DisposeBag);
 
             SearchTextField.Rx().Text()
@@ -52,7 +52,7 @@ namespace Toggl.Daneel.ViewControllers
 
         public async Task<bool> Dismiss()
         {
-            ViewModel.Close().Execute(Unit.Default);
+            ViewModel.Close.Execute(Unit.Default);
             return true;
         }
 

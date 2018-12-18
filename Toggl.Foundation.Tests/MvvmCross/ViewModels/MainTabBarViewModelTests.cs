@@ -33,7 +33,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     SuggestionProviderContainer,
                     IntentDonationService,
                     AccessRestrictionStorage,
-                    StopwatchProvider
+                    StopwatchProvider,
+                    RxActionFactory
                 );
 
             protected override void AdditionalViewModelSetup()
@@ -66,7 +67,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     bool useIntentDonationService,
                     bool useAccessRestrictionStorage,
                     bool useSuggestionProviderContainer,
-                    bool useStopwatchProvider)
+                    bool useStopwatchProvider,
+                    bool useRxActionFactory)
 
             {
                 var timeService = useTimeService ? TimeService : null;
@@ -86,6 +88,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var suggestionProviderContainer = useSuggestionProviderContainer ? SuggestionProviderContainer : null;
                 var intentDonationService = useIntentDonationService ? IntentDonationService : null;
                 var stopwatchProvider = useStopwatchProvider ? StopwatchProvider : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new MainTabBarViewModel(
@@ -105,7 +108,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         suggestionProviderContainer,
                         intentDonationService,
                         accessRestrictionStorage,
-                        stopwatchProvider
+                        stopwatchProvider,
+                        rxActionFactory
                     );
 
                 tryingToConstructWithEmptyParameters

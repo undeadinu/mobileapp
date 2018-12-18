@@ -16,7 +16,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class UpcomingEventsNotificationSettingsViewModelTest : BaseViewModelTests<UpcomingEventsNotificationSettingsViewModel>
         {
             protected override UpcomingEventsNotificationSettingsViewModel CreateViewModel()
-                => new UpcomingEventsNotificationSettingsViewModel(NavigationService, UserPreferences);
+                => new UpcomingEventsNotificationSettingsViewModel(NavigationService, UserPreferences, RxActionFactory);
         }
 
         public sealed class TheConstructor : UpcomingEventsNotificationSettingsViewModelTest
@@ -25,12 +25,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useNavigationService,
-                bool useUserPreferences)
+                bool useUserPreferences,
+                bool useRxActionFactory)
             {
                 Action tryingToConstructWithEmptyParameters =
                     () => new UpcomingEventsNotificationSettingsViewModel(
                         useNavigationService ? NavigationService : null,
-                        useUserPreferences ? UserPreferences : null
+                        useUserPreferences ? UserPreferences : null,
+                        useRxActionFactory ? RxActionFactory : null
                     );
 
                 tryingToConstructWithEmptyParameters.Should().Throw<ArgumentNullException>();
@@ -50,8 +52,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData(CalendarNotificationsOption.OneHour, true, 60)]
             public async Task SavesTheSelectedOption(CalendarNotificationsOption option, bool enabled, int minutes)
             {
-                await ViewModel.SelectOption.Execute(option);
+                ViewModel.SelectOption.Execute(option);
 
+                TestScheduler.Start();
                 UserPreferences.Received().SetCalendarNotificationsEnabled(enabled);
 
                 if (enabled)

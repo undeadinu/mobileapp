@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using MvvmCross.Commands;
 using MvvmCross.ViewModels;
@@ -47,6 +48,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ILastTimeUsageStorage lastTimeUsageStorage;
         private readonly ITimeService timeService;
         private readonly ISchedulerProvider schedulerProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private IDisposable getCountrySubscription;
         private IDisposable signupDisposable;
@@ -90,7 +92,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IErrorHandlingService errorHandlingService,
             ILastTimeUsageStorage lastTimeUsageStorage,
             ITimeService timeService,
-            ISchedulerProvider schedulerProvider)
+            ISchedulerProvider schedulerProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(apiFactory, nameof(apiFactory));
             Ensure.Argument.IsNotNull(userAccessManager, nameof(userAccessManager));
@@ -101,6 +104,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(lastTimeUsageStorage, nameof(lastTimeUsageStorage));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.apiFactory = apiFactory;
             this.userAccessManager = userAccessManager;
@@ -111,11 +115,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.lastTimeUsageStorage = lastTimeUsageStorage;
             this.timeService = timeService;
             this.schedulerProvider = schedulerProvider;
+            this.rxActionFactory = rxActionFactory;
 
-            Login = UIAction.FromAsync(login);
-            Signup = UIAction.FromAsync(signup);
-            GoogleSignup = UIAction.FromAsync(googleSignup);
-            PickCountry = UIAction.FromAsync(pickCountry);
+            Login = rxActionFactory.FromAsync(login);
+            Signup = rxActionFactory.FromAsync(signup);
+            GoogleSignup = rxActionFactory.FromAsync(googleSignup);
+            PickCountry = rxActionFactory.FromAsync(pickCountry);
 
             var emailObservable = emailSubject.Select(email => email.TrimmedEnd());
 

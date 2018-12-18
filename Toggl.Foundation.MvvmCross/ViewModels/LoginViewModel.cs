@@ -39,6 +39,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ILastTimeUsageStorage lastTimeUsageStorage;
         private readonly ITimeService timeService;
         private readonly ISchedulerProvider schedulerProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private IDisposable loginDisposable;
 
@@ -74,7 +75,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IErrorHandlingService errorHandlingService,
             ILastTimeUsageStorage lastTimeUsageStorage,
             ITimeService timeService,
-            ISchedulerProvider schedulerProvider)
+            ISchedulerProvider schedulerProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(userAccessManager, nameof(userAccessManager));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
@@ -85,6 +87,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(lastTimeUsageStorage, nameof(lastTimeUsageStorage));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.timeService = timeService;
             this.userAccessManager = userAccessManager;
@@ -98,9 +101,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             var emailObservable = emailSubject.Select(email => email.TrimmedEnd());
 
-            Signup = UIAction.FromAsync(signup);
-            ForgotPassword = UIAction.FromAsync(forgotPassword);
-            StartPasswordManager = UIAction.FromAsync(startPasswordManager);
+            Signup = rxActionFactory.FromAsync(signup);
+            ForgotPassword = rxActionFactory.FromAsync(forgotPassword);
+            StartPasswordManager = rxActionFactory.FromAsync(startPasswordManager);
 
             Shake = shakeSubject.AsDriver(this.schedulerProvider);
 

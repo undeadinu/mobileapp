@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Toggl.Foundation.Exceptions;
 using System.Collections.Immutable;
 using MvvmCross.Navigation;
+using Toggl.Foundation.Services;
 using Toggl.PrimeRadiant.Settings;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
@@ -24,6 +25,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
         private readonly IAccessRestrictionStorage accessRestrictionStorage;
+        private readonly IRxActionFactory rxActionFactory;
 
         public IImmutableList<SelectableWorkspaceViewModel> Workspaces { get; private set; }
 
@@ -33,19 +35,22 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ITogglDataSource dataSource,
             IInteractorFactory interactorFactory,
             IMvxNavigationService navigationService,
-            IAccessRestrictionStorage accessRestrictionStorage)
+            IAccessRestrictionStorage accessRestrictionStorage,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(accessRestrictionStorage, nameof(accessRestrictionStorage));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.dataSource = dataSource;
             this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
             this.accessRestrictionStorage = accessRestrictionStorage;
+            this.rxActionFactory = rxActionFactory;
 
-            SelectWorkspace = InputAction<SelectableWorkspaceViewModel>.FromObservable(selectWorkspace);
+            SelectWorkspace = rxActionFactory.FromObservable<SelectableWorkspaceViewModel>(selectWorkspace);
         }
 
         public override async Task Initialize()

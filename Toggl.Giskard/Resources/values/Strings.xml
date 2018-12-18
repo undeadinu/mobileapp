@@ -119,6 +119,22 @@ understand and agree to Toggl\'s</string>
     <string name="Billable">Billable</string>
     <string name="NonBillable">Non-billable</string>
     <string name="HourSymbol">h</string>
+    <string name="Tag">Tag</string>
+    <string name="SuggestionsText">Working on these?</string>
+    <string name="DoYouLikeThisApp">Do you like this app?</string>
+    <string name="YesWithExclamation">Yes!</string>
+    <string name="NotReally">Not really</string>
+    <string name="PleaseRateUs">Would you mind rating Toggl in the Play Store? Your review really makes a difference.</string>
+    <string name="RateTheApp">RateTheApp</string>
+    <string name="Later">Later</string>
+    <string name="PlusFiveMinutes">+5m</string>
+    <string name="PlusTenMinutes">+10m</string>
+    <string name="YourTokenWasReset">Your API token has been reset</string>
+    <string name="SignOutOption">Or sign out</string>
+    <string name="PlusThirtyMinutes">30m</string>
+    <string name="PlusThirtyMinutes">30m</string>
+    <string name="PlusThirtyMinutes">30m</string>
+    <string name="LoginBackRequest">Enter your password to log back in to your account:</string>
 
     <string name="ReportsCalendarShortcutsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.ReportsCalendarShortcutsTemplateSelector, Toggl.Giskard</string>
     <string name="ReportsCalendarTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.ReportsCalendarTemplateSelector, Toggl.Giskard</string>

@@ -6,6 +6,7 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Xunit;
 using System.Reactive.Linq;
+using Toggl.Foundation.Tests.Generators;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 {
@@ -14,16 +15,24 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class AboutViewModelTest : BaseViewModelTests<AboutViewModel>
         {
             protected override AboutViewModel CreateViewModel()
-                => new AboutViewModel(NavigationService);
+                => new AboutViewModel(NavigationService, RxActionFactory);
         }
 
         public sealed class TheConstructor : AboutViewModelTest
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfTheArgumentIsNull()
+            [Theory, LogIfTooSlow]
+            [ConstructorData]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useNavigationService,
+                bool useRxActionFactory)
             {
+                var navigationService = useNavigationService ? NavigationService : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
+
                 Action tryingToConstructWithEmptyParameters =
-                    () => new AboutViewModel(null);
+                    () => new AboutViewModel(
+                        navigationService,
+                        rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -33,11 +42,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheLicensesCommand : AboutViewModelTest
         {
             [Fact, LogIfTooSlow]
-            public async Task NavigatesToTheLicensesViewModel()
+            public void NavigatesToTheLicensesViewModel()
             {
-                await ViewModel.OpenLicensesView.Execute();
+                ViewModel.OpenLicensesView.Execute();
 
-                await NavigationService.Received().Navigate<LicensesViewModel>();
+                NavigationService.Received().Navigate<LicensesViewModel>();
             }
         }
 
@@ -46,9 +55,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task OpensTheBrowserInTheTermsOfServicePage()
             {
-                await ViewModel.OpenTermsOfServiceView.Execute();
+                ViewModel.OpenTermsOfServiceView.Execute();
 
-                await NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
+                NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
                     Arg.Is<BrowserParameters>(parameter => parameter.Url == Resources.TermsOfServiceUrl)
                 );
             }
@@ -56,9 +65,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task OpensTheBrowserWithTheAppropriateTitle()
             {
-                await ViewModel.OpenTermsOfServiceView.Execute();
+                ViewModel.OpenTermsOfServiceView.Execute();
 
-                await NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
+                NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
                     Arg.Is<BrowserParameters>(parameter => parameter.Title == Resources.TermsOfService)
                 );
             }
@@ -69,9 +78,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task OpensTheBrowserInThePrivacyPolicyPage()
             {
-                await ViewModel.OpenPrivacyPolicyView.Execute();
+                ViewModel.OpenPrivacyPolicyView.Execute();
 
-                await NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
+                NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
                     Arg.Is<BrowserParameters>(parameter => parameter.Url == Resources.PrivacyPolicyUrl)
                 );
             }
@@ -79,9 +88,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task OpensTheBrowserWithTheAppropriateTitle()
             {
-                await ViewModel.OpenPrivacyPolicyView.Execute();
+                ViewModel.OpenPrivacyPolicyView.Execute();
 
-                await NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
+                NavigationService.Received().Navigate<BrowserViewModel, BrowserParameters>(
                     Arg.Is<BrowserParameters>(parameter => parameter.Title == Resources.PrivacyPolicy)
                 );
             }

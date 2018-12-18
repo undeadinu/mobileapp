@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <LinearLayout
@@ -16,7 +17,7 @@
             android:paddingStart="16dp"
             android:paddingBottom="16dp"
             android:background="@drawable/TooltipShape"
-            android:text="Add a project and tags on the fly"
+            tools:text="Add a project and tags on the fly"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageView

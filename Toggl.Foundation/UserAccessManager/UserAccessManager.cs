@@ -120,9 +120,9 @@ namespace Toggl.Foundation.Login
             => database.User
                 .Single()
                 .Select(dataSourceFromUser)
+                .Do(userLoggedInSubject.OnNext)
                 .Catch(Observable.Return<ITogglDataSource>(null))
                 .Do(shortcutCreator.OnLogin)
-                .Do(userLoggedInSubject.OnNext)
                 .Wait();
 
         public IObservable<ITogglDataSource> RefreshToken(Password password)

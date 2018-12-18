@@ -42,7 +42,7 @@
             android:textStyle="normal"
             android:textColor="#3e3e3e"
             android:letterSpacing="0.01"
-            android:text="Do you like this app?" />
+            android:text="@string/DoYouLikeThisApp" />
         <ImageView
             android:id="@+id/UserFeedbackThumbsUp"
             local:layout_constraintLeft_toLeftOf="parent"
@@ -78,7 +78,7 @@
             android:letterSpacing="0.04"
             android:lineSpacingExtra="6sp"
             android:gravity="center_horizontal"
-            android:text="Yes!" />
+            android:text="@string/YesWithExclamation" />
         <TextView
             android:id="@+id/UserFeedbackThumbsDownText"
             local:layout_constraintTop_toBottomOf="@id/UserFeedbackThumbsDown"
@@ -96,7 +96,7 @@
             android:letterSpacing="0.04"
             android:lineSpacingExtra="6sp"
             android:gravity="center_horizontal"
-            android:text="Not really" />
+            android:text="@string/NotReally" />
             
         <TextView
             android:id="@+id/UserFeedbackImpressionTitle"
@@ -148,7 +148,7 @@
             android:textStyle="normal"
             android:textColor="#3e3e3e"
             android:lineSpacingExtra="8sp"
-            android:text="Would you mind rating Toggl in the Play Store? Your review really makes a difference." />
+            android:text="@string/PleaseRateUs" />
         <Button
             android:id="@+id/UserFeedbackRateButton"
             local:layout_constraintRight_toRightOf="parent"
@@ -158,7 +158,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="34dp"
-            android:text="Rate the app"
+            android:text="@string/RateTheApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
@@ -172,6 +172,6 @@
             android:paddingLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:text="Later" />
+            android:text="@string/Later" />
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

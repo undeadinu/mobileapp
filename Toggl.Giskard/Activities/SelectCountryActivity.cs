@@ -41,7 +41,7 @@ namespace Toggl.Giskard.Activities
                 .DisposedBy(DisposeBag);
 
             backImageView.Rx()
-                .BindAction(ViewModel.Close())
+                .BindAction(ViewModel.Close)
                 .DisposedBy(DisposeBag);
 
             filterEditText.Rx().Text()
@@ -63,7 +63,7 @@ namespace Toggl.Giskard.Activities
         {
             if (keyCode == Keycode.Back)
             {
-                ViewModel.Close().Execute();
+                ViewModel.Close.Execute();
                 return true;
             }
 

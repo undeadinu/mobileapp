@@ -11,6 +11,7 @@ using MvvmCross.UI;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.Parameters;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 
@@ -20,6 +21,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     public class SelectColorViewModel : MvxViewModel<ColorParameters, MvxColor>
     {
         private readonly IMvxNavigationService navigationService;
+        private readonly IRxActionFactory rxActionFactory;
 
         private MvxColor defaultColor;
         private IObservable<MvxColor> customColor;
@@ -43,23 +45,25 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public InputAction<float> SetValue { get; }
         public InputAction<MvxColor> SelectColor { get; }
 
-        public SelectColorViewModel(IMvxNavigationService navigationService)
+        public SelectColorViewModel(IMvxNavigationService navigationService, IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.navigationService = navigationService;
+            this.rxActionFactory = rxActionFactory;
 
             // Public properties
             Hue = hue.AsObservable();
             Saturation = saturation.AsObservable();
             Value = value.AsObservable();
 
-            Save = UIAction.FromAsync(save);
-            Close = UIAction.FromAsync(close);
-            SetHue = InputAction<float>.FromAction(hue.OnNext);
-            SetSaturation = InputAction<float>.FromAction(saturation.OnNext);
-            SetValue = InputAction<float>.FromAction(value.OnNext);
-            SelectColor = InputAction<MvxColor>.FromAction(selectColor);
+            Save = rxActionFactory.FromAsync(save);
+            Close = rxActionFactory.FromAsync(close);
+            SetHue = rxActionFactory.FromAction<float>(hue.OnNext);
+            SetSaturation = rxActionFactory.FromAction<float>(saturation.OnNext);
+            SetValue = rxActionFactory.FromAction<float>(value.OnNext);
+            SelectColor = rxActionFactory.FromAction<MvxColor>(selectColor);
 
             customColor = Observable
                 .CombineLatest(hue, saturation, value, Color.FromHSV)

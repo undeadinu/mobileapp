@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
 using MvvmCross.ViewModels;
 using NSubstitute;
@@ -9,6 +10,7 @@ using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.Services;
 using Toggl.Foundation.Suggestions;
+using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave;
@@ -44,12 +46,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         protected IStopwatchProvider StopwatchProvider { get; } = Substitute.For<IStopwatchProvider>();
 
         protected TestScheduler TestScheduler { get; }
+        protected IRxActionFactory RxActionFactory { get; }
 
         protected TViewModel ViewModel { get; private set; }
 
         protected BaseViewModelTests()
         {
             TestScheduler = SchedulerProvider.TestScheduler;
+            RxActionFactory = new RxActionFactory(SchedulerProvider);
+
             Setup();
         }
 

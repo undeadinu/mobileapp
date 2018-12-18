@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -21,7 +22,7 @@ namespace Toggl.Multivac.Extensions
 
         private readonly IObservable<IObservable<TElement>> executionObservables;
 
-        public RxAction(Func<TInput, IObservable<TElement>> workFactory, IObservable<bool> enabledIf = null)
+        public RxAction(Func<TInput, IObservable<TElement>> workFactory, IScheduler mainScheduler, IObservable<bool> enabledIf = null)
         {
             if (enabledIf == null)
             {
@@ -47,6 +48,7 @@ namespace Toggl.Multivac.Extensions
                     if (enabled)
                     {
                         var ob = workFactory(input)
+                            .ObserveOn(mainScheduler)
                             .Do(CommonFunctions.DoNothing, error => errorsSubject.OnNext(error))
                             .Replay(1).RefCount();
 

@@ -5,6 +5,7 @@ using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Tests.Generators;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -14,16 +15,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class OutdatedAppViewModelTest : BaseViewModelTests<OutdatedAppViewModel>
         {
             protected override OutdatedAppViewModel CreateViewModel()
-                => new OutdatedAppViewModel(BrowserService);
+                => new OutdatedAppViewModel(BrowserService, RxActionFactory);
         }
 
         public sealed class TheConstructor : OutdatedAppViewModelTest
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfTheArgumentIsNull()
+            [Theory, LogIfTooSlow]
+            [ConstructorData]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useBrowserService,
+                bool useRxActionFactory)
             {
+                var browserService = useBrowserService ? BrowserService : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
+
                 Action tryingToConstructWithEmptyParameters =
-                    () => new OutdatedAppViewModel(null);
+                    () => new OutdatedAppViewModel(
+                        browserService, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -35,7 +43,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task CallsTheOpenStoreMethodOfTheBrowserService()
             {
-                await ViewModel.UpdateApp.Execute();
+                ViewModel.UpdateApp.Execute();
+                TestScheduler.Start();
 
                 BrowserService.Received().OpenStore();
             }
@@ -48,7 +57,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 const string togglWebsiteUrl = "https://toggl.com";
 
-                await ViewModel.OpenWebsite.Execute();
+                ViewModel.OpenWebsite.Execute();
+                TestScheduler.Start();
 
                 BrowserService.Received().OpenUrl(Arg.Is(togglWebsiteUrl));
             }

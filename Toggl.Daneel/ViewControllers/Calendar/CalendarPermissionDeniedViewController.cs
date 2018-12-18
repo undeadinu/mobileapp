@@ -37,7 +37,7 @@ namespace Toggl.Daneel.ViewControllers.Calendar
                 .DisposedBy(DisposeBag);
 
             ContinueWithoutAccessButton.Rx()
-                .BindAction(ViewModel.Close(Unit.Default))
+                .BindAction(ViewModel.Close)
                 .DisposedBy(DisposeBag);
         }
     }

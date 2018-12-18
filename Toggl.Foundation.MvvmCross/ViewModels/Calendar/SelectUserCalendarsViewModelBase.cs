@@ -9,6 +9,7 @@ using Toggl.Foundation.Exceptions;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Foundation.MvvmCross.ViewModels.Selectable;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Settings;
@@ -18,6 +19,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
     public abstract class SelectUserCalendarsViewModelBase : MvxViewModel<bool, string[]>
     {
         private readonly IUserPreferences userPreferences;
+        private readonly IRxActionFactory rxActionFactory;
 
         protected bool ForceItemSelection { get; private set; }
 
@@ -36,15 +38,18 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
 
         protected SelectUserCalendarsViewModelBase(
             IUserPreferences userPreferences,
-            IInteractorFactory interactorFactory)
+            IInteractorFactory interactorFactory,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.userPreferences = userPreferences;
             InteractorFactory = interactorFactory;
+            this.rxActionFactory = rxActionFactory;
 
-            SelectCalendar = InputAction<SelectableUserCalendarViewModel>.FromObservable(selectCalendar);
+            SelectCalendar = rxActionFactory.FromObservable<SelectableUserCalendarViewModel>(selectCalendar);
         }
 
         public override sealed void Prepare(bool parameter)

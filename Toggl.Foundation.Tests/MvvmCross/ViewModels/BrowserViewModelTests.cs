@@ -3,6 +3,7 @@ using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Tests.Generators;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -12,16 +13,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class BrowserViewModelTest : BaseViewModelTests<BrowserViewModel>
         {
             protected override BrowserViewModel CreateViewModel()
-                => new BrowserViewModel(NavigationService);
+                => new BrowserViewModel(NavigationService, RxActionFactory);
         }
 
         public sealed class TheConstructor : BrowserViewModelTest
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfTheArgumentIsNull()
+
+            [Theory, LogIfTooSlow]
+            [ConstructorData]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useNavigationService,
+                bool useRxActionFactory)
             {
                 Action tryingToConstructWithEmptyParameters =
-                    () => new BrowserViewModel(null);
+                    () => new BrowserViewModel(
+                        useNavigationService ? NavigationService : null,
+                        useRxActionFactory ? RxActionFactory : null
+                    );
 
                 tryingToConstructWithEmptyParameters.Should().Throw<ArgumentNullException>();
             }

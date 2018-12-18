@@ -138,7 +138,7 @@
             <TextView
                 android:id="@+id/SelectDateTimeRunningTimeEntryPM"
                 local:MvxBind="Text StopTimeAmPmLabel; Visibility Visibility(!TimeFormat.IsTwentyFourHoursFormat)"
-                android:text="PM"
+                tools:text="PM"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@android:color/white"

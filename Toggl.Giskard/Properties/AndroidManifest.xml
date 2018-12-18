@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="987654321" android:versionName="1.8" package="com.toggl.giskard.debug">
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="27" />
 	<uses-permission android:name="android.permission.INTERNET" />

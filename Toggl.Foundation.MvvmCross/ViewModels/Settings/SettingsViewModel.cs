@@ -53,6 +53,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IPrivateSharedStorageService privateSharedStorageService;
         private readonly IIntentDonationService intentDonationService;
         private readonly IStopwatchProvider stopwatchProvider;
+        private readonly IRxActionFactory rxActionFactory;
 
         private bool isSyncing;
         private bool isLoggingOut;
@@ -92,6 +93,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public UIAction PickDefaultWorkspace { get; }
         public UIAction SelectDurationFormat { get; }
         public UIAction SelectBeginningOfWeek { get; }
+        public UIAction Close { get; }
 
         public InputAction<SelectableWorkspaceViewModel> SelectDefaultWorkspace { get; }
 
@@ -109,7 +111,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IMvxNavigationService navigationService,
             IPrivateSharedStorageService privateSharedStorageService,
             IIntentDonationService intentDonationService,
-            IStopwatchProvider stopwatchProvider)
+            IStopwatchProvider stopwatchProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(userAgent, nameof(userAgent));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
@@ -125,6 +128,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(privateSharedStorageService, nameof(privateSharedStorageService));
             Ensure.Argument.IsNotNull(intentDonationService, nameof(intentDonationService));
             Ensure.Argument.IsNotNull(stopwatchProvider, nameof(stopwatchProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.userAgent = userAgent;
             this.dataSource = dataSource;
@@ -140,6 +144,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.privateSharedStorageService = privateSharedStorageService;
             this.intentDonationService = intentDonationService;
             this.stopwatchProvider = stopwatchProvider;
+            this.rxActionFactory = rxActionFactory;
 
             IsSynced = dataSource.SyncManager.ProgressObservable.SelectMany(checkSynced);
 
@@ -224,18 +229,19 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             IsFeedbackSuccessViewShowing = isFeedbackSuccessViewShowing.AsObservable();
 
-            OpenCalendarSettings = UIAction.FromAsync(openCalendarSettings);
-            OpenNotificationSettings = UIAction.FromAsync(openNotificationSettings);
-            ToggleTwentyFourHourSettings = UIAction.FromAsync(toggleUseTwentyFourHourClock);
-            OpenHelpView = UIAction.FromAsync(openHelpView);
-            TryLogout = UIAction.FromAsync(tryLogout);
-            OpenAboutView = UIAction.FromAsync(openAboutView);
-            SubmitFeedback = UIAction.FromAsync(submitFeedback);
-            SelectDateFormat = UIAction.FromAsync(selectDateFormat);
-            PickDefaultWorkspace = UIAction.FromAsync(pickDefaultWorkspace);
-            SelectDurationFormat = UIAction.FromAsync(selectDurationFormat);
-            SelectBeginningOfWeek = UIAction.FromAsync(selectBeginningOfWeek);
-            SelectDefaultWorkspace = InputAction<SelectableWorkspaceViewModel>.FromAsync(selectDefaultWorkspace);
+            OpenCalendarSettings = rxActionFactory.FromAsync(openCalendarSettings);
+            OpenNotificationSettings = rxActionFactory.FromAsync(openNotificationSettings);
+            ToggleTwentyFourHourSettings = rxActionFactory.FromAsync(toggleUseTwentyFourHourClock);
+            OpenHelpView = rxActionFactory.FromAsync(openHelpView);
+            TryLogout = rxActionFactory.FromAsync(tryLogout);
+            OpenAboutView = rxActionFactory.FromAsync(openAboutView);
+            SubmitFeedback = rxActionFactory.FromAsync(submitFeedback);
+            SelectDateFormat = rxActionFactory.FromAsync(selectDateFormat);
+            PickDefaultWorkspace = rxActionFactory.FromAsync(pickDefaultWorkspace);
+            SelectDurationFormat = rxActionFactory.FromAsync(selectDurationFormat);
+            SelectBeginningOfWeek = rxActionFactory.FromAsync(selectBeginningOfWeek);
+            SelectDefaultWorkspace = rxActionFactory.FromAsync<SelectableWorkspaceViewModel>(selectDefaultWorkspace);
+            Close = rxActionFactory.FromAsync(() => navigationService.Close(this));
         }
 
         public override async Task Initialize()

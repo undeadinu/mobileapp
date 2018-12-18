@@ -47,11 +47,11 @@ namespace Toggl.Daneel.ViewControllers
             prepareTextView();
 
             AcceptButton.Rx()
-                .BindAction(ViewModel.Close(true))
+                .BindAction(ViewModel.Close, _ => true)
                 .DisposedBy(DisposeBag);
 
             CloseButton.Rx()
-                .BindAction(ViewModel.Close(false))
+                .BindAction(ViewModel.Close, _ => false)
                 .DisposedBy(DisposeBag);
         }
 

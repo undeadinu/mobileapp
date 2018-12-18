@@ -41,7 +41,7 @@
         android:layout_height="wrap_content">
         <TextView
             local:MvxBind="Click IncreaseDurationCommand, CommandParameter=5"
-            android:text="+5m"
+            android:text="@string/PlusFiveMinutes"
             android:textSize="14sp"
             android:gravity="center"
             android:textColor="@color/popupBlueBackground"
@@ -54,7 +54,7 @@
             android:layout_centerHorizontal="true" />
         <TextView
             local:MvxBind="Click IncreaseDurationCommand, CommandParameter=10"
-            android:text="+10m"
+            android:text="@string/PlusTenMinutes"
             android:textSize="14sp"
             android:gravity="center"
             android:textColor="@color/popupBlueBackground"
@@ -66,7 +66,7 @@
             android:layout_centerHorizontal="true" />
         <TextView
             local:MvxBind="Click IncreaseDurationCommand, CommandParameter=30"
-            android:text="+30m"
+            android:text="@string/PlusThirtyMinutes"
             android:textSize="14sp"
             android:gravity="center"
             android:textColor="@color/popupBlueBackground"

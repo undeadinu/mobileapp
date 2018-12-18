@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:foreground="?android:attr/selectableItemBackground"
@@ -22,5 +23,5 @@
         android:textStyle="normal"
         android:textColor="@android:color/black"
         android:lineSpacingExtra="5sp"
-        android:text="Just testing"/>
+        tools:text="Just testing"/>
 </LinearLayout>

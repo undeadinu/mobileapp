@@ -25,7 +25,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             protected override SelectUserCalendarsViewModel CreateViewModel()
-                => new SelectUserCalendarsViewModel(UserPreferences, InteractorFactory, NavigationService);
+                => new SelectUserCalendarsViewModel(UserPreferences, InteractorFactory, NavigationService, RxActionFactory);
         }
 
         public sealed class TheConstructor : SelectUserCalendarsViewModelTest
@@ -35,13 +35,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useUserPreferences,
                 bool useInteractorFactory,
-                bool useNavigationService)
+                bool useNavigationService,
+                bool useRxActionFactory)
             {
                 Action tryingToConstructWithEmptyParameters =
                     () => new SelectUserCalendarsViewModel(
                         useUserPreferences ? UserPreferences : null,
                         useInteractorFactory ? InteractorFactory : null,
-                        useNavigationService ? NavigationService : null
+                        useNavigationService ? NavigationService : null,
+                        useRxActionFactory ? RxActionFactory : null
                     );
 
                 tryingToConstructWithEmptyParameters
@@ -67,12 +69,21 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(Observable.Return(userCalendars));
                 await ViewModel.Initialize();
                 var selectedIds = new[] { "0", "2", "4", "7" };
-                userCalendars
-                    .Where(calendar => selectedIds.Contains(calendar.Id))
-                    .Select(calendar => new SelectableUserCalendarViewModel(calendar, false))
-                    .Do(calendar => ViewModel.SelectCalendar.Execute(calendar).Wait());
-                
-                await ViewModel.Done.Execute(Unit.Default);
+
+                var selectCalendars = Observable.Concat(
+                    userCalendars
+                        .Where(calendar => selectedIds.Contains(calendar.Id))
+                        .Select(calendar => new SelectableUserCalendarViewModel(calendar, false))
+                        .Select(calendar => Observable.Defer(() => ViewModel.SelectCalendar.Execute(calendar)))
+                );
+
+                var auxObserver = TestScheduler.CreateObserver<Unit>();
+                Observable.Concat(
+                        selectCalendars,
+                        Observable.Defer(() => ViewModel.Done.Execute())
+                        )
+                    .Subscribe(auxObserver);
+                TestScheduler.Start();
 
                 await NavigationService.Received().Close(ViewModel, Arg.Is<string[]>(ids => ids.SequenceEqual(selectedIds)));
             }
@@ -99,7 +110,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     observer.Received().OnNext(true);
                 }
             }
-         
+
             public class WhenYouForceItemSelection : SelectUserCalendarsViewModelTest
             {
                 public WhenYouForceItemSelection()
@@ -129,8 +140,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         false
                     );
 
-                    await ViewModel.SelectCalendar.Execute(selectableUserCalendar);
-                    SchedulerProvider.TestScheduler.AdvanceBy(2);
+                    ViewModel.SelectCalendar.Execute(selectableUserCalendar);
+                    TestScheduler.Start();
 
                     Received.InOrder(() =>
                     {
@@ -152,9 +163,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                             return new SelectableUserCalendarViewModel(userCalendar, false);
                         });
 
-                    selectedableUserCalendars
-                        .ForEach(calendar => ViewModel.SelectCalendar.Execute(calendar).Wait());
-                    SchedulerProvider.TestScheduler.AdvanceBy(2);
+                    var auxObserver = TestScheduler.CreateObserver<Unit>();
+                    Observable.Concat(
+                            selectedableUserCalendars
+                                .Select(calendar => Observable.Defer(() => ViewModel.SelectCalendar.Execute(calendar)))
+                        )
+                        .Subscribe(auxObserver);
+                    TestScheduler.Start();
 
                     Received.InOrder(() =>
                     {
@@ -176,13 +191,21 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                             return new SelectableUserCalendarViewModel(userCalendar, false);
                         });
 
-                    //Select all the calendars
-                    selectedableUserCalendars
-                        .ForEach(calendar => ViewModel.SelectCalendar.Execute(calendar).Wait());
-                    //Deselect all the calendars
-                    selectedableUserCalendars
-                        .ForEach(calendar => ViewModel.SelectCalendar.Execute(calendar).Wait());
-                    SchedulerProvider.TestScheduler.AdvanceBy(3);
+                    var selectAll = Observable
+                        .Concat(
+                            selectedableUserCalendars
+                                .Select(calendar => Observable.Defer(() => ViewModel.SelectCalendar.Execute(calendar)))
+                        );
+
+                    var auxObserver = TestScheduler.CreateObserver<Unit>();
+
+                    Observable
+                        .Concat(
+                            selectAll,
+                            selectAll
+                        )
+                        .Subscribe(auxObserver);
+                    TestScheduler.Start();
 
                     Received.InOrder(() =>
                     {

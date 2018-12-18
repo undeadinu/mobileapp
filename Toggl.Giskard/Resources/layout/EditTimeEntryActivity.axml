@@ -50,7 +50,7 @@
         <TextView
             android:id="@+id/EditTimeEntryConfirmButton"
             local:MvxBind="Text ConfirmButtonText; Click ConfirmCommand"
-            android:text="DONE"
+            android:text="@string/Done"
             android:padding="16dp"
             android:textSize="14sp"
             android:gravity="center"

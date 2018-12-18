@@ -21,7 +21,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class CalendarSettingsViewModelTest : BaseViewModelTests<CalendarSettingsViewModel>
         {
             protected override CalendarSettingsViewModel CreateViewModel()
-                => new CalendarSettingsViewModel(UserPreferences, InteractorFactory, PermissionsService);
+                => new CalendarSettingsViewModel(UserPreferences, InteractorFactory, PermissionsService, RxActionFactory);
         }
 
         public sealed class TheConstructor : CalendarSettingsViewModelTest
@@ -31,13 +31,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useUserPreferences,
                 bool useInteractorFactory,
-                bool usePermissionsService)
+                bool usePermissionsService,
+                bool useRxActionFactory)
             {
                 Action tryingToConstructWithEmptyParameters =
                     () => new CalendarSettingsViewModel(
                         useUserPreferences ? UserPreferences : null,
                         useInteractorFactory ? InteractorFactory : null,
-                        usePermissionsService ? PermissionsService : null
+                        usePermissionsService ? PermissionsService : null,
+                        useRxActionFactory ? RxActionFactory : null
                     );
 
                 tryingToConstructWithEmptyParameters.Should().Throw<ArgumentNullException>();
@@ -65,7 +67,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task OpensAppSettings()
             {
-                await ViewModel.RequestAccess.Execute(Unit.Default);
+                ViewModel.RequestAccess.Execute();
 
                 PermissionsService.Received().OpenAppSettings();
             }
@@ -115,8 +117,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var firstCalendar = new UserCalendar("1", "1", "1");
                 var secondCalendar = new UserCalendar("2", "2", "2");
 
-                await ViewModel.SelectCalendar.Execute(new SelectableUserCalendarViewModel(firstCalendar, false));
-                await ViewModel.SelectCalendar.Execute(new SelectableUserCalendarViewModel(secondCalendar, false));
+                var observer = TestScheduler.CreateObserver<Unit>();
+                Observable.Concat(
+                    Observable.Defer(() =>
+                        ViewModel.SelectCalendar.Execute(new SelectableUserCalendarViewModel(firstCalendar, false))),
+                    Observable.Defer(() =>
+                        ViewModel.SelectCalendar.Execute(new SelectableUserCalendarViewModel(secondCalendar, false)))
+                ).Subscribe(observer);
+
+                TestScheduler.Start();
 
                 Received.InOrder(() =>
                 {

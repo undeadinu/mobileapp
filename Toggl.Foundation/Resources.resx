@@ -495,4 +495,7 @@ account is not set up</value>
     <data name="Calendar">
         <value>Calendar</value>
     </data>
+    <data name="CreateClient">
+        <value>Create client</value>
+    </data>
 </root>

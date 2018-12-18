@@ -8,7 +8,7 @@
     android:textStyle="normal"
     android:textColor="#757575"
     android:fontFamily="sans-serif"
-    android:text="Toggls Workspace"
+    tools:text="Toggl's Workspace"
     android:layout_marginTop="16dp"
     android:layout_marginLeft="16dp"
     android:layout_width="match_parent"

@@ -10,6 +10,9 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Xunit;
 using System.Reactive.Linq;
+using Toggl.Foundation.MvvmCross;
+using Toggl.Foundation.Services;
+using Toggl.Foundation.Tests.Generators;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 {
@@ -18,18 +21,25 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class SelectColorViewModelTest : BaseViewModelTests<SelectColorViewModel>
         {
             protected override SelectColorViewModel CreateViewModel()
-                => new SelectColorViewModel(NavigationService);
+                => new SelectColorViewModel(NavigationService, RxActionFactory);
         }
 
-        public sealed class TheConstructor
+        public sealed class TheConstructor : SelectColorViewModelTest
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfTheArgumentIsNull()
+            [Theory, LogIfTooSlow]
+            [ConstructorData]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useNavigationService,
+                bool useRxActionFactory)
             {
-                Action tryingToConstructWithEmptyParameter =
-                    () => new SelectColorViewModel(null);
+                var navigationService = useNavigationService ? NavigationService : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
-                tryingToConstructWithEmptyParameter.Should().Throw<ArgumentNullException>();
+                Action tryingToConstructWithEmptyParameters =
+                    () => new SelectColorViewModel(navigationService, rxActionFactory);
+
+                tryingToConstructWithEmptyParameters
+                    .Should().Throw<ArgumentNullException>();
             }
         }
 
@@ -182,7 +192,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task ClosesTheViewModel()
             {
-                await ViewModel.Close.Execute();
+                ViewModel.Close.Execute();
+                TestScheduler.Start();
 
                 await NavigationService.Received().Close(Arg.Is(ViewModel), Arg.Any<MvxColor>());
             }
@@ -194,7 +205,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var parameters = ColorParameters.Create(color, true);
                 ViewModel.Prepare(parameters);
 
-                await ViewModel.Close.Execute();
+                ViewModel.Close.Execute();
+                TestScheduler.Start();
 
                 NavigationService.Received().Close(Arg.Is(ViewModel), Arg.Is(color)).Wait();
             }
@@ -205,7 +217,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task ClosesTheViewModel()
             {
-                await ViewModel.Close.Execute();
+                ViewModel.Close.Execute();
+                TestScheduler.Start();
 
                 await NavigationService.Received().Close(Arg.Is(ViewModel), Arg.Any<MvxColor>());
             }
@@ -218,7 +231,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var expected = Color.DefaultProjectColors.First();
                 ViewModel.SelectColor.Execute(expected);
 
-                await ViewModel.Save.Execute();
+                ViewModel.Save.Execute();
+                TestScheduler.Start();
 
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), Arg.Is<MvxColor>(c => c.ARGB == expected.ARGB));

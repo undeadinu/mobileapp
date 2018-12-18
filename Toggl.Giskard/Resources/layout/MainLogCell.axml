@@ -74,7 +74,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="15sp"
-            android:text="Add description"
+            android:text="@string/AddDescription"
             local:layout_goneMarginTop="8dp"
             local:layout_goneMarginBottom="8dp"
             android:textColor="@color/defaultText"

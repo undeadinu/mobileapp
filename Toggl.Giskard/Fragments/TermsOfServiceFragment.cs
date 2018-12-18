@@ -47,7 +47,7 @@ namespace Toggl.Giskard.Fragments
                 .DisposedBy(DisposeBag);
 
             acceptButton.Rx()
-                .BindAction(ViewModel.Close(true))
+                .BindAction(ViewModel.Close, _ => true)
                 .DisposedBy(DisposeBag);
         }
 
@@ -60,7 +60,7 @@ namespace Toggl.Giskard.Fragments
 
         public override void OnCancel(IDialogInterface dialog)
         {
-            ViewModel.Close(false).Execute();
+            ViewModel.Close.Execute(false);
         }
     }
 }

@@ -9,6 +9,7 @@ using MvvmCross.ViewModels;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Parameters;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using static Toggl.Foundation.Helper.Constants;
@@ -18,6 +19,15 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class SelectClientViewModel : MvxViewModel<SelectClientParameters, long?>
     {
+        private readonly IRxActionFactory rxActionFactory;
+        private readonly IInteractorFactory interactorFactory;
+        private readonly IMvxNavigationService navigationService;
+        private readonly ISchedulerProvider schedulerProvider;
+
+        private long workspaceId;
+        private long selectedClientId;
+        private SelectableClientViewModel noClient;
+        private ISubject<string> clientFilterText = new BehaviorSubject<string>(string.Empty);
 
         public IObservable<IEnumerable<SelectableClientBaseViewModel>> Clients { get; private set; }
 
@@ -27,29 +37,24 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public InputAction<string> SetFilterText { get; }
 
-        private ISubject<string> clientFilterText = new BehaviorSubject<string>(string.Empty);
-
-        private readonly IInteractorFactory interactorFactory;
-        private readonly IMvxNavigationService navigationService;
-        private readonly ISchedulerProvider schedulerProvider;
-        private long workspaceId;
-        private long selectedClientId;
-        private SelectableClientViewModel noClient;
-
         public SelectClientViewModel(
             IInteractorFactory interactorFactory,
             IMvxNavigationService navigationService,
-            ISchedulerProvider schedulerProvider)
+            ISchedulerProvider schedulerProvider,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
+
             this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
+            this.rxActionFactory = rxActionFactory;
 
-            Close = UIAction.FromAsync(close);
-            SelectClient = InputAction<SelectableClientBaseViewModel>.FromAsync(selectClient);
-            SetFilterText = InputAction<string>.FromAction(setText);
+            Close = rxActionFactory.FromAsync(close);
+            SelectClient = rxActionFactory.FromAsync<SelectableClientBaseViewModel>(selectClient);
+            SetFilterText = rxActionFactory.FromAction<string>(setText);
         }
 
         public override void Prepare(SelectClientParameters parameter)

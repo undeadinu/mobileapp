@@ -7,6 +7,7 @@ using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Xunit;
 using static Toggl.Multivac.Extensions.FunctionalExtensions;
@@ -18,8 +19,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
     {
         public sealed class MockSelectUserCalendarsViewModel : SelectUserCalendarsViewModelBase
         {
-            public MockSelectUserCalendarsViewModel(IUserPreferences userPreferences, IInteractorFactory interactorFactory)
-                : base(userPreferences, interactorFactory)
+            public MockSelectUserCalendarsViewModel(IUserPreferences userPreferences, IInteractorFactory interactorFactory, IRxActionFactory rxActionFactory)
+                : base(userPreferences, interactorFactory, rxActionFactory)
             {
             }
         }
@@ -32,7 +33,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             protected override MockSelectUserCalendarsViewModel CreateViewModel()
-                => new MockSelectUserCalendarsViewModel(UserPreferences, InteractorFactory);
+                => new MockSelectUserCalendarsViewModel(UserPreferences, InteractorFactory, RxActionFactory);
         }
 
         public sealed class TheInitializeMethod : SelectUserCalendarsViewModelBaseTest

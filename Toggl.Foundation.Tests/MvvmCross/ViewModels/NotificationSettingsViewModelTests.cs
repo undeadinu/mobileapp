@@ -19,7 +19,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class NotificationSettingsViewModelTest : BaseViewModelTests<NotificationSettingsViewModel>
         {
             protected override NotificationSettingsViewModel CreateViewModel()
-                => new NotificationSettingsViewModel(NavigationService, BackgroundService, PermissionsService, UserPreferences, SchedulerProvider);
+                => new NotificationSettingsViewModel(NavigationService, BackgroundService, PermissionsService, UserPreferences, SchedulerProvider, RxActionFactory);
         }
 
         public sealed class TheConstructor : NotificationSettingsViewModelTest
@@ -31,7 +31,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useBackgroundService,
                 bool usePermissionsService,
                 bool useUserPreferences,
-                bool useSchedulerProvider)
+                bool useSchedulerProvider,
+                bool useRxActionFactory)
             {
                 Action tryingToConstructWithEmptyParameters =
                     () => new NotificationSettingsViewModel(
@@ -39,7 +40,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         useBackgroundService ? BackgroundService : null,
                         usePermissionsService ? PermissionsService : null,
                         useUserPreferences ? UserPreferences : null,
-                        useSchedulerProvider ? SchedulerProvider : null
+                        useSchedulerProvider ? SchedulerProvider : null,
+                        useRxActionFactory ? RxActionFactory : null
                     );
 
                 tryingToConstructWithEmptyParameters.Should().Throw<ArgumentNullException>();
@@ -56,7 +58,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var observer = TestScheduler.CreateObserver<bool>();
                 PermissionsService.NotificationPermissionGranted.Returns(Observable.Return(permissionGranted));
 
-                var viewModel = new NotificationSettingsViewModel(NavigationService, BackgroundService, PermissionsService, UserPreferences, SchedulerProvider);
+                var viewModel = new NotificationSettingsViewModel(NavigationService, BackgroundService, PermissionsService, UserPreferences, SchedulerProvider, RxActionFactory);
                 viewModel.PermissionGranted.Subscribe(observer);
 
                 await viewModel.Initialize();
@@ -71,7 +73,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task OpensAppSettings()
             {
-                await ViewModel.RequestAccess.Execute(Unit.Default);
+                ViewModel.RequestAccess.Execute(Unit.Default);
+                TestScheduler.Start();
 
                 PermissionsService.Received().OpenAppSettings();
             }
@@ -82,7 +85,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task NavigatesToTheUpcomingEvents()
             {
-                await ViewModel.OpenUpcomingEvents.Execute(Unit.Default);
+                ViewModel.OpenUpcomingEvents.Execute();
+                TestScheduler.Start();
+
                 NavigationService.Received().Navigate<UpcomingEventsNotificationSettingsViewModel, Unit>();
             }
         }
