@@ -64,8 +64,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             isLoading.OnNext(true);
 
-            dataSource.CreateNewSyncManager();
-
             var anyWorkspaceIsAvailable = await dataSource.SyncManager.ForceFullSync()
                 .Where(state => state == SyncState.Sleep)
                 .SelectMany(_ => interactorFactory.GetAllWorkspaces().Execute())
@@ -82,8 +80,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private async Task createWorkspaceWithDefaultName()
         {
             isLoading.OnNext(true);
-
-            dataSource.CreateNewSyncManager();
 
             await interactorFactory.CreateDefaultWorkspace().Execute();
 

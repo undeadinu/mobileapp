@@ -118,7 +118,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 TestScheduler.Start();
 
                 await InteractorFactory.CreateDefaultWorkspace().Received().Execute();
-                //workspacesDataSource.Received().Create(Arg.Is($"{name}'s Workspace"));
             }
 
             [Fact, LogIfTooSlow]

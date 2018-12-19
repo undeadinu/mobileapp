@@ -32,7 +32,6 @@ namespace Toggl.Foundation.DataSources
         private IDisposable signalDisposable;
         private IDisposable midnightDisposable;
         private IDisposable errorHandlingDisposable;
-        private Func<ITogglDataSource, ISyncManager> createSyncManager;
 
         public TogglDataSource(
             ITogglApi api,
@@ -74,8 +73,8 @@ namespace Toggl.Foundation.DataSources
             WorkspaceFeatures = new WorkspaceFeaturesDataSource(database.WorkspaceFeatures);
             TimeEntries = new TimeEntriesDataSource(database.TimeEntries, timeService, analyticsService);
 
-            this.createSyncManager = createSyncManager;
-            CreateNewSyncManager();
+            SyncManager = createSyncManager(this);
+            errorHandlingDisposable = SyncManager.Errors.Subscribe(onSyncError);
 
             ReportsProvider = new ReportsProvider(api, database);
 
@@ -83,6 +82,7 @@ namespace Toggl.Foundation.DataSources
 
             isLoggedIn = true;
         }
+
         public ITimeEntriesSource TimeEntries { get; }
 
         public ISingletonDataSource<IThreadSafeUser> User { get; }
@@ -106,13 +106,6 @@ namespace Toggl.Foundation.DataSources
         public IReportsProvider ReportsProvider { get; }
 
         public IFeedbackApi FeedbackApi { get; }
-
-        public void CreateNewSyncManager()
-        {
-            SyncManager = createSyncManager(this);
-            errorHandlingDisposable?.Dispose();
-            errorHandlingDisposable = SyncManager.Errors.Subscribe(onSyncError);
-        }
 
         public IObservable<Unit> StartSyncing()
         {
