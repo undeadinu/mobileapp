@@ -23,10 +23,14 @@ On Visual Studio:
 4. You will have a new screen open, but you can get there by going to Build > ViewArchives;
 5. Select the apk you just archived > Click in the bottom of the page "Sign and Distribute" > Ad Hoc > androiddebugkey (create it if you don't have it) > Next > Publish > Select a folder
 5.1 If you don't have the androiddebugkey ready, click on "Import an Existing Key" and fill in the inputs with the values above. You can create a new one if you want, it doesn't matter much.
+5.1.1 When creating a new signing key, you can choose the name, store password and key password as you wish. 
 6. You have the signed debug APK (be careful, you want the apk without the -Signed suffix, it doesn't make sense... but the -Signed apk seems to have the mono runtime)! (or adhoc, the same process applies for it)
 
 #### How to run the tests
 First go to Toggl.Giskard.Tests.UI/Configuration.cs and update the path in `ApkFile` to point to your signed apk.
+Ex: 
+- if you put the apkName.apk file in your Desktop (MacOS) -> `.ApkFile("/Users/yourusername/Desktop/apkName.apk")`
+- if you put the apk on (Repo root folder)/bin/Release/apkName.apk -> `.ApkFile("../../bin/Release/apkName.apk")`
 
 ##### To run on Visual Studio:
 Have the build target to Giskard | Debug | Any CPU
