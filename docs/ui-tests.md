@@ -42,6 +42,8 @@ That's it.
 
 ##### To run on Rider:
 1st thing you should know, switching back and forth from VS and Rider might break your build. Build the project again from the command line usually fixes it; if it doesn't, clean then build again. :see_no_evil:
+First run this step from the instructions on how to run the tests on VS, in VS: 
+> If you don't see the tests there yet, double click on the Giskard > Toggl.Giskard.Tests.UI
 In rider you just navigate in the bottom bar "Unit Tests" are and add the tests you want to run or go directly to the test classes and run the tests from the left panel icon; You can also run all the tests in the file by clicking on it and selecting "Run Unit Tests";
 
 Remember: you'll be modifying the test files, you don't need a new apk for each test run; you can keep using the same apk while updating the tests.
