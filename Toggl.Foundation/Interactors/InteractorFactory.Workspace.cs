@@ -32,7 +32,7 @@ namespace Toggl.Foundation.Interactors
             => new IsBillableAvailableForWorkspaceInteractor(dataSource, workspaceId);
 
         public IInteractor<IObservable<Unit>> CreateDefaultWorkspace()
-            => new CreateDefaultWorkspaceInteractor(idProvider, timeService, dataSource.User, dataSource.Workspaces);
+            => new CreateDefaultWorkspaceInteractor(idProvider, timeService, dataSource.User, dataSource.Workspaces, dataSource.SyncManager);
 
         public IInteractor<IObservable<IEnumerable<IThreadSafeWorkspace>>> ObserveAllWorkspaces()
             => new ObserveAllWorkspacesInteractor(dataSource);

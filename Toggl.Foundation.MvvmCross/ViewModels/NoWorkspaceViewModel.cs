@@ -83,10 +83,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             await interactorFactory.CreateDefaultWorkspace().Execute();
 
-            await dataSource
-                .SyncManager
-                .ForceFullSync();
-
             isLoading.OnNext(false);
             close();
         }
