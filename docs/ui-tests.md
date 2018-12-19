@@ -5,7 +5,7 @@ It doesn't matter if the APK is from a debug, release or adhoc build, it just ha
 
 #### How to sign
 For release builds, our Bitrise process uses a step to sign it, but I don't think we should run UI tests on release builds. (Except by the Google-related tests, if we ever do them)
-For adhoc and debug builds, any keystore would do and we can safely use the default android debug keystore it for UI tests, which can be found on a secret folder inside your home folder if you have the SDK installed (either by having Android Studio, Xamarin, or just the Android SDK installed in your machine)
+For adhoc and debug builds, any keystore would do and we can safely use the default android debug keystore for UI tests, which can be found on a secret folder inside your home folder if you have the SDK installed (either by having Android Studio, Xamarin, or just the Android SDK installed in your machine)
 
 For adhoc and release builds, you can grab them from the latest builds on Bitrise.
 For debug builds, you'll need to archive a debug build.
@@ -29,7 +29,7 @@ On Visual Studio:
 First go to Toggl.Giskard.Tests.UI/Configuration.cs and update the path in `ApkFile` to point to your signed apk.
 
 ##### To run on Visual Studio:
-Have the build target to Giskard ; Debug | Any CPU
+Have the build target to Giskard | Debug | Any CPU
 On the right sidebar > Unit Tests > Giskard > Toggl.Giskard.Tests.UI
 On Test Apps select the device where you want to run the tests (it can be an actual device or an emulator, but it has to be already running)
 If you don't see the tests there yet, double click on the Giskard > Toggl.Giskard.Tests.UI; fix whatever bugs might be there (the build might be broken) > click again > You'll eventually see all the tests from Shared.Toggl.Tests.UI;
