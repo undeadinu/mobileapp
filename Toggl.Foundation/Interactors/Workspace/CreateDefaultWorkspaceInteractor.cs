@@ -45,6 +45,7 @@ namespace Toggl.Foundation.Interactors
                 .FirstAsync()
                 .SelectMany(createWorkspace)
                 .SelectMany(updateDefaultWorkspace)
+                .SelectMany(_ => syncManager.PushSync())
                 .SelectMany(_ => syncManager.ForceFullSync())
                 .SelectUnit();
 
