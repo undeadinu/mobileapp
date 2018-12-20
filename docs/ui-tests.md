@@ -1,7 +1,9 @@
 ### How to run UI tests for Android
 
 There's only one dependency: having an actual already built and signed APK.
-It doesn't matter if the APK is from a debug, release or adhoc build, it just have to be signed.
+It doesn't matter if the APK** is from a debug, release or adhoc build, it just have to be signed.
+
+Why? It doesn't work otherwise. Further explanations why is like might be added at some point.
 
 #### How to sign
 For release builds, our Bitrise process uses a step to sign it, but I don't think we should run UI tests on release builds. (Except by the Google-related tests, if we ever do them)
