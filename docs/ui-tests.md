@@ -49,3 +49,4 @@ First run this step from the instructions on how to run the tests on VS, in VS:
 In rider you just navigate in the bottom bar "Unit Tests" are and add the tests you want to run or go directly to the test classes and run the tests from the left panel icon; You can also run all the tests in the file by clicking on it and selecting "Run Unit Tests";
 
 Remember: you'll be modifying the test files, you don't need a new apk for each test run; you can keep using the same apk while updating the tests.
+**: Please note that the apk architecture must match the device's architecture you are running (arm apks will only run on arm devices/emulators, for example).
