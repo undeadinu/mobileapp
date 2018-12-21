@@ -5,6 +5,7 @@ It doesn't matter if the APK** is from a debug, release or adhoc build, it just 
 
 #### How to sign
 For release builds, Bitrise has a step to sign the apk, but I don't think we should run UI tests on release builds. (Except for the Google-related tests, if we ever do them)
+Don't run UI tests on production without approval from the team lead.
 For adhoc and debug builds, any keystore would do and we can safely use the default android debug keystore for UI tests, which can be found on a secret folder inside your home folder if you have the SDK installed (either by having Android Studio, Xamarin, or just the Android SDK installed in your machine)
 
 For adhoc and release builds, you can grab them from the latest builds on Bitrise.
