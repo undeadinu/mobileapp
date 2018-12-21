@@ -32,7 +32,7 @@ SetUp : System.Exception : Mono Shared Runtime is not supported. This can be res
 ```
 
 #### How to run the tests
-First go to Toggl.Giskard.Tests.UI/Configuration.cs and update the path in `ApkFile` to point to your signed apk.
+First go to `Toggl.Giskard.Tests.UI/Configuration.cs` and update the path in `ApkFile` to point to your signed apk.
 Ex: 
 - if you put the apkName.apk file in your Desktop (MacOS) -> .ApkFile(`"/Users/yourusername/Desktop/apkName.apk"`)
 - if you put the apk on (Repo root folder)/bin/Release/apkName.apk -> .ApkFile(`"../../bin/Release/apkName.apk"`)
