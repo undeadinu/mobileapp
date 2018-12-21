@@ -1,18 +1,16 @@
 ### How to run UI tests for Android
 
-There's only one dependency: having an actual already built and signed APK.
-It doesn't matter if the APK** is from a debug, release or adhoc build, it just have to be signed.
-
-Why? It doesn't work otherwise. Further explanations why is like might be added at some point.
+There's only one dependency: having an actual already built and signed APK. The tests won't run on an unsigned apk.
+It doesn't matter if the APK** is from a debug, release or adhoc build, it just has to be signed.
 
 #### How to sign
-For release builds, our Bitrise process uses a step to sign it, but I don't think we should run UI tests on release builds. (Except by the Google-related tests, if we ever do them)
+For release builds, Bitrise has a step to sign the apk, but I don't think we should run UI tests on release builds. (Except for the Google-related tests, if we ever do them)
 For adhoc and debug builds, any keystore would do and we can safely use the default android debug keystore for UI tests, which can be found on a secret folder inside your home folder if you have the SDK installed (either by having Android Studio, Xamarin, or just the Android SDK installed in your machine)
 
 For adhoc and release builds, you can grab them from the latest builds on Bitrise.
 For debug builds, you'll need to archive a debug build.
 
-Save this:
+Debug keystore information (MacOS):
 - Path: `~/.android/debug.keystore`
 - Alias: `androiddebugkey`
 - Store password: `android`
@@ -31,22 +29,21 @@ On Visual Studio:
 #### How to run the tests
 First go to Toggl.Giskard.Tests.UI/Configuration.cs and update the path in `ApkFile` to point to your signed apk.
 Ex: 
-- if you put the apkName.apk file in your Desktop (MacOS) -> `.ApkFile("/Users/yourusername/Desktop/apkName.apk")`
-- if you put the apk on (Repo root folder)/bin/Release/apkName.apk -> `.ApkFile("../../bin/Release/apkName.apk")`
+- if you put the apkName.apk file in your Desktop (MacOS) -> .ApkFile(`"/Users/yourusername/Desktop/apkName.apk"`)
+- if you put the apk on (Repo root folder)/bin/Release/apkName.apk -> .ApkFile(`"../../bin/Release/apkName.apk"`)
 
 ##### To run on Visual Studio:
-Have the build target to Giskard | Debug | Any CPU
-On the right sidebar > Unit Tests > Giskard > Toggl.Giskard.Tests.UI
-On Test Apps select the device where you want to run the tests (it can be an actual device or an emulator, but it has to be already running)
-If you don't see the tests there yet, double click on the Giskard > Toggl.Giskard.Tests.UI; fix whatever bugs might be there (the build might be broken) > click again > You'll eventually see all the tests from Shared.Toggl.Tests.UI;
-On Toggl.Tests.UI you can run all the tests or only the ones you want.
-That's it. 
+- Have the build target to Giskard | Debug | Any CPU
+- On the right sidebar > Unit Tests > Giskard > Toggl.Giskard.Tests.UI
+- On Test Apps select the device where you want to run the tests on, it can be an actual device or a running emulator.
+- <a name="makingUITestsAppear"></a>If you don't see the tests there yet, double click Giskard > Toggl.Giskard.Tests.UI; fix whatever bugs might be there (the build might be broken) > click again > You'll eventually see all the tests from Shared.Toggl.Tests.UI;
+- On Toggl.Tests.UI you can run all the tests or only the ones you want.
+- That's it. 
 
 ##### To run on Rider:
-1st thing you should know, switching back and forth from VS and Rider might break your build. Build the project again from the command line usually fixes it; if it doesn't, clean then build again. :see_no_evil:
-First run this step from the instructions on how to run the tests on VS, in VS: 
-> If you don't see the tests there yet, double click on the Giskard > Toggl.Giskard.Tests.UI
-In rider you just navigate in the bottom bar "Unit Tests" are and add the tests you want to run or go directly to the test classes and run the tests from the left panel icon; You can also run all the tests in the file by clicking on it and selecting "Run Unit Tests";
+- First thing you should know, switching back and forth from VS and Rider might break your build. Building the project again from the command line usually fixes it; if it doesn't, clean then build again. :see_no_evil:
+- First run [this step from the instructions on how to run the tests on VS](#makingUITestsAppear)
+- In rider you just navigate in the bottom bar "Unit Tests" are and add the tests you want to run or go directly to the test classes and run the tests from the left panel icon; You can also run all the tests in the file by clicking on it and selecting "Run Unit Tests";
 
 Remember: you'll be modifying the test files, you don't need a new apk for each test run; you can keep using the same apk while updating the tests.
 **: Please note that the apk architecture must match the device's architecture you are running (arm apks will only run on arm devices/emulators, for example).
