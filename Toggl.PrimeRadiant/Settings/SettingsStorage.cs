@@ -53,6 +53,9 @@ namespace Toggl.PrimeRadiant.Settings
         private const string calendarNotificationsEnabledKey = "CalendarNotificationsEnabled";
         private const string timeSpanBeforeCalendarNotificationsKey = "TimeSpanBeforeCalendarNotifications";
 
+        private const string calendarWorkingHoursStartKey = "CalendarWorkingHoursStartKey";
+        private const string calendarWorkingHoursEndKey = "CalendarWorkingHoursEndKey";
+
         private readonly Version version;
         private readonly IKeyValueStorage keyValueStorage;
 
@@ -72,6 +75,8 @@ namespace Toggl.PrimeRadiant.Settings
         private readonly ISubject<List<string>> enabledCalendarsSubject;
         private readonly ISubject<bool> calendarNotificationsEnabledSubject;
         private readonly ISubject<TimeSpan> timeSpanBeforeCalendarNotificationsSubject;
+        private readonly ISubject<int> calendarWorkingHoursStartSubject;
+        private readonly ISubject<int> calendarWorkingHoursEndSubject;
 
         private readonly TimeSpan defaultTimeSpanBeforeCalendarNotificationsSubject = TimeSpan.FromMinutes(10);
 
@@ -98,6 +103,10 @@ namespace Toggl.PrimeRadiant.Settings
             (navigatedAwayFromMainViewAfterTappingStopButtonSubject, NavigatedAwayFromMainViewAfterTappingStopButton) = prepareSubjectAndObservable(navigatedAwayFromMainViewAfterTappingStopButtonKey, keyValueStorage.GetBool);
             (hasTimeEntryBeenContinuedSubject, HasTimeEntryBeenContinued) = prepareSubjectAndObservable(hasTimeEntryBeenContinuedKey, keyValueStorage.GetBool);
             (timeSpanBeforeCalendarNotificationsSubject, TimeSpanBeforeCalendarNotifications) = prepareSubjectAndObservable(keyValueStorage.GetTimeSpan(timeSpanBeforeCalendarNotificationsKey) ?? defaultTimeSpanBeforeCalendarNotificationsSubject);
+            (calendarWorkingHoursStartSubject, CalendarWorkingHoursStart) =
+                prepareSubjectAndObservable(calendarWorkingHoursStartKey, key => keyValueStorage.GetInt(key, defaultValue: 9));
+            (calendarWorkingHoursEndSubject, CalendarWorkingHoursEnd) =
+                prepareSubjectAndObservable(calendarWorkingHoursEndKey, key => keyValueStorage.GetInt(key, defaultValue: 17));
         }
 
         #region IAccessRestrictionStorage
@@ -344,6 +353,9 @@ namespace Toggl.PrimeRadiant.Settings
 
         public IObservable<TimeSpan> TimeSpanBeforeCalendarNotifications { get; }
 
+        public IObservable<int> CalendarWorkingHoursStart { get; }
+        public IObservable<int> CalendarWorkingHoursEnd { get; }
+
         public bool IsManualModeEnabled
             => keyValueStorage.GetBool(preferManualModeKey);
 
@@ -429,6 +441,18 @@ namespace Toggl.PrimeRadiant.Settings
         {
             keyValueStorage.SetTimeSpan(timeSpanBeforeCalendarNotificationsKey, timeSpan);
             timeSpanBeforeCalendarNotificationsSubject.OnNext(timeSpan);
+        }
+
+        public void SetCalendarWorkingHoursStart(int start)
+        {
+            keyValueStorage.SetInt(calendarWorkingHoursStartKey, start);
+            calendarWorkingHoursStartSubject.OnNext(start);
+        }
+
+        public void SetCalendarWorkingHoursEnd(int end)
+        {
+            keyValueStorage.SetInt(calendarWorkingHoursEndKey, end);
+            calendarWorkingHoursEndSubject.OnNext(end);
         }
 
         #endregion

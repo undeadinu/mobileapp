@@ -13,6 +13,10 @@ namespace Toggl.PrimeRadiant.Settings
 
         IObservable<TimeSpan> TimeSpanBeforeCalendarNotifications { get; }
 
+        IObservable<int> CalendarWorkingHoursStart { get; }
+
+        IObservable<int> CalendarWorkingHoursEnd { get; }
+
         IObservable<bool> AreRunningTimerNotificationsEnabledObservable { get; }
 
         IObservable<bool> AreStoppedTimerNotificationsEnabledObservable { get; }
@@ -40,5 +44,9 @@ namespace Toggl.PrimeRadiant.Settings
         void SetCalendarNotificationsEnabled(bool enabled);
 
         void SetTimeSpanBeforeCalendarNotifications(TimeSpan timeSpan);
+
+        void SetCalendarWorkingHoursStart(int start);
+
+        void SetCalendarWorkingHoursEnd(int end);
     }
 }
