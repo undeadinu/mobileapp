@@ -26,6 +26,8 @@ namespace Toggl.Foundation.Interactors
 
         public IObservable<TimeSpan> Execute()
             => timeEntries.ItemsChanged()
+                .Merge(timeService.MidnightObservable.SelectUnit())
+                .Merge(timeService.SignificantTimeChangeObservable)
                 .StartWith(Unit.Default)
                 .SelectMany(_ => calculateTimeTrackedToday());
 
