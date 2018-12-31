@@ -8,10 +8,10 @@ using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Daneel.Views.Calendar;
 using Toggl.Daneel.ViewSources;
 using Toggl.Foundation;
-using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
 using Toggl.Multivac.Extensions;
 using UIKit;
+using Math = System.Math;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -92,10 +92,6 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(DisposeBag);
 
             CalendarCollectionView.LayoutIfNeeded();
-            var currentTimeY = layout.FrameForCurrentTime().Y;
-            var scrollPointY = currentTimeY - View.Frame.Height / 2;
-            var currentTimePoint = new CGPoint(0, scrollPointY.Clamp(0, CalendarCollectionView.ContentSize.Height));
-            CalendarCollectionView.SetContentOffset(currentTimePoint, false);
         }
 
         public override void ViewWillAppear(bool animated)
@@ -109,6 +105,63 @@ namespace Toggl.Daneel.ViewControllers
             };
 
             layout.InvalidateCurrentTimeLayout();
+
+            var timeService = Mvx.Resolve<ITimeService>();
+            selectGoodScrollPoint(timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
+        }
+
+        private void selectGoodScrollPoint(TimeSpan timeOfDay)
+        {
+            var workingHoursStart = 9;
+            var workingHoursEnd = 17;
+            var frameHeight =
+                CalendarCollectionView.Frame.Height
+                    - CalendarCollectionView.ContentInset.Top
+                    - CalendarCollectionView.ContentInset.Bottom;
+            var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, workingHoursStart, workingHoursEnd, frameHeight);
+            Console.WriteLine($@"Current time: ${timeOfDay} Centered hour: ${centeredHour}");
+
+            var centeredHourY = (centeredHour / 24) * CalendarCollectionView.ContentSize.Height;
+            var scrollPointY = centeredHourY - frameHeight / 2;
+            var scrollPoint = new CGPoint(0, scrollPointY.Clamp(0, CalendarCollectionView.ContentSize.Height));
+
+            CalendarCollectionView.SetContentOffset(scrollPoint, false);
+        }
+
+        private double calculateCenteredHour(
+            double currentHour,
+            double workingHoursStart,
+            double workingHoursEnd,
+            double frameHeight)
+        {
+            var hoursPerHalfOfScreen = (frameHeight / (CalendarCollectionView.ContentSize.Height / 24)) / 2;
+
+            if (currentHour < workingHoursStart)
+            {
+                return currentHour - 1 + hoursPerHalfOfScreen;
+            }
+
+            if (currentHour > workingHoursEnd)
+            {
+                return currentHour + 1 - hoursPerHalfOfScreen;
+            }
+
+            var naiveStart = currentHour - hoursPerHalfOfScreen;
+            var naiveEnd = currentHour + hoursPerHalfOfScreen;
+
+            if (naiveStart >= workingHoursStart && workingHoursEnd < naiveEnd)
+            {
+                var start = naiveStart - Math.Min(naiveStart - workingHoursStart, naiveEnd - workingHoursEnd);
+                return start + hoursPerHalfOfScreen;
+            }
+
+            if (naiveStart < workingHoursStart && workingHoursEnd >= naiveEnd)
+            {
+                var end = naiveEnd + Math.Min(workingHoursEnd - naiveEnd, workingHoursStart - naiveStart);
+                return end - hoursPerHalfOfScreen;
+            }
+
+            return currentHour;
         }
     }
 }
