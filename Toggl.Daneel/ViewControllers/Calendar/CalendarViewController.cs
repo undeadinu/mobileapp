@@ -25,6 +25,9 @@ namespace Toggl.Daneel.ViewControllers
         private CalendarCollectionViewEditItemHelper editItemHelper;
         private CalendarCollectionViewCreateFromSpanHelper createFromSpanHelper;
 
+        private int workingHoursStart;
+        private int workingHoursEnd;
+
         private readonly UIButton settingsButton = new UIButton(new CGRect(0, 0, 40, 50));
 
         public CalendarViewController()
@@ -91,6 +94,22 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(ViewModel.OnDurationSelected.Inputs)
                 .DisposedBy(DisposeBag);
 
+            ViewModel.WorkingHoursStart
+                .Subscribe(start =>
+                {
+                    workingHoursStart = start;
+                    updateScrollOffset();
+                })
+                .DisposedBy(DisposeBag);
+
+            ViewModel.WorkingHoursEnd
+                .Subscribe(end =>
+                {
+                    workingHoursEnd = end;
+                    updateScrollOffset();
+                })
+                .DisposedBy(DisposeBag);
+
             CalendarCollectionView.LayoutIfNeeded();
         }
 
@@ -105,20 +124,22 @@ namespace Toggl.Daneel.ViewControllers
             };
 
             layout.InvalidateCurrentTimeLayout();
+            updateScrollOffset();
+        }
 
+        private void updateScrollOffset()
+        {
             var timeService = Mvx.Resolve<ITimeService>();
             selectGoodScrollPoint(timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
         }
 
         private void selectGoodScrollPoint(TimeSpan timeOfDay)
         {
-            var workingHoursStart = 9;
-            var workingHoursEnd = 17;
             var frameHeight =
                 CalendarCollectionView.Frame.Height
                     - CalendarCollectionView.ContentInset.Top
                     - CalendarCollectionView.ContentInset.Bottom;
-            var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, workingHoursStart, workingHoursEnd, frameHeight);
+            var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, frameHeight);
             Console.WriteLine($@"Current time: ${timeOfDay} Centered hour: ${centeredHour}");
 
             var centeredHourY = (centeredHour / 24) * CalendarCollectionView.ContentSize.Height;
@@ -128,11 +149,7 @@ namespace Toggl.Daneel.ViewControllers
             CalendarCollectionView.SetContentOffset(scrollPoint, false);
         }
 
-        private double calculateCenteredHour(
-            double currentHour,
-            double workingHoursStart,
-            double workingHoursEnd,
-            double frameHeight)
+        private double calculateCenteredHour(double currentHour, double frameHeight)
         {
             var hoursPerHalfOfScreen = (frameHeight / (CalendarCollectionView.ContentSize.Height / 24)) / 2;
 

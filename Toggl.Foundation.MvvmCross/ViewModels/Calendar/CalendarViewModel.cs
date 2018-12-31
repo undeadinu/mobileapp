@@ -66,6 +66,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
 
         public ObservableGroupedOrderedCollection<CalendarItem> CalendarItems { get; }
 
+        public IObservable<int> WorkingHoursStart { get; }
+
+        public IObservable<int> WorkingHoursEnd { get; }
+
         public CalendarViewModel(
             ITogglDataSource dataSource,
             ITimeService timeService,
@@ -140,6 +144,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
                 indexKey: item => item.StartTime,
                 orderingKey: item => item.StartTime,
                 groupingKey: _ => 0);
+
+            WorkingHoursStart = userPreferences.CalendarWorkingHoursStart;
+            WorkingHoursEnd = userPreferences.CalendarWorkingHoursEnd;
         }
 
         public void Init(string eventId)
@@ -293,8 +300,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
                 TagIds = timeEntry.TagIds
             };
 
-            var duration = calendarItem.Duration.HasValue 
-                ? calendarItem.Duration.Value.TotalSeconds 
+            var duration = calendarItem.Duration.HasValue
+                ? calendarItem.Duration.Value.TotalSeconds
                 : (timeService.CurrentDateTime - calendarItem.StartTime.LocalDateTime).TotalSeconds;
 
             if (timeEntry.Duration != duration)
