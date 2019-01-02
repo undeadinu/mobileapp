@@ -139,7 +139,6 @@ namespace Toggl.Daneel.ViewControllers
                     - CalendarCollectionView.ContentInset.Top
                     - CalendarCollectionView.ContentInset.Bottom;
             var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, frameHeight);
-            Console.WriteLine($@"Current time: ${timeOfDay} Centered hour: ${centeredHour}");
 
             var centeredHourY = (centeredHour / 24) * CalendarCollectionView.ContentSize.Height;
             var scrollPointY = centeredHourY - frameHeight / 2;
