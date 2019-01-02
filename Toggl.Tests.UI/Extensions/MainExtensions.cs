@@ -11,9 +11,9 @@ namespace Toggl.Tests.UI.Extensions
 
             app.WaitForSignUpScreen();
 
+            app.Tap(SignUp.EmailText);
             app.EnterText(email);
-            app.GoToPasswordScreen();
-
+            app.Tap(SignUp.PasswordText);
             app.EnterText("123456");
             app.SignUpSuccesfully();
         }

@@ -21,16 +21,11 @@ namespace Toggl.Foundation.DataSources
     public sealed class TogglDataSource : ITogglDataSource
     {
         private readonly ITogglDatabase database;
-        private readonly ITimeService timeService;
-        private readonly IBackgroundService backgroundService;
         private readonly INotificationService notificationService;
         private readonly IErrorHandlingService errorHandlingService;
         private readonly IApplicationShortcutCreator shortcutCreator;
-        private readonly TimeSpan minimumTimeInBackgroundForFullSync;
 
         private bool isLoggedIn;
-        private IDisposable signalDisposable;
-        private IDisposable midnightDisposable;
         private IDisposable errorHandlingDisposable;
 
         public TogglDataSource(
@@ -38,9 +33,7 @@ namespace Toggl.Foundation.DataSources
             ITogglDatabase database,
             ITimeService timeService,
             IErrorHandlingService errorHandlingService,
-            IBackgroundService backgroundService,
             Func<ITogglDataSource, ISyncManager> createSyncManager,
-            TimeSpan minimumTimeInBackgroundForFullSync,
             INotificationService notificationService,
             IApplicationShortcutCreator shortcutCreator,
             IAnalyticsService analyticsService)
@@ -50,18 +43,14 @@ namespace Toggl.Foundation.DataSources
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(notificationService, nameof(notificationService));
             Ensure.Argument.IsNotNull(errorHandlingService, nameof(errorHandlingService));
-            Ensure.Argument.IsNotNull(backgroundService, nameof(backgroundService));
             Ensure.Argument.IsNotNull(createSyncManager, nameof(createSyncManager));
             Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
 
             this.database = database;
-            this.timeService = timeService;
             this.shortcutCreator = shortcutCreator;
-            this.backgroundService = backgroundService;
             this.notificationService = notificationService;
             this.errorHandlingService = errorHandlingService;
-            this.minimumTimeInBackgroundForFullSync = minimumTimeInBackgroundForFullSync;
 
             User = new UserDataSource(database.User);
             Tags = new TagsDataSource(database.Tags);
@@ -107,25 +96,6 @@ namespace Toggl.Foundation.DataSources
 
         public IFeedbackApi FeedbackApi { get; }
 
-        public IObservable<Unit> StartSyncing()
-        {
-            if (isLoggedIn == false)
-                throw new InvalidOperationException("Cannot start syncing after the user logged out of the app.");
-
-            if (signalDisposable != null || midnightDisposable != null)
-                throw new InvalidOperationException("The StartSyncing method has already been called.");
-
-            signalDisposable = backgroundService.AppResumedFromBackground
-                .Where(timeInBackground => timeInBackground >= minimumTimeInBackgroundForFullSync)
-                .Subscribe((TimeSpan _) => SyncManager.ForceFullSync());
-
-            midnightDisposable = timeService.MidnightObservable
-                .Subscribe((DateTimeOffset _) => SyncManager.CleanUp());
-
-            return SyncManager.ForceFullSync()
-                .Select(_ => Unit.Default);
-        }
-
         public IObservable<bool> HasUnsyncedData()
             => Observable.Merge(
                 hasUnsyncedData(database.TimeEntries),
@@ -141,7 +111,6 @@ namespace Toggl.Foundation.DataSources
             => SyncManager.Freeze()
                 .FirstAsync()
                 .Do(_ => isLoggedIn = false)
-                .Do(stopSyncingOnSignal)
                 .SelectMany(_ => database.Clear())
                 .Do(shortcutCreator.OnLogout)
                 .SelectMany(_ =>
@@ -159,19 +128,15 @@ namespace Toggl.Foundation.DataSources
 
         private void onSyncError(Exception exception)
         {
-            if (errorHandlingService.TryHandleDeprecationError(exception)
-                || errorHandlingService.TryHandleUnauthorizedError(exception)
-                || errorHandlingService.TryHandleNoWorkspaceError(exception)
-                || errorHandlingService.TryHandleNoDefaultWorkspaceError(exception))
+            if (!errorHandlingService.TryHandleDeprecationError(exception)
+                && !errorHandlingService.TryHandleUnauthorizedError(exception)
+                && !errorHandlingService.TryHandleNoWorkspaceError(exception)
+                && !errorHandlingService.TryHandleNoDefaultWorkspaceError(exception))
             {
-                stopSyncingOnSignal();
-                return;
+                throw new ArgumentException(
+                    $"{nameof(TogglDataSource)} could not handle unknown sync error {exception.GetType().FullName}.",
+                    exception);
             }
-
-            throw new ArgumentException($"{nameof(TogglDataSource)} could not handle unknown sync error {exception.GetType().FullName}.", exception);
         }
-
-        private void stopSyncingOnSignal()
-            => signalDisposable?.Dispose();
     }
 }

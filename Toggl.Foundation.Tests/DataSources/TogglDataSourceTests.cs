@@ -35,12 +35,10 @@ namespace Toggl.Foundation.Tests.DataSources
             protected ITogglDatabase Database { get; } = Substitute.For<ITogglDatabase>();
             protected ITimeService TimeService { get; } = Substitute.For<ITimeService>();
             protected ISyncManager SyncManager { get; } = Substitute.For<ISyncManager>();
-            protected IBackgroundService BackgroundService { get; } = Substitute.For<IBackgroundService>();
             protected INotificationService NotificationService { get; } = Substitute.For<INotificationService>();
             protected IErrorHandlingService ErrorHandlingService { get; } = Substitute.For<IErrorHandlingService>();
             protected ISubject<SyncProgress> ProgressSubject = new Subject<SyncProgress>();
             protected ISubject<Exception> ErrorsSubject = new Subject<Exception>();
-            protected TimeSpan MinimumTimeInBackgroundForFullSync = TimeSpan.FromMinutes(5);
             protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
             protected IAnalyticsService AnalyticsService { get; } = Substitute.For<IAnalyticsService>();
 
@@ -53,9 +51,7 @@ namespace Toggl.Foundation.Tests.DataSources
                     Database,
                     TimeService,
                     ErrorHandlingService,
-                    BackgroundService,
                     _ => SyncManager,
-                    MinimumTimeInBackgroundForFullSync,
                     NotificationService,
                     ApplicationShortcutCreator,
                     AnalyticsService);
@@ -142,114 +138,6 @@ namespace Toggl.Foundation.Tests.DataSources
                 await DataSource.Logout();
 
                 ApplicationShortcutCreator.Received().OnLogout();
-            }
-        }
-
-        public sealed class TheStartSyncingMethod : TogglDataSourceTest
-        {
-            [Fact, LogIfTooSlow]
-            public void SubscribesSyncManagerToTheBackgroundServiceSignal()
-            {
-                var observable = Substitute.For<IObservable<TimeSpan>>();
-                BackgroundService.AppResumedFromBackground.Returns(observable);
-
-                DataSource.StartSyncing();
-
-                observable.ReceivedWithAnyArgs().Subscribe(null);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void CallsForceFullSync()
-            {
-                DataSource.StartSyncing();
-
-                SyncManager.Received().ForceFullSync();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ReturnsAnObservableWhichEmitsWhenTheForceFullSyncObservableEmits()
-            {
-                bool emitted = false;
-                var forceFullSyncSubject = new Subject<SyncState>();
-                SyncManager.ForceFullSync().Returns(forceFullSyncSubject.AsObservable());
-
-                var observable = DataSource.StartSyncing();
-                observable.Subscribe(_ => emitted = true);
-                forceFullSyncSubject.OnNext(SyncState.Pull);
-
-                emitted.Should().BeTrue();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ReturnsAnObservableWhichDoesNotEmitWhenTheForceFullSyncObservableDoesNotEmit()
-            {
-                bool emitted = false;
-                var forceFullSyncSubject = new Subject<SyncState>();
-                SyncManager.ForceFullSync().Returns(forceFullSyncSubject.AsObservable());
-
-                var observable = DataSource.StartSyncing();
-                observable.Subscribe(_ => emitted = true);
-
-                emitted.Should().BeFalse();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void CallsForceFullSyncOnlyOnceWhenTheObservableDoesNotEmitAnyValues()
-            {
-                var observable = Observable.Never<TimeSpan>();
-                BackgroundService.AppResumedFromBackground.Returns(observable);
-
-                DataSource.StartSyncing();
-
-                SyncManager.Received(1).ForceFullSync();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void CallsForceFullSyncWhenAValueIsEmitted()
-            {
-                var subject = new Subject<TimeSpan>();
-                BackgroundService.AppResumedFromBackground.Returns(subject.AsObservable());
-
-                DataSource.StartSyncing();
-                subject.OnNext(MinimumTimeInBackgroundForFullSync + TimeSpan.FromSeconds(1));
-
-                SyncManager.Received(2).ForceFullSync();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ThrowsWhenCalledForTheSecondTime()
-            {
-                var observable = Observable.Never<TimeSpan>();
-                BackgroundService.AppResumedFromBackground.Returns(observable);
-                DataSource.StartSyncing();
-
-                Action callForTheSecondTime = () => DataSource.StartSyncing();
-
-                callForTheSecondTime.Should().Throw<InvalidOperationException>();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask UnsubscribesFromTheSignalAfterLogout()
-            {
-                var subject = new Subject<TimeSpan>();
-                BackgroundService.AppResumedFromBackground.Returns(subject.AsObservable());
-                await DataSource.StartSyncing();
-                SyncManager.ClearReceivedCalls();
-                await DataSource.Logout();
-
-                subject.OnNext(MinimumTimeInBackgroundForFullSync + TimeSpan.FromSeconds(1));
-
-                await SyncManager.DidNotReceive().ForceFullSync();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask ThrowsWhenStartSyncingIsCalledAfterLoggingOut()
-            {
-                await DataSource.Logout();
-
-                Action startSyncing = () => DataSource.StartSyncing().Wait();
-
-                startSyncing.Should().Throw<InvalidOperationException>();
             }
         }
 
@@ -425,23 +313,6 @@ namespace Toggl.Foundation.Tests.DataSources
 
                 handling.Should().Throw<ArgumentException>();
             }
-
-            [Fact, LogIfTooSlow]
-            public void UnsubscribesFromTheBackgroundServiceObservableWhenExceptionIsCaught()
-            {
-                var subject = new Subject<TimeSpan>();
-                BackgroundService.AppResumedFromBackground.Returns(subject.AsObservable());
-                DataSource.StartSyncing();
-                SyncManager.ClearReceivedCalls();
-                var exception = new UnauthorizedException(request, response);
-                ErrorHandlingService.TryHandleUnauthorizedError(Arg.Any<UnauthorizedException>()).Returns(true);
-
-                ErrorsSubject.OnNext(exception);
-                subject.OnNext(MinimumTimeInBackgroundForFullSync + TimeSpan.FromSeconds(1));
-
-                SyncManager.DidNotReceive().ForceFullSync();
-            }
-
 
             public static IEnumerable<object[]> ApiExceptionsWhichAreNotThrowByTheProgressObservable()
                 => ApiExceptions.ClientExceptions

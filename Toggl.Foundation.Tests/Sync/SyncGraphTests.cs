@@ -39,12 +39,10 @@ namespace Toggl.Foundation.Tests.Sync
                 Substitute.For<ITogglDatabase>(),
                 Substitute.For<ITogglApi>(),
                 Substitute.For<ITogglDataSource>(),
-                Substitute.For<IRetryDelayService>(),
                 Substitute.For<IScheduler>(),
                 Substitute.For<ITimeService>(),
                 Substitute.For<IAnalyticsService>(),
                 entryPoints,
-                Substitute.For<IObservable<Unit>>(),
                 Substitute.For<ISyncStateQueue>()
             );
 

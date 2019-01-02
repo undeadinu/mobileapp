@@ -126,6 +126,16 @@ namespace Toggl.Foundation.Analytics
 
         IAnalyticsEvent<int> WorkspacesInaccesibleAfterCleanUp { get; }
 
+        IAnalyticsEvent<int> NumberOfSyncedTimeEntriesWhenResumingTheAppFromBackground { get; }
+
+        IAnalyticsEvent BackgroundSyncStarted { get; }
+
+        IAnalyticsEvent<string> BackgroundSyncFinished { get; }
+
+        IAnalyticsEvent<string, string, string> BackgroundSyncFailed { get; }
+
+        IAnalyticsEvent<int> RateLimitingDelayDuringSyncing { get; }
+
         IAnalyticsEvent<string, string> UnknownLoginFailure { get; }
 
         IAnalyticsEvent<string, string> UnknownSignUpFailure { get; }

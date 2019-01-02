@@ -12,3 +12,7 @@ The recommended reading order is this:
 7. [Transitions configuration](transitions-configuration.md)
 8. [Sample sync state](example.md)
 9. [Syncing tests](tests.md)
+10. [Rate limiting](rate-limiting.md)
+11. [Background sync](bg-sync.md)
+12. [Background Fetch on iOS](bg-fetch-ios.md)
+12. [Background Fetch on Android](bg-fetch-android.md)

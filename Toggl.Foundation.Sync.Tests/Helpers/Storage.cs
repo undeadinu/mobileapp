@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Realms;
 using Toggl.Foundation.Sync.Tests.State;
 using Toggl.Multivac.Extensions;
+using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 using Toggl.PrimeRadiant.Realm;
@@ -34,12 +35,12 @@ namespace Toggl.Foundation.Sync.Tests.Helpers
             var workspaces = await Database.Workspaces.GetAll().Select(ws => ws.Select(Models.Workspace.From));
             var sinceParameters = new Dictionary<Type, DateTimeOffset?>
             {
-                [typeof(IDatabaseClient)] = Database.SinceParameters.Get<IDatabaseClient>(),
-                [typeof(IDatabaseProject)] = Database.SinceParameters.Get<IDatabaseProject>(),
-                [typeof(IDatabaseTag)] = Database.SinceParameters.Get<IDatabaseTag>(),
-                [typeof(IDatabaseTask)] = Database.SinceParameters.Get<IDatabaseTask>(),
-                [typeof(IDatabaseTimeEntry)] = Database.SinceParameters.Get<IDatabaseTimeEntry>(),
-                [typeof(IDatabaseWorkspace)] = Database.SinceParameters.Get<IDatabaseWorkspace>()
+                [typeof(IClient)] = Database.SinceParameters.Get<IClient>(),
+                [typeof(IProject)] = Database.SinceParameters.Get<IProject>(),
+                [typeof(ITag)] = Database.SinceParameters.Get<ITag>(),
+                [typeof(ITask)] = Database.SinceParameters.Get<ITask>(),
+                [typeof(ITimeEntry)] = Database.SinceParameters.Get<ITimeEntry>(),
+                [typeof(IWorkspace)] = Database.SinceParameters.Get<IWorkspace>()
             };
 
             return new DatabaseState(

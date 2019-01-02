@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -11,7 +10,6 @@ using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Sync.States;
-using Toggl.Foundation.Sync.States.Push;
 using Toggl.PrimeRadiant;
 using Toggl.Ultrawave;
 
@@ -160,11 +158,10 @@ namespace SyncDiagramGenerator
             {
                 case InvalidTransitionState _:
                     return Node.NodeType.InvalidTransitionState;
-                case CheckServerStatusState _:
+                case DelayState _:
                     return Node.NodeType.RetryLoop;
-                case ResetAPIDelayState _:
-                    return Node.NodeType.APIDelayReset;
                 case DeadEndState _:
+                case FailureState _:
                     return Node.NodeType.DeadEnd;
                 default:
                     return Node.NodeType.Regular;
@@ -228,12 +225,10 @@ namespace SyncDiagramGenerator
                 Substitute.For<ITogglDatabase>(),
                 Substitute.For<ITogglApi>(),
                 Substitute.For<ITogglDataSource>(),
-                Substitute.For<IRetryDelayService>(),
                 Substitute.For<IScheduler>(),
                 Substitute.For<ITimeService>(),
                 Substitute.For<IAnalyticsService>(),
                 entryPoints,
-                Substitute.For<IObservable<Unit>>(),
                 Substitute.For<ISyncStateQueue>()
             );
         }

@@ -1,10 +1,12 @@
 ﻿using System;
+using Toggl.Multivac.Models;
 
 namespace Toggl.PrimeRadiant
 {
     public interface ISinceParameterRepository
     {
-        DateTimeOffset? Get<T>() where T : IDatabaseSyncable;
+        DateTimeOffset? Get<T>()
+            where T : ILastChangedDatable;
 
         void Set<T>(DateTimeOffset? since);
 

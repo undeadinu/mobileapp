@@ -23,6 +23,7 @@ using Toggl.Foundation.Suggestions;
 using Toggl.Giskard.BroadcastReceivers;
 using Toggl.Giskard.Presenters;
 using Toggl.Giskard.Services;
+using Toggl.Giskard.Startup;
 using Toggl.PrimeRadiant.Realm;
 using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave;
@@ -73,6 +74,7 @@ namespace Toggl.Giskard
             var database = new Database();
             var scheduler = Scheduler.Default;
             var timeService = new TimeService(scheduler);
+            var backgroundService = new BackgroundService(timeService);
             var suggestionProviderContainer = new SuggestionProviderContainer(
                 new MostUsedTimeEntrySuggestionProvider(database, timeService, maxNumberOfSuggestions)
             );
@@ -88,6 +90,7 @@ namespace Toggl.Giskard
             var schedulerProvider = new AndroidSchedulerProvider();
             var permissionsService = new PermissionsServiceAndroid();
             var calendarService = new CalendarServiceAndroid(permissionsService);
+            var automaticSyncingService = new AutomaticSyncingService(backgroundService, timeService, analyticsService);
 
             ApplicationContext.RegisterReceiver(new TimezoneChangedBroadcastReceiver(timeService),
                 new IntentFilter(Intent.ActionTimezoneChanged));
@@ -109,13 +112,14 @@ namespace Toggl.Giskard
                     .WithNotificationService<NotificationServiceAndroid>()
                     .WithRemoteConfigService<RemoteConfigServiceAndroid>()
                     .WithApiFactory(new ApiFactory(environment, userAgent))
-                    .WithBackgroundService(new BackgroundService(timeService))
+                    .WithBackgroundService(backgroundService)
+                    .WithAutomaticSyncingService(automaticSyncingService)
                     .WithSuggestionProviderContainer(suggestionProviderContainer)
                     .WithApplicationShortcutCreator(new ApplicationShortcutCreator(ApplicationContext))
                     .WithStopwatchProvider<FirebaseStopwatchProviderAndroid>()
                     .WithIntentDonationService(new NoopIntentDonationServiceAndroid())
                     .WithPrivateSharedStorageService(new NoopPrivateSharedStorageServiceAndroid())
-
+                    .WithBackgroundSyncService<BackgroundSyncServiceAndroid>()
                     .StartRegisteringPlatformServices()
                     .WithDialogService(dialogService)
                     .WithFeedbackService(feedbackService)
@@ -135,6 +139,7 @@ namespace Toggl.Giskard
             foundation.RevokeNewUserIfNeeded().Initialize();
 
             ensureDataSourceInitializationIfLoggedIn();
+            createApplicationLifecycleObserver(backgroundService);
 
             base.InitializeApp(pluginManager, app);
         }
@@ -178,6 +183,14 @@ namespace Toggl.Giskard
              */
             var userAccessManager = Mvx.Resolve<IUserAccessManager>();
             var dataSource = userAccessManager.GetDataSourceIfLoggedIn();
+        }
+
+        private void createApplicationLifecycleObserver(IBackgroundService backgroundService)
+        {
+            var mvxApplication = MvxAndroidApplication.Instance;
+            var appLifecycleObserver = new ApplicationLifecycleObserver(backgroundService);
+            mvxApplication.RegisterActivityLifecycleCallbacks(appLifecycleObserver);
+            mvxApplication.RegisterComponentCallbacks(appLifecycleObserver);
         }
     }
 }

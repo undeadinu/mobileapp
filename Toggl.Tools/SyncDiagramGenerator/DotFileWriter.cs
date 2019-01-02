@@ -19,6 +19,7 @@ namespace SyncDiagramGenerator
         private static readonly string[] subGraphTerminationNodes =
         {
             "FetchAllSinceState", "DeadEndState", "Loose End",
+            "DelayState",
         };
 
         public void WriteToFile(string outPath, List<Node> nodes, List<Edge> edges)

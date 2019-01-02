@@ -31,8 +31,6 @@ namespace Toggl.Foundation.Sync.Tests.Helpers
 
         public IErrorHandlingService ErrorHandlingService { get; }
 
-        public IBackgroundService BackgroundServiceSubstitute { get; } = Substitute.For<IBackgroundService>();
-
         public IAnalyticsService AnalyticsServiceSubstitute { get; } = Substitute.For<IAnalyticsService>();
 
         public ILastTimeUsageStorage LastTimeUsageStorageSubstitute { get; } = Substitute.For<ILastTimeUsageStorage>();
@@ -59,7 +57,6 @@ namespace Toggl.Foundation.Sync.Tests.Helpers
                     TimeService,
                     AnalyticsServiceSubstitute,
                     LastTimeUsageStorageSubstitute,
-                    retryLimit,
                     Scheduler);
 
             var togglDataSource = new TogglDataSource(
@@ -67,9 +64,7 @@ namespace Toggl.Foundation.Sync.Tests.Helpers
                 database,
                 TimeService,
                 ErrorHandlingService,
-                BackgroundServiceSubstitute,
                 createSyncManager,
-                minimumTimeInBackgroundForFullSync,
                 NotificationServiceSubstitute,
                 ApplicationShortcutCreatorSubstitute,
                 AnalyticsServiceSubstitute);

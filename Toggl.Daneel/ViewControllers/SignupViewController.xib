@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -51,6 +49,7 @@
                 </imageView>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="l9R-60-VBL" customClass="LoginTextField">
                     <rect key="frame" x="16" y="133" width="288" height="56"/>
+                    <accessibility key="accessibilityConfiguration" label="SignUpEmail"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="56" id="uN1-Sc-9gG"/>
                     </constraints>
@@ -60,6 +59,7 @@
                 </textField>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Tbg-EL-dza" customClass="LoginTextField">
                     <rect key="frame" x="16" y="201" width="288" height="56"/>
+                    <accessibility key="accessibilityConfiguration" label="SignUpPassword"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="56" id="GQS-iS-edi"/>
                     </constraints>
@@ -79,6 +79,7 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4U6-rc-Cap">
                     <rect key="frame" x="16" y="297" width="288" height="40"/>
                     <color key="backgroundColor" red="0.023529411764705882" green="0.66666666666666663" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
+                    <accessibility key="accessibilityConfiguration" label="SignUpButton"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="g1T-bA-zza"/>
                     </constraints>
@@ -103,7 +104,7 @@
                     <rect key="frame" x="16" y="361" width="288" height="14.5"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z4P-YM-3Id">
-                            <rect key="frame" x="0.0" y="7.5" width="127.5" height="1"/>
+                            <rect key="frame" x="0.0" y="7" width="127.5" height="1"/>
                             <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="vZh-mI-qFV"/>
@@ -116,7 +117,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vMT-lo-zCD">
-                            <rect key="frame" x="161" y="7.5" width="127" height="1"/>
+                            <rect key="frame" x="161" y="7" width="127" height="1"/>
                             <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="xAh-U9-vyw"/>
@@ -202,6 +203,7 @@
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password should be at least 6 characters." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rbq-cx-c1j">
                     <rect key="frame" x="16" y="263" width="288" height="14.5"/>
+                    <accessibility key="accessibilityConfiguration" label="SignUpError"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" red="0.96862745098039216" green="0.25098039215686274" blue="0.28627450980392155" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
@@ -265,7 +267,7 @@
         <image name="icDownS" width="8" height="5"/>
         <image name="icErrorSmall" width="11" height="11"/>
         <image name="icGoogleColored" width="18" height="18"/>
-        <image name="icJustSpider" width="61" height="48"/>
+        <image name="icJustSpider" width="61" height="48.5"/>
         <image name="togglLogoBig" width="101" height="31"/>
     </resources>
 </document>

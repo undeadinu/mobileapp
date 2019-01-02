@@ -513,8 +513,7 @@ private string[] GetUnitTestProjects() => new []
 
 private string[] GetUITestFiles() => new []
 {
-    "./bin/Debug/Toggl.Giskard.Tests.UI.dll",
-    "./bin/Debug/Toggl.Daneel.Tests.UI.dll"
+    "./bin/Release/Toggl.Daneel.Tests.UI.dll"
 };
 
 private string[] GetIntegrationTestProjects()
@@ -586,8 +585,7 @@ Task("Build.Tests.Sync")
 
 Task("Build.Tests.UI")
     .IsDependentOn("Nuget")
-    .Does(BuildSolution("UITests"))
-    .Does(GenerateApk("Release"));
+    .Does(BuildSolution("UITests"));
 
 Task("BuildSyncDiagramGenerator")
     .IsDependentOn("Nuget")

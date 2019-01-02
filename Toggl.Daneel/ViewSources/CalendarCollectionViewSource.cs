@@ -183,7 +183,7 @@ namespace Toggl.Daneel.ViewSources
         public void StartEditing(NSIndexPath indexPath)
         {
             IsEditing = true;
-            editingItemIndexPath = indexPath; 
+            editingItemIndexPath = indexPath;
             layout.IsEditing = true;
             CollectionView.ReloadItems(new NSIndexPath[] { indexPath });
         }

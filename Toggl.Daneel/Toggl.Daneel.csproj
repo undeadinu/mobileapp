@@ -1176,6 +1176,7 @@
     </Compile>
     <Compile Include="Extensions\IThreadSafeTimeEntryExtensions.cs" />
     <Compile Include="PlatformInfoIos.cs" />
+    <Compile Include="Services\BackgroundSyncServiceIos.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">

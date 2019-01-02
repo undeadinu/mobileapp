@@ -8,15 +8,16 @@ namespace Toggl.Foundation.Sync.States.Push
     public sealed class TryResolveClientErrorState<T> : ISyncState<(Exception Error, T Entity)>
         where T : class, IThreadSafeModel
     {
-        public StateResult UnresolvedTooManyRequests { get; } = new StateResult();
+        public StateResult<TooManyRequestsException> UnresolvedTooManyRequests { get; }
+            = new StateResult<TooManyRequestsException>();
 
         public StateResult<(Exception, T)> Unresolved { get; } = new StateResult<(Exception, T)>();
 
         public IObservable<ITransition> Start((Exception Error, T Entity) parameter)
             => parameter.Error is ClientErrorException == false
                 ? Observable.Throw<ITransition>(new ArgumentException(nameof(parameter.Error)))
-                : parameter.Error is TooManyRequestsException
-                    ? Observable.Return((ITransition)UnresolvedTooManyRequests.Transition())
+                : parameter.Error is TooManyRequestsException tooManyRequests
+                    ? Observable.Return((ITransition)UnresolvedTooManyRequests.Transition(tooManyRequests))
                     : Observable.Return(Unresolved.Transition(parameter));
     }
 }

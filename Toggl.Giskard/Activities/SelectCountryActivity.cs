@@ -45,7 +45,7 @@ namespace Toggl.Giskard.Activities
                 .DisposedBy(DisposeBag);
 
             filterEditText.Rx().Text()
-                .Subscribe(ViewModel.SetFilterText.Inputs)
+                .Subscribe(ViewModel.FilterText)
                 .DisposedBy(DisposeBag);
 
             recyclerAdapter.ItemTapObservable

@@ -1,4 +1,6 @@
-﻿using Xamarin.UITest;
+﻿using System;
+using System.Linq;
+using Xamarin.UITest;
 
 namespace Toggl.Tests.UI.Extensions
 {
@@ -19,10 +21,10 @@ namespace Toggl.Tests.UI.Extensions
             app.WaitForElement(Onboarding.ThirdLabel);
         }
 
-        public static void GoForwardToFourthOnboardingPage(this IApp app)
+        public static void GoForwardToLoginPage(this IApp app)
         {
             app.Tap(Onboarding.NextButton);
-            app.WaitForElement(Onboarding.LoginButton);
+            app.WaitForElement(Login.LoginButton);
         }
 
         public static void SwipeForwardToSecondOnboardingPage(this IApp app)
@@ -37,12 +39,6 @@ namespace Toggl.Tests.UI.Extensions
             app.WaitForElement(Onboarding.ThirdLabel);
         }
 
-        public static void SwipeForwardToFourthOnboardingPage(this IApp app)
-        {
-            app.SwipeRightToLeft(Onboarding.ThirdLabel);
-            app.WaitForElement(Onboarding.LoginButton);
-        }
-
         public static void GoBackToFirstOnboardingPage(this IApp app)
         {
             app.Tap(Onboarding.PreviousButton);
@@ -53,12 +49,6 @@ namespace Toggl.Tests.UI.Extensions
         {
             app.Tap(Onboarding.PreviousButton);
             app.WaitForElement(Onboarding.SecondLabel);
-        }
-
-        public static void GoBackToThirdOnboardingPage(this IApp app)
-        {
-            app.Tap(Onboarding.PreviousButton);
-            app.WaitForElement(Onboarding.ThirdLabel);
         }
 
         public static void SwipeBackToFirstOnboardingPage(this IApp app)
@@ -73,22 +63,14 @@ namespace Toggl.Tests.UI.Extensions
             app.WaitForElement(Onboarding.SecondLabel);
         }
 
-        public static void SkipToLastOnboardingPage(this IApp app)
+        public static void SkipToLoginPage(this IApp app)
         {
-            app.Tap(Onboarding.SkipButton);
-            app.WaitForElement(Onboarding.LoginButton);
-        }
-
-        public static void OpenLoginFromOnboardingLastPage(this IApp app)
-        {
-            app.Tap(Onboarding.LoginButton);
-            app.WaitForElement(Login.EmailText);
-        }
-
-        public static void OpenSignUpFromOnboardingLastPage(this IApp app)
-        {
-            app.Tap(Onboarding.SignUpButton);
-            app.WaitForElement(Login.EmailText);
+            var skip = app.Query(Onboarding.SkipButton);
+            if (skip != null && skip.Any())
+            {
+                app.Tap(Onboarding.SkipButton);
+            }
+            app.WaitForElement(Login.LoginButton);
         }
     }
 }

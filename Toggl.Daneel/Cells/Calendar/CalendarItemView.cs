@@ -79,7 +79,7 @@ namespace Toggl.Daneel.Cells.Calendar
             prepareInitialConstraints();
 
             backgroundLayer = new CALayer();
-            patternLayer = new CALayer();
+            patternLayer = new CALayer { CornerRadius = 2 };
             tintLayer = new CALayer();
             topBorderLayer = new CAShapeLayer();
             bottomBorderLayer = new CAShapeLayer();

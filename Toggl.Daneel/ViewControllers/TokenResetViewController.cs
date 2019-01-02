@@ -47,12 +47,11 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(DisposeBag);
 
             ViewModel.Password
-                .SelectToString()
                 .Subscribe(PasswordTextField.Rx().TextObserver())
                 .DisposedBy(DisposeBag);
 
             PasswordTextField.Rx().Text()
-                .Subscribe(ViewModel.SetPassword.Inputs)
+                .Subscribe(ViewModel.Password)
                 .DisposedBy(DisposeBag);
 
             ViewModel.IsPasswordMasked
@@ -85,12 +84,12 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(ErrorView.Rx().IsVisible())
                 .DisposedBy(DisposeBag);
 
-            ViewModel.IsLoading
+            ViewModel.Done.Executing
                 .Invert()
                 .Subscribe(ShowPasswordButton.Rx().IsVisible())
                 .DisposedBy(DisposeBag);
 
-            ViewModel.IsLoading
+            ViewModel.Done.Executing
                 .Subscribe(ActivityIndicatorView.Rx().IsVisible())
                 .DisposedBy(DisposeBag);
 

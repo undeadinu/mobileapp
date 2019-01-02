@@ -11,5 +11,8 @@ namespace Toggl.Foundation.Interactors
 
         public IInteractor<IObservable<bool>> HasFinishedSyncBefore()
             => new HasFinsihedSyncBeforeInteractor(dataSource);
+
+        public IInteractor<IObservable<SyncOutcome>> RunBackgroundSync()
+            => new RunBackgroundSyncInteractor(syncManager, analyticsService, stopwatchProvider);
     }
 }

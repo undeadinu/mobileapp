@@ -23,7 +23,6 @@ namespace Toggl.Foundation.DataSources
 
         ISyncManager SyncManager { get; }
 
-        IObservable<Unit> StartSyncing();
         IReportsProvider ReportsProvider { get; }
 
         IFeedbackApi FeedbackApi { get; }

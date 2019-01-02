@@ -27,15 +27,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private long workspaceId;
         private long selectedClientId;
         private SelectableClientViewModel noClient;
-        private ISubject<string> clientFilterText = new BehaviorSubject<string>(string.Empty);
 
         public IObservable<IEnumerable<SelectableClientBaseViewModel>> Clients { get; private set; }
-
+        public ISubject<string> FilterText { get; } = new BehaviorSubject<string>(string.Empty);
         public UIAction Close { get; }
-
         public InputAction<SelectableClientBaseViewModel> SelectClient { get; }
-
-        public InputAction<string> SetFilterText { get; }
 
         public SelectClientViewModel(
             IInteractorFactory interactorFactory,
@@ -54,7 +50,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             Close = rxActionFactory.FromAsync(close);
             SelectClient = rxActionFactory.FromAsync<SelectableClientBaseViewModel>(selectClient);
-            SetFilterText = rxActionFactory.FromAction<string>(setText);
         }
 
         public override void Prepare(SelectClientParameters parameter)
@@ -70,7 +65,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             var allClients = await interactorFactory.GetAllClientsInWorkspace(workspaceId).Execute();
 
-            Clients = clientFilterText
+            Clients = FilterText
+                .Select(text => text ?? string.Empty)
                 .Select(text =>
                 {
                     var trimmedText = text.Trim();
@@ -116,11 +112,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     await navigationService.Close(this, c.Id);
                     break;
             }
-        }
-
-        private void setText(string text)
-        {
-            clientFilterText.OnNext(text ?? "");
         }
     }
 }

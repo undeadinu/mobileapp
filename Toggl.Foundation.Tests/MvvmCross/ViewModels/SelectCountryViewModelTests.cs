@@ -123,7 +123,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare(10);
                 await ViewModel.Initialize();
 
-                ViewModel.SetFilterText.Execute("Greece");
+                ViewModel.FilterText.OnNext("Greece");
 
                 ViewModel.Countries.First().Count().Should().Equals(1);
             }

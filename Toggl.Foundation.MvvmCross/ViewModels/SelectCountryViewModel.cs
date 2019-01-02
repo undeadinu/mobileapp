@@ -20,15 +20,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private long? selectedCountryId;
 
-        private readonly ISubject<string> filterText = new BehaviorSubject<string>(string.Empty);
-
         private readonly IMvxNavigationService navigationService;
 
-        public InputAction<SelectableCountryViewModel> SelectCountry { get; }
-
         public IObservable<IEnumerable<SelectableCountryViewModel>> Countries { get; private set; }
-
-        public InputAction<string> SetFilterText { get; }
+        public ISubject<string> FilterText { get; } = new BehaviorSubject<string>(string.Empty);
+        public InputAction<SelectableCountryViewModel> SelectCountry { get; }
         public UIAction Close { get; }
 
         public SelectCountryViewModel(IMvxNavigationService navigationService, IRxActionFactory rxActionFactory)
@@ -40,7 +36,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.rxActionFactory = rxActionFactory;
 
             SelectCountry = rxActionFactory.FromAsync<SelectableCountryViewModel>(selectCountry);
-            SetFilterText = rxActionFactory.FromAction<string>(setText);
             Close = rxActionFactory.FromAsync(() => NavigationService.Close(this));
         }
 
@@ -57,8 +52,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 allCountries.Insert(0, selectedElement);
             }
 
-            Countries = filterText
-                .Select(text => text.Trim())
+            Countries = FilterText
+                .Select(text => text?.Trim() ?? string.Empty)
                 .DistinctUntilChanged()
                 .Select(trimmedText =>
                 {
@@ -75,10 +70,5 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task selectCountry(SelectableCountryViewModel selectedCountry)
             => await navigationService.Close(this, selectedCountry.Country.Id);
-
-        private void setText(string text)
-        {
-            filterText.OnNext(text ?? string.Empty);
-        }
     }
 }

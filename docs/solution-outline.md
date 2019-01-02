@@ -53,8 +53,7 @@ Dependencies: Multivac, Foundation
 This project contains shared view models for all our app, and uses MvvmCross for IoC, UI bindings, and navigation within the individual apps. Only business logic related directly to specific UI components that cannot be handled easily in Foundation is dealt with here. Otherwise the project is kept as light as possible.
 This allows us to use a lot of UI behaviour between the apps, and keep the platform specific code minimal.
 
-## :sunny: Daneel
-## :robot: Giskard
+## :sunny: Daneel & :robot: Giskard
 
 Daneel is the Toggl iOS app and Giskard is the Toggl Android app.
 

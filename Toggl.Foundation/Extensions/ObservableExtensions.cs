@@ -8,6 +8,9 @@ namespace Toggl.Foundation.Extensions
 {
     public static class ObservableExtensions
     {
+        public static IObservable<T2> ThenExecute<T1, T2>(this IObservable<T1> observable, Func<IObservable<T2>> continuation)
+            => observable.SelectMany(_ => continuation());
+
         public static IObservable<T> Track<T>(this IObservable<T> observable, ITrackableEvent trackableEvent, IAnalyticsService service)
             => observable.Do(_ => service.Track(trackableEvent));
 

@@ -24,6 +24,7 @@
             android:layout_height="56dp" />
         <EditText
             local:MvxBind="Text Text"
+            android:gravity="left"
             android:textSize="19sp"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="5sp"

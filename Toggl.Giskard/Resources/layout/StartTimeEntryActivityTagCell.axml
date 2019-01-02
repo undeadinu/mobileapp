@@ -10,6 +10,7 @@
     <TextView
         local:MvxBind="Text Name"
         android:maxLines="1"
+        android:gravity="left"
         android:textSize="15sp"
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/defaultText"

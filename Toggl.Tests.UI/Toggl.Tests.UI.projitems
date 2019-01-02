@@ -20,6 +20,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StartTimeEntryExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Attributes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ReplTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SignUpExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SignUpTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ForgotPasswordTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Helpers\" />

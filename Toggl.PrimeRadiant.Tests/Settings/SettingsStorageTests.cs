@@ -416,5 +416,53 @@ namespace Toggl.PrimeRadiant.Tests.Settings
                 });
             }
         }
+
+        public sealed class TheCalendarWorkingHoursProperties : SettingsStorageTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task DefaultWorkingHoursAreNineToFive()
+            {
+                var start = await SettingsStorage.CalendarWorkingHoursStart.FirstAsync();
+                var end = await SettingsStorage.CalendarWorkingHoursEnd.FirstAsync();
+
+                start.Should().Be(9);
+                end.Should().Be(17);
+            }
+
+            [Theory, LogIfTooSlow]
+            [MemberData(nameof(Hours))]
+            public void EmitsNewValueWheneverNewStartValueIsSet(int hour)
+            {
+                var observer = Substitute.For<IObserver<int>>();
+                SettingsStorage.CalendarWorkingHoursStart.Subscribe(observer);
+                SettingsStorage.SetCalendarWorkingHoursStart(hour);
+
+                Received.InOrder(() =>
+                {
+                    observer.OnNext(9);
+                    if (hour != 9)
+                        observer.OnNext(hour);
+                });
+            }
+
+            [Theory, LogIfTooSlow]
+            [MemberData(nameof(Hours))]
+            public void EmitsNewValueWheneverNewEndValueIsSet(int hour)
+            {
+                var observer = Substitute.For<IObserver<int>>();
+                SettingsStorage.CalendarWorkingHoursEnd.Subscribe(observer);
+                SettingsStorage.SetCalendarWorkingHoursEnd(hour);
+
+                Received.InOrder(() =>
+                {
+                    observer.OnNext(17);
+                    if (hour != 17)
+                        observer.OnNext(hour);
+                });
+            }
+
+            public static IEnumerable<object[]> Hours
+                => Enumerable.Range(0, 24).Select(hour => new object[] { hour });
+        }
     }
 }

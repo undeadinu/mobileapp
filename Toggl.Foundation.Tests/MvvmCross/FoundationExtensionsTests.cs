@@ -37,10 +37,12 @@ namespace Toggl.Foundation.Tests.MvvmCross
         private readonly IAnalyticsService analyticsService = Substitute.For<IAnalyticsService>();
         private readonly IStopwatchProvider stopwatchProvider = Substitute.For<IStopwatchProvider>();
         private readonly IBackgroundService backgroundService = Substitute.For<IBackgroundService>();
+        private readonly IBackgroundSyncService backgroundSyncService = Substitute.For<IBackgroundSyncService>();
         private readonly IRemoteConfigService remoteConfigService = Substitute.For<IRemoteConfigService>();
         private readonly IApplicationShortcutCreator applicationShortcutCreator = Substitute.For<IApplicationShortcutCreator>();
         private readonly ISuggestionProviderContainer suggestionProviderContainer = Substitute.For<ISuggestionProviderContainer>();
         private readonly ISchedulerProvider schedulerProvider = new TestSchedulerProvider();
+        private readonly IAutomaticSyncingService automaticSyncingService = Substitute.For<IAutomaticSyncingService>();
         private readonly IRxActionFactory rxActionFactory = Substitute.For<IRxActionFactory>();
 
         private readonly IDialogService dialogService = Substitute.For<IDialogService>();
@@ -197,6 +199,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
                     .WithAnalyticsService(analyticsService)
                     .WithStopwatchProvider(stopwatchProvider)
                     .WithBackgroundService(backgroundService)
+                    .WithBackgroundSyncService(backgroundSyncService)
                     .WithSchedulerProvider(schedulerProvider)
                     .WithPlatformInfo(platformInfo)
                     .WithNotificationService(notificationService)
@@ -205,6 +208,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
                     .WithApplicationShortcutCreator(applicationShortcutCreator)
                     .WithSuggestionProviderContainer(suggestionProviderContainer)
                     .WithPrivateSharedStorageService(PrivateSharedStorageService)
+                    .WithAutomaticSyncingService(automaticSyncingService)
                     .Build();
     }
 }

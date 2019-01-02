@@ -23,42 +23,14 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public void TheNextButtonShowsThePasswordField()
-        {
-            app.EnterText(validEmail);
-
-            app.GoToPasswordScreen();
-
-            app.Screenshot("Login password page.");
-        }
-
-        [Test]
-        public void TheBackButtonClosesTheLoginViewIfTheEmailFieldIsVisible()
-        {
-            app.GoBackToOnboardingScreen();
-
-            app.Screenshot("Onboarding last page.");
-        }
-
-        [Test]
-        public void TheBackButtonShowsTheEmailFieldIfThePasswordFieldIsVisible()
-        {
-            app.EnterText(validEmail);
-            app.GoToPasswordScreen();
-
-            app.GoBackToEmailScreen();
-
-            app.Screenshot("Login email page.");
-        }
-
-        [Test]
-        public void TheNextButtonAfterInputtingAnInvalidPasswordShowsTheErrorLabel()
+        public void TheLoginButtonAfterInputtingAnInvalidCredentialsShowsTheErrorLabel()
         {
             var email = randomEmail();
-            app.EnterText(email);
-            app.GoToPasswordScreen();
-
             var password = "asdads";
+
+            app.Tap(Login.EmailText);
+            app.EnterText(email);
+            app.Tap(Login.PasswordText);
             app.EnterText($"{password}123456");
             app.TryLoginAndFail();
 
@@ -66,13 +38,14 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public async Task TheNextButtonAfterInputtingAValidPasswordShowsTheMainScreen()
+        public async Task TheLoginButtonAfterInputtingAValidCredentialsShowTheMainScreen()
         {
             var email = randomEmail();
-            app.EnterText(email);
-            app.GoToPasswordScreen();
-
             var password = await User.Create(email);
+
+            app.Tap(Login.EmailText);
+            app.EnterText(email);
+            app.Tap(Login.PasswordText);
             app.EnterText(password);
             app.LoginSuccesfully();
 

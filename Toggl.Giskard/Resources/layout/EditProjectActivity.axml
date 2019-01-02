@@ -26,6 +26,7 @@
                 android:id="@+id/EditProjectProjectName"
                 local:MvxBind="Text Name; TopMargin EditProjectErrorOffset(IsNameAlreadyTaken)"
                 android:lines="1"
+                android:gravity="left"
                 android:textSize="15sp"
                 android:singleLine="true"
                 android:lineSpacingExtra="5sp"

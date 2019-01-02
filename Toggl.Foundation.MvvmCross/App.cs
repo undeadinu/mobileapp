@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System;
+using System.Reactive.Linq;
 using MvvmCross.Plugin;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.Login;
@@ -78,7 +79,7 @@ namespace Toggl.Foundation.MvvmCross
                 return;
             }
 
-            var _ = dataSource.StartSyncing();
+            dataSource.SyncManager.ForceFullSync().Subscribe();
 
             await navigationService.ForkNavigate<MainTabBarViewModel, MainViewModel>();
         }

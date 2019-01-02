@@ -1,7 +1,6 @@
 ﻿using MvvmCross.ViewModels;
 using System;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -30,28 +29,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ISchedulerProvider schedulerProvider;
         private readonly IRxActionFactory rxActionFactory;
 
-        private readonly BehaviorSubject<string> errorSubject = new BehaviorSubject<string>(string.Empty);
         private readonly BehaviorSubject<Email> emailSubject = new BehaviorSubject<Email>(Multivac.Email.Empty);
-        private readonly BehaviorSubject<Password> passwordSubject = new BehaviorSubject<Password>(Multivac.Password.Empty);
         private readonly BehaviorSubject<bool> isPasswordMaskedSubject = new BehaviorSubject<bool>(true);
 
         private bool needsSync;
 
         public IObservable<Email> Email { get; }
-        public IObservable<Password> Password { get; }
         public IObservable<bool> IsPasswordMasked { get; }
-
         public IObservable<bool> HasError { get; }
         public IObservable<string> Error { get; }
-
-        public IObservable<bool> IsLoading { get; }
-
         public IObservable<bool> NextIsEnabled { get; }
+
+        public ISubject<string> Password { get; } = new BehaviorSubject<string>(string.Empty);
 
         public UIAction Done { get; private set; }
         public UIAction SignOut { get; private set; }
         public UIAction TogglePasswordVisibility { get; private set; }
-        public InputAction<string> SetPassword { get; private set; }
+
 
         public TokenResetViewModel(
             IUserAccessManager userAccessManager,
@@ -82,9 +76,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.schedulerProvider = schedulerProvider;
             this.rxActionFactory = rxActionFactory;
 
-            Error = errorSubject
-                .AsDriver(schedulerProvider);
-
             Email = emailSubject
                 .DistinctUntilChanged()
                 .AsDriver(schedulerProvider);
@@ -93,26 +84,21 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .DistinctUntilChanged()
                 .AsDriver(schedulerProvider);
 
-            Password = passwordSubject
-                .DistinctUntilChanged()
-                .AsDriver(schedulerProvider);
+            TogglePasswordVisibility = rxActionFactory.FromAction(togglePasswordVisibility);
+
+            Done = rxActionFactory.FromObservable(done);
+            SignOut = rxActionFactory.FromAsync(signout);
+
+            Error = Done.Errors
+                .Select(transformException);
 
             HasError = Error
                 .Select(error => !string.IsNullOrEmpty(error))
                 .DistinctUntilChanged()
                 .AsDriver(schedulerProvider);
 
-            TogglePasswordVisibility = rxActionFactory.FromAction(togglePasswordVisibility);
-            SetPassword = rxActionFactory.FromAction<string>(setPassword);
-
-            Done = rxActionFactory.FromObservable(done);
-            SignOut = rxActionFactory.FromAsync(signout);
-
-            IsLoading = Done.Executing
-                .DistinctUntilChanged()
-                .AsDriver(schedulerProvider);
-
             NextIsEnabled = Password
+                .Select(Multivac.Password.From)
                 .CombineLatest(Done.Executing, (password, isExecuting) => password.IsValid && !isExecuting)
                 .DistinctUntilChanged()
                 .AsDriver(schedulerProvider);
@@ -128,20 +114,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             emailSubject.OnNext(user.Email);
         }
 
-        private void setPassword(string password)
-        {
-            passwordSubject.OnNext(Multivac.Password.From(password));
-        }
-
         private void togglePasswordVisibility()
         {
             isPasswordMaskedSubject.OnNext(!isPasswordMaskedSubject.Value);
-        }
-
-        private void output(string text)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(text);
         }
 
         private async Task signout()
@@ -161,39 +136,26 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         }
 
         private IObservable<Unit> done() =>
-            Observable.Create<Unit>(observer =>
-            {
-                if (!passwordSubject.Value.IsValid)
-                {
-                    observer.OnError(new InvalidOperationException());
-                    return Disposable.Empty;
-                }
-
-                userAccessManager
-                    .RefreshToken(passwordSubject.Value)
-                    .Subscribe(onDataSource, error =>
-                    {
-                        onError(error);
-                        observer.OnError(error);
-                    }, observer.CompleteWithUnit);
-
-                return Disposable.Empty;
-            });
+            Password
+                .FirstAsync()
+                .Select(Multivac.Password.From)
+                .ThrowIf(password => !password.IsValid, new InvalidOperationException())
+                .SelectMany(userAccessManager.RefreshToken)
+                .Do(onDataSource)
+                .SelectUnit();
 
         private void onDataSource(ITogglDataSource newDataSource)
         {
-            newDataSource.StartSyncing();
+            newDataSource.SyncManager.ForceFullSync().Subscribe();
 
             navigationService.ForkNavigate<MainTabBarViewModel, MainViewModel>();
         }
 
-        private void onError(Exception ex)
+        private string transformException(Exception ex)
         {
-            var error = ex is ForbiddenException
+            return ex is ForbiddenException
                 ? Resources.IncorrectPassword
                 : Resources.GenericLoginError;
-
-            errorSubject.OnNext(error);
         }
 
         private IObservable<bool> askToLogOut()

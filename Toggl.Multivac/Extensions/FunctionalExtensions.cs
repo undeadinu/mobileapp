@@ -10,6 +10,8 @@ namespace Toggl.Multivac.Extensions
 
         public static bool And(bool x, bool y) => x && y;
 
+        public static bool Or(bool x, bool y) => x || y;
+
         public static bool Invert(bool x) => !x;
 
         public static bool NotNull(object obj) => obj != null;

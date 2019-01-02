@@ -18,7 +18,7 @@ namespace Toggl.Foundation.Tests.Sync.States
         private readonly ISinceParameterRepository sinceParameterRepository =
             Substitute.For<ISinceParameterRepository>();
 
-        private readonly SinceDateUpdatingState<ITestModel, IDatabaseTestModel> state;
+        private readonly SinceDateUpdatingState<ITestModel> state;
 
         private readonly DateTimeOffset now = new DateTimeOffset(2017, 04, 05, 12, 34, 56, TimeSpan.Zero);
 
@@ -26,7 +26,7 @@ namespace Toggl.Foundation.Tests.Sync.States
 
         public SinceDateUpdatingStateTests()
         {
-            state = new SinceDateUpdatingState<ITestModel, IDatabaseTestModel>(sinceParameterRepository);
+            state = new SinceDateUpdatingState<ITestModel>(sinceParameterRepository);
         }
 
         [Fact]

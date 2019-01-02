@@ -24,10 +24,10 @@ namespace Toggl.Foundation.Login
         private readonly Func<ITogglApi, ITogglDataSource> createDataSource;
 
         private ITogglDataSource cachedDataSource;
-        private ISubject<Unit> userLoggedInSubject = new Subject<Unit>();
+        private ISubject<ITogglDataSource> userLoggedInSubject = new Subject<ITogglDataSource>();
         private ISubject<Unit> userLoggedOutSubject = new Subject<Unit>();
 
-        public IObservable<Unit> UserLoggedIn => userLoggedInSubject.AsObservable();
+        public IObservable<ITogglDataSource> UserLoggedIn => userLoggedInSubject.AsObservable();
         public IObservable<Unit> UserLoggedOut => userLoggedOutSubject.AsObservable();
 
         public UserAccessManager(
@@ -70,7 +70,7 @@ namespace Toggl.Foundation.Login
                 .SelectMany(database.User.Create)
                 .Select(dataSourceFromUser)
                 .Do(shortcutCreator.OnLogin)
-                .Do(_ => userLoggedInSubject.OnNext(Unit.Default));
+                .Do(userLoggedInSubject.OnNext);
         }
 
         public IObservable<ITogglDataSource> LoginWithGoogle()
@@ -120,9 +120,9 @@ namespace Toggl.Foundation.Login
             => database.User
                 .Single()
                 .Select(dataSourceFromUser)
+                .Do(userLoggedInSubject.OnNext)
                 .Catch(Observable.Return<ITogglDataSource>(null))
                 .Do(shortcutCreator.OnLogin)
-                .Do(_ => userLoggedInSubject.OnNext(Unit.Default))
                 .Wait();
 
         public IObservable<ITogglDataSource> RefreshToken(Password password)
@@ -140,7 +140,7 @@ namespace Toggl.Foundation.Login
                 .SelectMany(database.User.Update)
                 .Select(dataSourceFromUser)
                 .Do(shortcutCreator.OnLogin)
-                .Do(_ => userLoggedInSubject.OnNext(Unit.Default));
+                .Do(userLoggedInSubject.OnNext);
         }
 
         private ITogglDataSource dataSourceFromUser(IUser user)
@@ -165,7 +165,7 @@ namespace Toggl.Foundation.Login
                 .SelectMany(database.User.Create)
                 .Select(dataSourceFromUser)
                 .Do(shortcutCreator.OnLogin)
-                .Do(_ => userLoggedInSubject.OnNext(Unit.Default));
+                .Do(userLoggedInSubject.OnNext);
         }
 
         private IObservable<IUser> signUp(Email email, Password password, bool termsAccepted, int countryId)
@@ -186,7 +186,7 @@ namespace Toggl.Foundation.Login
                 .SelectMany(database.User.Create)
                 .Select(dataSourceFromUser)
                 .Do(shortcutCreator.OnLogin)
-                .Do(_ => userLoggedInSubject.OnNext(Unit.Default));
+                .Do(userLoggedInSubject.OnNext);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Toggl.Foundation.Tests.Sync
                 Queue = new SyncStateQueue();
                 Transitions = new TransitionHandlerProvider();
                 Scheduler = new TestScheduler();
-                StateMachine = new StateMachine(Transitions, Scheduler, Substitute.For<ISubject<Unit>>());
+                StateMachine = new StateMachine(Transitions, Scheduler);
                 EntryPoints = new StateMachineEntryPoints();
                 Orchestrator = new StateMachineOrchestrator(StateMachine, EntryPoints);
                 SyncManager = new SyncManager(Queue, Orchestrator, analyticsService, lastTimeUsageStorage, timeService);

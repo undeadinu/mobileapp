@@ -78,6 +78,8 @@ namespace Toggl.Foundation.Interactors
 
         IInteractor<IObservable<bool>> HasFinishedSyncBefore();
 
+        IInteractor<IObservable<SyncOutcome>> RunBackgroundSync();
+
         #endregion
 
         #region Autocomplete Suggestions

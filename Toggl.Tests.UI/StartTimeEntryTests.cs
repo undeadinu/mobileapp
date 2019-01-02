@@ -37,5 +37,44 @@ namespace Toggl.Tests.UI
 
             app.WaitForElement(query => query.Marked(description));
         }
+
+        [Test]
+        public void TappingTheCloseButtonShowsConfirmationDialog()
+        {
+            var description = "UI testing the Toggl App";
+
+            app.EnterText(description);
+            app.Tap(StartTimeEntry.CloseButton);
+
+            app.WaitForElement(StartTimeEntry.DialogDiscard);
+        }
+
+        [Test]
+        public void TappingDiscardWhenClosingShouldNotStartATimeEntry()
+        {
+            var description = "UI testing the Toggl App";
+
+            app.EnterText(description);
+            app.Tap(StartTimeEntry.CloseButton);
+            app.Tap(StartTimeEntry.DialogDiscard);
+
+            app.WaitForNoElement(Main.StopTimeEntryButton);
+        }
+
+        [Test]
+        public void TappingDoneAfterTryingToDiscardAndEditingTheDescriptionDoesNotChangeTheCurrentDescription()
+        {
+            var description = "UI testing the Toggl App";
+            var edit = " - edit";
+
+            app.EnterText(description);
+            app.Tap(StartTimeEntry.CloseButton);
+            app.Tap(StartTimeEntry.DialogCancel);
+
+            app.EnterText(edit);
+            app.Tap(StartTimeEntry.DoneButton);
+
+            app.WaitForElement(query => query.Marked(description + edit));
+        }
     }
 }

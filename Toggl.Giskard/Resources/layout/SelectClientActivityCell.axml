@@ -10,6 +10,7 @@
     <TextView
         android:id="@+id/NameTextView"
         android:maxLines="1"
+        android:gravity="left"
         android:textSize="15sp"
         android:textColor="@android:color/black"
         tools:text="This is a ridiculously big client name for testing someth other stuff and"

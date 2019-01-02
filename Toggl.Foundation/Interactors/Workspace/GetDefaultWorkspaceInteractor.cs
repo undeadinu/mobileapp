@@ -6,6 +6,7 @@ using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Multivac;
+using Toggl.Multivac.Extensions;
 
 namespace Toggl.Foundation.Interactors
 {
@@ -31,6 +32,11 @@ namespace Toggl.Foundation.Interactors
 
         private IObservable<IThreadSafeWorkspace> chooseWorkspace()
             => dataSource.Workspaces.GetAll(workspace => !workspace.IsDeleted)
-                .Select(workspaces => workspaces.OrderBy(workspace => workspace.Id).First());
+                .Select(workspaces => workspaces.OrderBy(workspace => workspace.Id))
+                .SelectMany(workspaces =>
+                    workspaces.None()
+                        ? Observable.Never<IThreadSafeWorkspace>()
+                        : Observable.Return(workspaces.First()));
+
     }
 }

@@ -11,9 +11,8 @@ using Toggl.Ultrawave.Exceptions;
 
 namespace Toggl.Foundation.Sync.States.Pull
 {
-    public sealed class SinceDateUpdatingState<TInterface, TDatabaseInterface> : ISyncState<IFetchObservables>
-        where TInterface : ILastChangedDatable
-        where TDatabaseInterface : TInterface, IDatabaseSyncable
+    public sealed class SinceDateUpdatingState<T> : ISyncState<IFetchObservables>
+        where T : ILastChangedDatable
     {
         private readonly ISinceParameterRepository sinceParameterRepository;
 
@@ -27,16 +26,16 @@ namespace Toggl.Foundation.Sync.States.Pull
         }
 
         public IObservable<ITransition> Start(IFetchObservables fetch)
-            => fetch.GetList<TInterface>()
+            => fetch.GetList<T>()
                 .Do(maybeUpdateSinceDates)
                 .SelectValue(Finished.Transition(fetch));
 
-        private void maybeUpdateSinceDates(List<TInterface> entities)
+        private void maybeUpdateSinceDates(List<T> entities)
         {
             var since = entities.Max(entity => entity?.At);
             if (since.HasValue)
             {
-                sinceParameterRepository.Set<TDatabaseInterface>(since);
+                sinceParameterRepository.Set<T>(since);
             }
         }
     }

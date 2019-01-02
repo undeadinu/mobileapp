@@ -9,8 +9,9 @@
     android:layout_width="match_parent">
     <TextView
         local:MvxBind="Text Format('{0} {1}', Symbol, Description)"
-        android:maxLines="1"
         tools:text="# Search Projects"
+        android:maxLines="1"
+        android:gravity="left"
         android:textSize="15sp"
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/defaultText"

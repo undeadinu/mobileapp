@@ -10,6 +10,7 @@
     <TextView
         local:MvxBind="Text Name"
         android:maxLines="1"
+        android:gravity="left"
         android:textSize="14sp"
         tools:text="Superday landing page"
         android:letterSpacing="0.04"

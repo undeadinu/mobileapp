@@ -26,12 +26,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ISchedulerProvider schedulerProvider;
         private readonly IRxActionFactory rxActionFactory;
 
-        private readonly Subject<bool> isLoading = new Subject<bool>();
-
         public IObservable<bool> IsLoading { get; }
-
         public UIAction CreateWorkspaceWithDefaultName { get; }
-
         public UIAction TryAgain { get; }
 
         public NoWorkspaceViewModel(
@@ -55,21 +51,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.interactorFactory = interactorFactory;
             this.rxActionFactory = rxActionFactory;
 
-            CreateWorkspaceWithDefaultName = rxActionFactory.FromAsync(createWorkspaceWithDefaultName);
+            CreateWorkspaceWithDefaultName = rxActionFactory.FromObservable(createWorkspaceWithDefaultName);
             TryAgain = rxActionFactory.FromAsync(tryAgain);
-            IsLoading = isLoading.AsDriver(onErrorJustReturn: false, schedulerProvider: schedulerProvider);
+            IsLoading = Observable.CombineLatest(
+                CreateWorkspaceWithDefaultName.Executing,
+                TryAgain.Executing,
+                CommonFunctions.Or);
         }
 
         private async Task tryAgain()
         {
-            isLoading.OnNext(true);
-
             var anyWorkspaceIsAvailable = await dataSource.SyncManager.ForceFullSync()
                 .Where(state => state == SyncState.Sleep)
                 .SelectMany(_ => interactorFactory.GetAllWorkspaces().Execute())
                 .Any(workspaces => workspaces.Any());
-
-            isLoading.OnNext(false);
 
             if (anyWorkspaceIsAvailable)
             {
@@ -77,14 +72,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
         }
 
-        private async Task createWorkspaceWithDefaultName()
+        private IObservable<Unit> createWorkspaceWithDefaultName()
         {
-            isLoading.OnNext(true);
-
-            await interactorFactory.CreateDefaultWorkspace().Execute();
-
-            isLoading.OnNext(false);
-            close();
+            return interactorFactory.CreateDefaultWorkspace().Execute()
+                .Do(() =>
+                {
+                    dataSource.SyncManager.ForceFullSync();
+                    close();
+                });
         }
 
         private void close()

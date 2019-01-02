@@ -24,6 +24,7 @@
                             </imageView>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lcd-vh-led" customClass="LoginTextField">
                                 <rect key="frame" x="16" y="201" width="343" height="56"/>
+                                <accessibility key="accessibilityConfiguration" label="LoginPassword"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="ZQQ-CK-JB9"/>
                                 </constraints>
@@ -33,6 +34,7 @@
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email Address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Lsa-g7-i4M" customClass="LoginTextField">
                                 <rect key="frame" x="16" y="133" width="343" height="56"/>
+                                <accessibility key="accessibilityConfiguration" label="LoginEmail"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="iLr-E2-Vih"/>
                                 </constraints>
@@ -43,6 +45,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8e6-Gh-xye">
                                 <rect key="frame" x="16" y="297.5" width="343" height="40"/>
                                 <color key="backgroundColor" red="0.023529411760000001" green="0.66666666669999997" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <accessibility key="accessibilityConfiguration" label="LoginButton"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="YLe-IC-wcc"/>
                                 </constraints>
@@ -57,12 +60,14 @@
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Incorrect email/password. Please try again." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mES-7Q-qsS">
                                 <rect key="frame" x="16" y="263" width="343" height="14.5"/>
+                                <accessibility key="accessibilityConfiguration" label="LoginError"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" red="0.96862745100000003" green="0.25098039220000001" blue="0.28627450980000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FOx-xg-Ol7">
                                 <rect key="frame" x="16" y="349.5" width="343" height="40"/>
+                                <accessibility key="accessibilityConfiguration" label="LoginForgotPassword"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="ReX-En-4eO"/>
                                 </constraints>
@@ -144,6 +149,9 @@
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <accessibility key="accessibilityConfiguration" label="LoginSwitchToSignUp">
+                                    <bool key="isElement" value="YES"/>
+                                </accessibility>
                                 <constraints>
                                     <constraint firstItem="EVb-tB-eEa" firstAttribute="top" secondItem="R6U-zp-jAZ" secondAttribute="top" id="2Be-PX-Dee"/>
                                     <constraint firstAttribute="trailing" secondItem="EVb-tB-eEa" secondAttribute="trailing" constant="24" id="cXM-08-Iu3"/>
@@ -174,6 +182,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="doe-4h-781" userLabel="Show Password Button">
                                 <rect key="frame" x="311" y="213" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" label="LoginShowPassword"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="doe-4h-781" secondAttribute="height" multiplier="1:1" id="yhl-88-SY1"/>
                                 </constraints>

@@ -1,12 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Toggl.Multivac;
-using Toggl.Ultrawave.Exceptions;
 
 namespace Toggl.Foundation.Sync
 {
@@ -20,40 +14,30 @@ namespace Toggl.Foundation.Sync
 
         private readonly Queue<DateTimeOffset> historyWindow = new Queue<DateTimeOffset>();
 
+        private readonly ITimeService timeService;
+
         public LeakyBucket(
+            ITimeService timeService,
             int slotsPerWindow = standardSlotsLimit,
             TimeSpan? movingWindowSize = null)
         {
+            Ensure.Argument.IsNotNull(timeService, nameof(timeService));
+
             if (slotsPerWindow <= 0)
             {
                 throw new ArgumentOutOfRangeException(
                     $"The value of {nameof(slotsPerWindow)} must be greater than 0, the constructor was given {slotsPerWindow}.");
             }
 
+            this.timeService = timeService;
             this.slotsPerWindow = slotsPerWindow;
             this.movingWindowSize = movingWindowSize ?? standardMovingWindowWidth;
         }
 
-        public void SlotWasUsed(DateTimeOffset time)
-        {
-            SlotsWereUsed(time, numberOfSlots: 1);
-        }
+        public bool TryClaimFreeSlot(out TimeSpan timeToFreeSlot)
+            => TryClaimFreeSlots(numberOfSlots: 1, timeToFreeSlot: out timeToFreeSlot);
 
-        public void SlotsWereUsed(DateTimeOffset time, int numberOfSlots)
-        {
-            lock (historyWindow)
-            {
-                for (var i = 0; i < numberOfSlots; i++)
-                {
-                    useSlot(time, historyWindow);
-                }
-            }
-        }
-
-        public bool HasFreeSlot(DateTimeOffset now, out TimeSpan timeToFreeSlot)
-            => HasFreeSlots(now, numberOfSlots: 1, timeToFreeSlot: out timeToFreeSlot);
-
-        public bool HasFreeSlots(DateTimeOffset now, int numberOfSlots, out TimeSpan timeToFreeSlot)
+        public bool TryClaimFreeSlots(int numberOfSlots, out TimeSpan timeToFreeSlot)
         {
             lock (historyWindow)
             {
@@ -63,8 +47,17 @@ namespace Toggl.Foundation.Sync
                         $"It is not possible to allocate {numberOfSlots} slots because the maximum size of a window is {slotsPerWindow}.");
                 }
 
+                var now = timeService.CurrentDateTime;
                 timeToFreeSlot = timeToNextFreeSlots(now, numberOfSlots);
-                return timeToFreeSlot == TimeSpan.Zero;
+                var claimSlots = timeToFreeSlot == TimeSpan.Zero;
+
+                if (claimSlots)
+                {
+                    for (var i = 0; i < numberOfSlots; i++)
+                        useSlot(now, historyWindow);
+                }
+
+                return claimSlots;
             }
         }
 

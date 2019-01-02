@@ -63,13 +63,16 @@ These are endpoints that are prefixed with `https://mobile.toggl.com/api/v9/` (`
 
 ## Other
 
-* `GET status`
 * `GET me/features`
 
 ## Subscriptions
 
 * `GET /workspaces/{user.DefaultWorkspaceId}/plans` - get a list of available plans for integration tests
 * `POST /workspaces/{workspaceId}/subscription` - set a specific plan (trial) for integration tests
+
+## Feedback
+
+* `POST /mobile/feedback`
 
 # Reports endpoints
 These endpoints are prefixed with `https://mobile.toggl.com/reports/api/v3/` (`mobile.toggl.space` domain is used when building the app in debug mode [or for testing]).

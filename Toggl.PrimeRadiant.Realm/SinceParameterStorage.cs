@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
+using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Models;
 using Toggl.PrimeRadiant.Realm.Models;
 
@@ -17,12 +18,12 @@ namespace Toggl.PrimeRadiant.Realm
         private static readonly Dictionary<Type, long> typesToIdsMapping
             = new Dictionary<Type, long>
             {
-                [typeof(IDatabaseClient)] = 0,
-                [typeof(IDatabaseProject)] = 1,
-                [typeof(IDatabaseTag)] = 2,
-                [typeof(IDatabaseTask)] = 3,
-                [typeof(IDatabaseTimeEntry)] = 4,
-                [typeof(IDatabaseWorkspace)] = 5
+                [typeof(IClient)] = 0,
+                [typeof(IProject)] = 1,
+                [typeof(ITag)] = 2,
+                [typeof(ITask)] = 3,
+                [typeof(ITimeEntry)] = 4,
+                [typeof(IWorkspace)] = 5
             };
 
         public SinceParameterStorage(IRealmAdapter<IDatabaseSinceParameter> realmAdapter)
@@ -33,7 +34,7 @@ namespace Toggl.PrimeRadiant.Realm
         }
 
         public DateTimeOffset? Get<T>()
-            where T : IDatabaseSyncable
+            where T : ILastChangedDatable
         {
             var id = getId<T>();
 

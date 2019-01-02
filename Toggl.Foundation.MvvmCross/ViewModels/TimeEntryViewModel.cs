@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using MvvmCross.ViewModels;
 using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
@@ -12,7 +10,7 @@ using Toggl.PrimeRadiant;
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class TimeEntryViewModel : MvxNotifyPropertyChanged, ITimeEntryPrototype, IEquatable<TimeEntryViewModel>
+    public sealed class TimeEntryViewModel : ITimeEntryPrototype, IEquatable<TimeEntryViewModel>
     {
         public long Id { get; }
 
@@ -50,7 +48,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public long[] TagIds { get; }
 
-        public DurationFormat DurationFormat { get; set; }
+        public DurationFormat DurationFormat { get; }
 
         public bool IsInaccessible { get; }
 
@@ -93,7 +91,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ClientName = timeEntry.Project.Client?.Name ?? "";
         }
 
-
         public bool Equals(TimeEntryViewModel other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -123,11 +120,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             => HashCode.From(
                 Id,
                 IsBillable,
-                Description != null ? Description : default(string),
-                ProjectName != null ? ProjectName : default(string),
-                ProjectColor != null ? ProjectColor : default(string),
-                ClientName != null ? ClientName : default(string),
-                TaskName != null ? TaskName : default(string),
+                Description ?? default(string),
+                ProjectName ?? default(string),
+                ProjectColor ?? default(string),
+                ClientName ?? default(string),
+                TaskName ?? default(string),
                 Duration,
                 HasProject,
                 HasTags,

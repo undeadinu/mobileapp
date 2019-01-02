@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
+using NSubstitute;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Generators;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.Sync.States
@@ -13,10 +17,14 @@ namespace Toggl.Foundation.Tests.Sync.States
     {
         public sealed class TheConstructor
         {
-            [Fact]
-            public void ThrowsWhenArgumentIsNull()
+            [Theory]
+            [ConstructorData]
+            public void ThrowsWhenArgumentIsNull(bool useScheduler, bool useAnalyticsService)
             {
-                Action createDelayState = () => new DelayState(null);
+                var scheduler = useScheduler ? Substitute.For<IScheduler>() : null;
+                var analyticsService = useAnalyticsService ? Substitute.For<IAnalyticsService>() : null;
+
+                Action createDelayState = () => new DelayState(scheduler, analyticsService);
 
                 createDelayState.Should().Throw<ArgumentNullException>();
             }
@@ -24,13 +32,15 @@ namespace Toggl.Foundation.Tests.Sync.States
 
         public sealed class TheStartMethod
         {
+            private readonly TestScheduler scheduler = new TestScheduler();
+            private readonly IAnalyticsService analyticsService = Substitute.For<IAnalyticsService>();
+
             [Theory]
             [MemberData(nameof(Delays))]
             public void DoesNotContinueBeforeTheDelayIsOver(TimeSpan delay)
             {
-                var scheduler = new TestScheduler();
                 var observer = scheduler.CreateObserver<ITransition>();
-                var state = new DelayState(scheduler);
+                var state = new DelayState(scheduler, analyticsService);
 
                 state.Start(delay.ToPositive()).Subscribe(observer);
                 scheduler.AdvanceBy(delay.ToPositive().Ticks - 10);
@@ -42,9 +52,8 @@ namespace Toggl.Foundation.Tests.Sync.States
             [MemberData(nameof(Delays))]
             public void CompletesWhenTheDelayIsOver(TimeSpan delay)
             {
-                var scheduler = new TestScheduler();
                 var observer = scheduler.CreateObserver<ITransition>();
-                var state = new DelayState(scheduler);
+                var state = new DelayState(scheduler, analyticsService);
 
                 state.Start(delay.ToPositive()).Subscribe(observer);
                 scheduler.AdvanceBy(delay.ToPositive().Ticks);
@@ -56,14 +65,26 @@ namespace Toggl.Foundation.Tests.Sync.States
             [MemberData(nameof(Delays))]
             public void ReturnsTheContinueTransition(TimeSpan delay)
             {
-                var scheduler = new TestScheduler();
                 var observer = scheduler.CreateObserver<ITransition>();
-                var state = new DelayState(scheduler);
+                var state = new DelayState(scheduler, analyticsService);
 
                 state.Start(delay.ToPositive()).Subscribe(observer);
                 scheduler.AdvanceBy(delay.ToPositive().Ticks);
 
                 observer.Messages.First().Value.Value.Result.Should().Be(state.Continue);
+            }
+
+            [Theory]
+            [MemberData(nameof(Delays))]
+            public void TracksTheDurationOfTheDelay(TimeSpan delay)
+            {
+                var state = new DelayState(scheduler, analyticsService);
+                var seconds = (int)delay.TotalSeconds;
+
+                state.Start(delay.ToPositive()).Subscribe();
+                scheduler.AdvanceBy(delay.ToPositive().Ticks);
+
+                analyticsService.RateLimitingDelayDuringSyncing.Received().Track(seconds);
             }
 
             public static IEnumerable<object[]> Delays

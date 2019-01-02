@@ -25,7 +25,7 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public void TheNextButtonShowsTheSecondPage()
+        public void ClickingTheNextButtonShowsTheSecondPage()
         {
             app.GoForwardToSecondOnboardingPage();
 
@@ -33,7 +33,26 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public void SwipingRightOnTheFirstLabelShowsTheSecondPage()
+        public void ClickingTheNextTwiceButtonShowsTheThirdPage()
+        {
+            app.GoForwardToSecondOnboardingPage();
+            app.GoForwardToThirdOnboardingPage();
+
+            app.Screenshot("Onboarding third page.");
+        }
+
+        [Test]
+        public void ClickingTheNextButtonThriceShowsTheLoginScreen()
+        {
+            app.GoForwardToSecondOnboardingPage();
+            app.GoForwardToThirdOnboardingPage();
+            app.GoForwardToLoginPage();
+
+            app.Screenshot("Login page.");
+        }
+
+        [Test]
+        public void SwippingRightOnTheFirstLabelShowsTheSecondPage()
         {
             app.SwipeForwardToSecondOnboardingPage();
 
@@ -41,12 +60,31 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public void TheBackButtonShowsTheFirstPageAgain()
+        public void SwippingRightOnTheSecondLabelShowsTheThirdPage()
+        {
+            app.SwipeForwardToSecondOnboardingPage();
+            app.SwipeForwardToThirdOnboardingPage();
+
+            app.Screenshot("Onboarding third page.");
+        }
+
+        [Test]
+        public void TheBackButtonOnTheSecondPageShowsTheFirstPageAgain()
         {
             app.GoForwardToSecondOnboardingPage();
             app.GoBackToFirstOnboardingPage();
 
             app.Screenshot("Onboarding first page.");
+        }
+
+        [Test]
+        public void TheBackButtonOnTheThirdPageShowsTheSecondPageAgain()
+        {
+            app.GoForwardToSecondOnboardingPage();
+            app.GoForwardToThirdOnboardingPage();
+            app.GoBackToSecondOnboardingPage();
+
+            app.Screenshot("Onboarding second page.");
         }
 
         [Test]
@@ -59,40 +97,21 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public void ClickingNextThriceShowsTheLoginSignupScreen()
-        {
-            app.GoForwardToSecondOnboardingPage();
-            app.GoForwardToThirdOnboardingPage();
-            app.GoForwardToFourthOnboardingPage();
-
-            app.Screenshot("Login or Sign up page.");
-        }
-
-        [Test]
-        public void SwipingRightThriceShowsTheLoginSignupScreen()
+        public void SwipingLeftOnTheThirdLabelShowsTheSecondPage()
         {
             app.SwipeForwardToSecondOnboardingPage();
             app.SwipeForwardToThirdOnboardingPage();
-            app.SwipeForwardToFourthOnboardingPage();
+            app.SwipeBackToSecondOnboardingPage();
 
-            app.Screenshot("Login or Sign up page.");
+            app.Screenshot("Onboarding second page.");
         }
 
         [Test]
-        public void TheSkipButtonShowsTheLoginSignUpScreen()
+        public void ClickingTheSkipButtonGoesDirectlyToTheLoginPage()
         {
-            app.SkipToLastOnboardingPage();
+            app.SkipToLoginPage();
 
-            app.Screenshot("Login or Sign up page.");
-        }
-
-        [Test]
-        public void TheLoginButtonOpensTheLoginScreen()
-        {
-            app.SkipToLastOnboardingPage();
-            app.OpenLoginFromOnboardingLastPage();
-
-            app.Screenshot("Login screen.");
+            app.Screenshot("Login page.");
         }
     }
 }

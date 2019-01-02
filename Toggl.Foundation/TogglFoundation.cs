@@ -30,6 +30,7 @@ namespace Toggl.Foundation
         public IAnalyticsService AnalyticsService { get; }
         public IStopwatchProvider StopwatchProvider { get; }
         public IBackgroundService BackgroundService { get; }
+        public IBackgroundSyncService BackgroundSyncService { get; }
         public ISchedulerProvider SchedulerProvider { get; }
         public INotificationService NotificationService { get; }
         public IRemoteConfigService RemoteConfigService { get; }
@@ -37,6 +38,7 @@ namespace Toggl.Foundation
         public IIntentDonationService IntentDonationService { get; }
         public IPrivateSharedStorageService PrivateSharedStorageService { get; }
         public ISuggestionProviderContainer SuggestionProviderContainer { get; }
+        public IAutomaticSyncingService AutomaticSyncingService { get; }
 
         public static Builder ForClient(UserAgent userAgent, Version version)
             => new Builder(userAgent, version);
@@ -61,12 +63,14 @@ namespace Toggl.Foundation
             StopwatchProvider = builder.StopwatchProvider;
             PlatformInfo = builder.PlatformInfo;
             BackgroundService = builder.BackgroundService;
+            BackgroundSyncService = builder.BackgroundSyncService;
             SchedulerProvider = builder.SchedulerProvider;
             NotificationService = builder.NotificationService;
             RemoteConfigService = builder.RemoteConfigService;
             IntentDonationService = builder.IntentDonationService;
             PrivateSharedStorageService = builder.PrivateSharedStorageService;
             SuggestionProviderContainer = builder.SuggestionProviderContainer;
+            AutomaticSyncingService = builder.AutomaticSyncingService;
         }
 
         public class Builder
@@ -91,9 +95,11 @@ namespace Toggl.Foundation
             public IApplicationShortcutCreator ShortcutCreator { get; internal set; }
             public IBackgroundService BackgroundService { get; internal set; }
             public IPlatformInfo PlatformInfo { get; internal set; }
+            public IBackgroundSyncService BackgroundSyncService { get; internal set; }
             public IIntentDonationService IntentDonationService { get; internal set; }
             public ISuggestionProviderContainer SuggestionProviderContainer { get; internal set; }
             public IPrivateSharedStorageService PrivateSharedStorageService { get; internal set; }
+            public IAutomaticSyncingService AutomaticSyncingService { get; internal set; }
 
             public Builder(UserAgent agent, Version version)
             {
@@ -152,6 +158,12 @@ namespace Toggl.Foundation
             public Builder WithBackgroundService(IBackgroundService backgroundService)
             {
                 BackgroundService = backgroundService;
+                return this;
+            }
+
+            public Builder WithBackgroundSyncService(IBackgroundSyncService backgroundSyncService)
+            {
+                BackgroundSyncService = backgroundSyncService;
                 return this;
             }
 
@@ -221,6 +233,12 @@ namespace Toggl.Foundation
                 return this;
             }
 
+            public Builder WithAutomaticSyncingService(IAutomaticSyncingService automaticSyncingService)
+            {
+                AutomaticSyncingService = automaticSyncingService;
+                return this;
+            }
+
             public Builder WithDatabase<TDatabase>()
                 where TDatabase : ITogglDatabase, new()
                 => WithDatabase(new TDatabase());
@@ -244,6 +262,10 @@ namespace Toggl.Foundation
             public Builder WithBackgroundService<TBackgroundService>()
                 where TBackgroundService : IBackgroundService, new()
                 => WithBackgroundService(new TBackgroundService());
+
+            public Builder WithBackgroundSyncService<TBackgroundSyncService>()
+                where TBackgroundSyncService : IBackgroundSyncService, new()
+                => WithBackgroundSyncService(new TBackgroundSyncService());
 
             public Builder WithLicenseProvider<TLicenseProvider>()
                 where TLicenseProvider : ILicenseProvider, new()
@@ -300,6 +322,7 @@ namespace Toggl.Foundation
                 Ensure.Argument.IsNotNull(AnalyticsService, nameof(AnalyticsService));
                 Ensure.Argument.IsNotNull(StopwatchProvider, nameof(StopwatchProvider));
                 Ensure.Argument.IsNotNull(BackgroundService, nameof(BackgroundService));
+                Ensure.Argument.IsNotNull(BackgroundSyncService, nameof(BackgroundSyncService));
                 Ensure.Argument.IsNotNull(SchedulerProvider, nameof(SchedulerProvider));
                 Ensure.Argument.IsNotNull(PlatformInfo, nameof(PlatformInfo));
                 Ensure.Argument.IsNotNull(NotificationService, nameof(NotificationService));
@@ -307,6 +330,7 @@ namespace Toggl.Foundation
                 Ensure.Argument.IsNotNull(IntentDonationService, nameof(IntentDonationService));
                 Ensure.Argument.IsNotNull(SuggestionProviderContainer, nameof(SuggestionProviderContainer));
                 Ensure.Argument.IsNotNull(PrivateSharedStorageService, nameof(PrivateSharedStorageService));
+                Ensure.Argument.IsNotNull(AutomaticSyncingService, nameof(AutomaticSyncingService));
             }
         }
     }

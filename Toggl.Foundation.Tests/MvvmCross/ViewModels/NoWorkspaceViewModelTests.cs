@@ -8,6 +8,7 @@ using Microsoft.Reactive.Testing;
 using NSubstitute;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Tests.Extensions;
 using Toggl.Foundation.Tests.Generators;
 using Xunit;
 
@@ -98,9 +99,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.CreateWorkspaceWithDefaultName.Execute();
                 TestScheduler.Start();
 
-                observer.Messages.Count.Should().Be(2);
-                observer.Messages[0].Value.Value.Should().BeTrue();
-                observer.Messages[1].Value.Value.Should().BeFalse();
+                observer.Values().AssertEqual(
+                    false,
+                    true,
+                    false
+                );
             }
         }
 
@@ -156,9 +159,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.CreateWorkspaceWithDefaultName.Execute();
                 TestScheduler.Start();
 
-                observer.Messages.Count.Should().Be(2);
-                observer.Messages[0].Value.Value.Should().BeTrue();
-                observer.Messages[1].Value.Value.Should().BeFalse();
+                observer.Values().AssertEqual(
+                    false,
+                    true,
+                    false
+                );
             }
         }
     }

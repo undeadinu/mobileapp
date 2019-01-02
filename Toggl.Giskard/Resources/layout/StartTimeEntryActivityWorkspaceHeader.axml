@@ -11,6 +11,7 @@
         local:MvxBind="Text WorkspaceName"
         android:maxLines="1"
         tools:text="Toggl Workspace"
+        android:gravity="left"
         android:textSize="12sp"
         android:textStyle="normal"
         android:letterSpacing="0.04"

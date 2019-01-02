@@ -26,7 +26,7 @@ namespace Toggl.Foundation.Tests.Sync
                 var scheduler = useScheduler ? Substitute.For<IScheduler>() : null;
 
                 // ReSharper disable once ObjectCreationAsStatement
-                Action ctor = () => new StateMachine(handler, scheduler, Substitute.For<ISubject<Unit>>());
+                Action ctor = () => new StateMachine(handler, scheduler);
 
                 ctor.Should().Throw<ArgumentNullException>();
             }
@@ -40,13 +40,12 @@ namespace Toggl.Foundation.Tests.Sync
             protected TestScheduler Scheduler { get; } = new TestScheduler();
             protected IStateMachine StateMachine { get; }
             protected List<StateMachineEvent> Events { get; } = new List<StateMachineEvent>();
-            protected ISubject<Unit> DelayCancellation { get; } = new Subject<Unit>();
 
             protected StateMachineTestBase()
             {
                 SetTransitionHandler(Arg.Any<IStateResult>(), null);
 
-                StateMachine = new StateMachine(TransitionHandlers, Scheduler, DelayCancellation);
+                StateMachine = new StateMachine(TransitionHandlers, Scheduler);
                 StateMachine.StateTransitions.Subscribe(e => Events.Add(e));
             }
 
@@ -199,7 +198,7 @@ namespace Toggl.Foundation.Tests.Sync
                 stateSubject.OnCompleted();
 
                 Events.ShouldBeSameEventsAs(
-                    Transition(transition), 
+                    Transition(transition),
                     Transition(transition2)
                 );
             }
@@ -280,7 +279,7 @@ namespace Toggl.Foundation.Tests.Sync
                 var transition = MakeTransitionSubstitute(_ => stateSubject.AsObservable());
                 var transition2 = MakeTransitionSubstitute(_ => stateSubject2.AsObservable());
                 var transition3 = MakeTransitionSubstitute(_ => Observable.Never<ITransition>());
-                
+
                 StateMachine.Start(transition);
                 stateSubject.OnNext(transition2);
                 stateSubject.OnCompleted();
@@ -327,31 +326,6 @@ namespace Toggl.Foundation.Tests.Sync
                 Action starting = () => StateMachine.Start(Substitute.For<ITransition>());
 
                 starting.Should().Throw<InvalidOperationException>();
-            }
-            
-
-            [Fact, LogIfTooSlow]
-            public void CancelsDelays()
-            {
-                bool cancelled = false;
-                DelayCancellation.AsObservable().Subscribe(_ => cancelled = true);
-
-                StateMachine.Freeze();
-
-                cancelled.Should().BeTrue();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void CancelsDelaysOnlyOnceWhenFreezeIsCalledMultipleTimes()
-            {
-                int cancelled = 0;
-                DelayCancellation.AsObservable().Subscribe(_ => cancelled++);
-
-                StateMachine.Freeze();
-                StateMachine.Freeze();
-                StateMachine.Freeze();
-
-                cancelled.Should().Be(1);
             }
         }
     }

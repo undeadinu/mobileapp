@@ -1,12 +1,13 @@
 ﻿using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Diagnostics;
 using Toggl.Foundation.Services;
 using Toggl.Foundation.Shortcuts;
+using Toggl.Foundation.Sync;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave.Network;
-using Toggl.Foundation.Services;
 
 namespace Toggl.Foundation.Interactors
 {
@@ -25,6 +26,8 @@ namespace Toggl.Foundation.Interactors
         private readonly IPlatformInfo platformInfo;
         private readonly UserAgent userAgent;
         private readonly ICalendarService calendarService;
+        private readonly ISyncManager syncManager;
+        private readonly IStopwatchProvider stopwatchProvider;
 
         public InteractorFactory(
             IIdProvider idProvider,
@@ -38,7 +41,9 @@ namespace Toggl.Foundation.Interactors
             ILastTimeUsageStorage lastTimeUsageStorage,
             IPlatformInfo platformInfo,
             UserAgent userAgent,
-            ICalendarService calendarService)
+            ICalendarService calendarService,
+            ISyncManager syncManager,
+            IStopwatchProvider stopwatchProvider)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(idProvider, nameof(idProvider));
@@ -52,6 +57,8 @@ namespace Toggl.Foundation.Interactors
             Ensure.Argument.IsNotNull(platformInfo, nameof(platformInfo));
             Ensure.Argument.IsNotNull(userAgent, nameof(userAgent));
             Ensure.Argument.IsNotNull(calendarService, nameof(calendarService));
+            Ensure.Argument.IsNotNull(syncManager, nameof(syncManager));
+            Ensure.Argument.IsNotNull(stopwatchProvider, nameof(stopwatchProvider));
 
             this.dataSource = dataSource;
             this.idProvider = idProvider;
@@ -65,6 +72,8 @@ namespace Toggl.Foundation.Interactors
             this.platformInfo = platformInfo;
             this.userAgent = userAgent;
             this.calendarService = calendarService;
+            this.syncManager = syncManager;
+            this.stopwatchProvider = stopwatchProvider;
         }
     }
 }

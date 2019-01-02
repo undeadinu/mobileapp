@@ -40,7 +40,7 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(DisposeBag);
 
             SearchTextField.Rx().Text()
-                .Subscribe(ViewModel.SetFilterText.Inputs)
+                .Subscribe(ViewModel.FilterText)
                 .DisposedBy(DisposeBag);
 
             tableViewSource.CountrySelected

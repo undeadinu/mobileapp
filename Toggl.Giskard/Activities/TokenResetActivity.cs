@@ -41,7 +41,7 @@ namespace Toggl.Giskard.Activities
                 .Subscribe(passwordEditText.Rx().TextObserver())
                 .DisposedBy(DisposeBag);
 
-            ViewModel.IsLoading
+            ViewModel.Done.Executing
                 .Subscribe(progressBar.Rx().IsVisible())
                 .DisposedBy(DisposeBag);
 

@@ -84,6 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/expandedToolbarHeight">
         <ImageView
+            android:id="@+id/StartTimeEntryClose"    
             local:MvxBind="Click BackCommand"
             android:padding="16dp"
             android:clickable="true"
@@ -96,6 +97,7 @@
             android:id="@+id/StartTimeEntryDescriptionTextField"
             local:MvxBind="Hint PlaceholderText"
             android:maxLines="1"
+            android:gravity="left"
             android:textSize="19sp"
             android:singleLine="true"
             android:letterSpacing="-0.01"

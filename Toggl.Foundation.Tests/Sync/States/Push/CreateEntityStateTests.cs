@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Linq;
 using FluentAssertions;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources.Interfaces;
 using Toggl.Foundation.Extensions;
-using Toggl.Foundation.Models;
-using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Sync.States.Push;
 using Toggl.Foundation.Tests.Sync.States.Push.BaseStates;
@@ -62,6 +62,23 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
             transition.Result.Should().Be(state.Finished);
             persistedEntity.Id.Should().Be(withPositiveId.Id);
             persistedEntity.SyncStatus.Should().Be(SyncStatus.InSync);
+        }
+
+        [Fact, LogIfTooSlow]
+        public void WaitsForASlotFromTheRateLimiter()
+        {
+            var scheduler = new TestScheduler();
+            var delay = TimeSpan.FromSeconds(1);
+            RateLimiter.WaitForFreeSlot().Returns(Observable.Return(Unit.Default).Delay(delay, scheduler));
+            var state = (CreateEntityState<ITestModel, IDatabaseTestModel, IThreadSafeTestModel>)CreateState();
+            var entity = new TestModel(-1, SyncStatus.SyncFailed);
+
+            state.Start(entity).Subscribe();
+
+            scheduler.AdvanceBy(delay.Ticks - 1);
+            api.DidNotReceive().Create(Arg.Any<ITestModel>());
+            scheduler.AdvanceBy(1);
+            api.Received().Create(Arg.Any<ITestModel>());
         }
 
         private static IThreadSafeTestModel entityWithId(IThreadSafeTestModel testModel, long id)
@@ -201,7 +218,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         {
             var exception = new Exception("SomeRandomMessage");
             var entity = (IThreadSafeTestModel)Substitute.For(new[] { entityType }, new object[0]);
-            var state = new CreateEntityState<ITestModel, IDatabaseTestModel, IThreadSafeTestModel>(api, dataSource, analyticsService, _ => null);
+            var state = new CreateEntityState<ITestModel, IDatabaseTestModel, IThreadSafeTestModel>(api, dataSource, analyticsService, LeakyBucket, RateLimiter, _ => null);
             var expectedMessage = $"{Create}:{exception.Message}";
             var analyticsEvent = entity.GetType().ToSyncErrorAnalyticsEvent(analyticsService);
             PrepareApiCallFunctionToThrow(exception);
@@ -212,7 +229,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         }
 
         protected override BasePushEntityState<IThreadSafeTestModel> CreateState()
-            => new CreateEntityState<ITestModel, IDatabaseTestModel, IThreadSafeTestModel>(api, dataSource, analyticsService, TestModel.From);
+            => new CreateEntityState<ITestModel, IDatabaseTestModel, IThreadSafeTestModel>(api, dataSource, analyticsService, LeakyBucket, RateLimiter, TestModel.From);
 
         protected override void PrepareApiCallFunctionToThrow(Exception e)
         {

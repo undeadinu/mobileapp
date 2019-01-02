@@ -70,5 +70,9 @@
 	<string>Toggl needs access to your calendar in order to display its events</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 </dict>
 </plist>

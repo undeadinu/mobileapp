@@ -3,6 +3,19 @@ Pull sync loop
 
 The pull sync loop is responsible for querying the server and merging the obtained entities into the local database.
 
+Fetching in waves
+-----------------
+
+We send at most 3 parallel requests to prevent overloading the server with large bursts of requests. We need to make 9 HTTP requests to fetch all the necessary data from the server which means we send requests in "waves" of 3 requests:
+
+1. workspaces, user, workspace features
+2. preferences, tags, clients
+3. projects, time entries, tasks
+
+The whole wave doesn't have to be completed before we start pulling the next wave. It's OK to send one request of the next wave once one of the requests from the previous requests is finished.
+
+The dependencies between the requests are based on the order in which the entities are meant to be processed by the sync states.
+
 Limiting the queries with 'since' parameters
 --------------------------------------------
 

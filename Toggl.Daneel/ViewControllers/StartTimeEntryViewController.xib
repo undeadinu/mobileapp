@@ -41,6 +41,7 @@
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MAa-jq-GXB">
                     <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                    <accessibility key="accessibilityConfiguration" identifier="StartTimeEntryClose"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="YvH-cT-HJB"/>
                         <constraint firstAttribute="height" constant="40" id="j4v-E8-f86"/>

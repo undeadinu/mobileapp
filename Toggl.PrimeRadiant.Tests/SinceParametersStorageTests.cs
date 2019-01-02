@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
+using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Models;
 using Toggl.PrimeRadiant.Realm;
 using Toggl.PrimeRadiant.Tests.Realm;
@@ -166,20 +167,20 @@ namespace Toggl.PrimeRadiant.Tests
         public static IEnumerable<object[]> SupportedTypes
             => new[]
             {
-                new[] { typeof(IDatabaseWorkspace) },
-                new[] { typeof(IDatabaseTag) },
-                new[] { typeof(IDatabaseTask) },
-                new[] { typeof(IDatabaseClient) },
-                new[] { typeof(IDatabaseTimeEntry) },
-                new[] { typeof(IDatabaseProject) }
+                new[] { typeof(IWorkspace) },
+                new[] { typeof(ITag) },
+                new[] { typeof(ITask) },
+                new[] { typeof(IClient) },
+                new[] { typeof(ITimeEntry) },
+                new[] { typeof(IProject) }
             };
 
         public static IEnumerable<object[]> ExamplesOfUnsupportedTypes
             => new[]
             {
-                new[] { typeof(IDatabaseUser) },
-                new[] { typeof(IDatabasePreferences) },
-                new[] { typeof(IDatabaseWorkspaceFeatureCollection) }
+                new[] { typeof(IUser) },
+                new[] { typeof(IPreferences) },
+                new[] { typeof(IWorkspaceFeatureCollection) }
             };
     }
 }

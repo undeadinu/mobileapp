@@ -25,6 +25,7 @@
                 local:MvxBind="Text ProjectName; TextColor ARGB(Color)"
                 tools:textColor="#328fff"
                 android:lines="1"
+                android:gravity="left"
                 android:textSize="15sp"
                 android:singleLine="true"
                 tools:text="Marketing and some aditional text to test the overflow and some stugg and"

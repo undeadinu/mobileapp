@@ -191,7 +191,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 {
                     ViewModel.Login();
 
-                    await DataSource.Received().StartSyncing();
+                    DataSource.SyncManager.Received().ForceFullSync();
                 }
 
                 [Fact, LogIfTooSlow]

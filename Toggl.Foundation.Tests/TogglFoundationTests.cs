@@ -37,6 +37,7 @@ namespace Toggl.Foundation.Tests
                 bool useAnalyticsService,
                 bool useStopwatchProvider,
                 bool useBackgroundService,
+                bool useBackgroundSyncService,
                 bool useSchedulerProvider,
                 bool useNotificationService,
                 bool useRemoteConfigService,
@@ -59,6 +60,7 @@ namespace Toggl.Foundation.Tests
                 var analyticsService = useAnalyticsService ? Substitute.For<IAnalyticsService>() : null;
                 var stopwatchProvider = useStopwatchProvider ? Substitute.For<IStopwatchProvider>() : null;
                 var backgroundService = useBackgroundService ? Substitute.For<IBackgroundService>() : null;
+                var backgroundSyncService = useBackgroundSyncService ? Substitute.For<IBackgroundSyncService>() : null;
                 var notificationService = useNotificationService ? Substitute.For<INotificationService>() : null;
                 var remoteConfigService = useRemoteConfigService ? Substitute.For<IRemoteConfigService>() : null;
                 var intentDonationService = useIntentDonationService ? Substitute.For<IIntentDonationService>() : null;
@@ -82,6 +84,7 @@ namespace Toggl.Foundation.Tests
                         .WithAnalyticsService(analyticsService)
                         .WithStopwatchProvider(stopwatchProvider)
                         .WithBackgroundService(backgroundService)
+                        .WithBackgroundSyncService(backgroundSyncService)
                         .WithSchedulerProvider(schedulerProvider)
                         .WithPlatformInfo(platformInfo)
                         .WithNotificationService(notificationService)
@@ -113,12 +116,14 @@ namespace Toggl.Foundation.Tests
                 var stopwatchProvider = Substitute.For<IStopwatchProvider>();
                 var schedulerProvider = Substitute.For<ISchedulerProvider>();
                 var backgroundService = Substitute.For<IBackgroundService>();
+                var backgroundSyncService = Substitute.For<IBackgroundSyncService>();
                 var notificationService = Substitute.For<INotificationService>();
                 var remoteConfigService = Substitute.For<IRemoteConfigService>();
                 var intentDonationService = Substitute.For<IIntentDonationService>();
                 var applicationShortcutCreator = Substitute.For<IApplicationShortcutCreator>();
                 var suggestionProviderContainer = Substitute.For<ISuggestionProviderContainer>();
                 var privateSharedStorageService = Substitute.For<IPrivateSharedStorageService>();
+                var automaticSyncingService = Substitute.For<IAutomaticSyncingService>();
                 var rxActionFactory = Substitute.For<IRxActionFactory>();
 
                 Action tryingToConstructWithValidParameters = () =>
@@ -136,6 +141,7 @@ namespace Toggl.Foundation.Tests
                         .WithAnalyticsService(analyticsService)
                         .WithStopwatchProvider(stopwatchProvider)
                         .WithBackgroundService(backgroundService)
+                        .WithBackgroundSyncService(backgroundSyncService)
                         .WithSchedulerProvider(schedulerProvider)
                         .WithPlatformInfo(platformInfo)
                         .WithNotificationService(notificationService)
@@ -144,6 +150,7 @@ namespace Toggl.Foundation.Tests
                         .WithApplicationShortcutCreator(applicationShortcutCreator)
                         .WithPrivateSharedStorageService(privateSharedStorageService)
                         .WithSuggestionProviderContainer(suggestionProviderContainer)
+                        .WithAutomaticSyncingService(automaticSyncingService)
                         .Build();
 
                 tryingToConstructWithValidParameters.Should().NotThrow();

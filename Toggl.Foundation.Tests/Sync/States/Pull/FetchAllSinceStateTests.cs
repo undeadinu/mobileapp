@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FsCheck.Xunit;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Sync.States;
@@ -22,19 +22,25 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
     {
         public sealed class TheStartMethod
         {
-            private readonly ITogglDatabase database;
+            private readonly ISinceParameterRepository sinceParameters;
             private readonly ITogglApi api;
             private readonly ITimeService timeService;
+            private readonly ILeakyBucket leakyBucket;
+            private readonly IRateLimiter rateLimiter;
             private readonly FetchAllSinceState state;
             private readonly DateTimeOffset now = new DateTimeOffset(2017, 02, 15, 13, 50, 00, TimeSpan.Zero);
 
             public TheStartMethod()
             {
-                database = Substitute.For<ITogglDatabase>();
+                sinceParameters = Substitute.For<ISinceParameterRepository>();
                 api = Substitute.For<ITogglApi>();
                 timeService = Substitute.For<ITimeService>();
+                leakyBucket = Substitute.For<ILeakyBucket>();
+                leakyBucket.TryClaimFreeSlots(Arg.Any<int>(), out _).Returns(true);
+                rateLimiter = Substitute.For<IRateLimiter>();
+                rateLimiter.WaitForFreeSlot().Returns(Observable.Return(Unit.Default));
                 timeService.CurrentDateTime.Returns(now);
-                state = new FetchAllSinceState(database, api, timeService);
+                state = new FetchAllSinceState(api, sinceParameters, timeService, leakyBucket, rateLimiter);
             }
 
             [Fact, LogIfTooSlow]
@@ -61,6 +67,66 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
                 var pr = api.DidNotReceive().Preferences;
             }
 
+            [Fact, LogIfTooSlow]
+            public void SendsRequestsInWavesWhenRateLimiterAllocatesASlotAfterSubscription()
+            {
+                var scheduler = new TestScheduler();
+                var delay = TimeSpan.FromSeconds(1);
+                rateLimiter.WaitForFreeSlot().Returns(Observable.Return(Unit.Default).Delay(delay, scheduler));
+
+                api.Workspaces.GetAll().Returns(Observable.Return<List<IWorkspace>>(null));
+                api.WorkspaceFeatures.GetAll().Returns(Observable.Return<List<IWorkspaceFeatureCollection>>(null));
+                api.User.Get().Returns(Observable.Return<IUser>(null));
+                api.Clients.GetAll().Returns(Observable.Return<List<IClient>>(null));
+                api.Projects.GetAll().Returns(Observable.Return<List<IProject>>(null));
+                api.TimeEntries.GetAll(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
+                    .Returns(Observable.Return<List<ITimeEntry>>(null));
+                api.Tasks.GetAll().Returns(Observable.Return<List<ITask>>(null));
+                api.Tags.GetAll().Returns(Observable.Return<List<ITag>>(null));
+                api.Preferences.Get().Returns(Observable.Return<IPreferences>(null));
+
+                state.Start().Subscribe();
+
+                // before the first wave
+                api.Workspaces.DidNotReceive().GetAll();
+                api.WorkspaceFeatures.DidNotReceive().GetAll();
+                api.User.DidNotReceive().Get();
+
+                // first wave
+                scheduler.AdvanceBy(delay.Ticks);
+
+                api.Workspaces.Received().GetAll();
+                api.WorkspaceFeatures.Received().GetAll();
+                api.User.Received().Get();
+
+                api.Preferences.DidNotReceive().Get();
+                api.Clients.DidNotReceive().GetAll();
+                api.Clients.DidNotReceive().GetAllSince(Arg.Any<DateTimeOffset>());
+                api.Tags.DidNotReceive().GetAll();
+                api.Tags.DidNotReceive().GetAllSince(Arg.Any<DateTimeOffset>());
+
+                // second wave
+                scheduler.AdvanceBy(delay.Ticks);
+
+                api.Preferences.Received().Get();
+                api.Clients.Received().GetAll();
+                api.Tags.Received().GetAll();
+
+                api.Tasks.DidNotReceive().GetAll();
+                api.Tasks.DidNotReceive().GetAllSince(Arg.Any<DateTimeOffset>());
+                api.Projects.DidNotReceive().GetAll();
+                api.Projects.DidNotReceive().GetAllSince(Arg.Any<DateTimeOffset>());
+                api.TimeEntries.DidNotReceive().GetAll(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>());
+                api.TimeEntries.DidNotReceive().GetAllSince(Arg.Any<DateTimeOffset>());
+
+                // third wave
+                scheduler.AdvanceBy(delay.Ticks);
+
+                api.Tasks.Received().GetAll();
+                api.Projects.Received().GetAll();
+                api.TimeEntries.Received().GetAll(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>());
+            }
+
             [Property]
             public void MakesCorrectCallsWithSinceThresholdsWhenSinceIsLessThanTwoMonthsInThePast(int seed)
             {
@@ -72,15 +138,12 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
                 var seconds = twoMonths.TotalSeconds * percent;
                 var since = now.AddSeconds(-seconds);
 
-                var sinceParameters = Substitute.For<ISinceParameterRepository>();
-                sinceParameters.Get<IDatabaseClient>().Returns(since);
-                sinceParameters.Get<IDatabaseProject>().Returns(since);
-                sinceParameters.Get<IDatabaseTask>().Returns(since);
-                sinceParameters.Get<IDatabaseTag>().Returns(since);
-                sinceParameters.Get<IDatabaseWorkspace>().Returns(since);
-                sinceParameters.Get<IDatabaseTimeEntry>().Returns(since);
-
-                database.SinceParameters.Returns(sinceParameters);
+                sinceParameters.Get<IClient>().Returns(since);
+                sinceParameters.Get<IProject>().Returns(since);
+                sinceParameters.Get<ITask>().Returns(since);
+                sinceParameters.Get<ITag>().Returns(since);
+                sinceParameters.Get<IWorkspace>().Returns(since);
+                sinceParameters.Get<ITimeEntry>().Returns(since);
 
                 state.Start().Wait();
 
@@ -97,15 +160,12 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
             {
                 var now = timeService.CurrentDateTime;
 
-                var sinceParameters = Substitute.For<ISinceParameterRepository>();
-                sinceParameters.Get<IDatabaseClient>().Returns(now.AddMonths(-3));
-                sinceParameters.Get<IDatabaseProject>().Returns(now.AddMonths(-4));
-                sinceParameters.Get<IDatabaseTask>().Returns(now.AddMonths(-5));
-                sinceParameters.Get<IDatabaseTag>().Returns(now.AddMonths(-6));
-                sinceParameters.Get<IDatabaseWorkspace>().Returns(now.AddMonths(-7));
-                sinceParameters.Get<IDatabaseTimeEntry>().Returns(now.AddMonths(-8));
-
-                database.SinceParameters.Returns(sinceParameters);
+                sinceParameters.Get<IClient>().Returns(now.AddMonths(-3));
+                sinceParameters.Get<IProject>().Returns(now.AddMonths(-4));
+                sinceParameters.Get<ITask>().Returns(now.AddMonths(-5));
+                sinceParameters.Get<ITag>().Returns(now.AddMonths(-6));
+                sinceParameters.Get<IWorkspace>().Returns(now.AddMonths(-7));
+                sinceParameters.Get<ITimeEntry>().Returns(now.AddMonths(-8));
 
                 state.Start().Wait();
 
@@ -128,43 +188,6 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
                 api.TimeEntries.Received().GetAll(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>());
                 api.Tasks.Received().GetAll();
                 api.Tags.Received().GetAll();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ConnectsToApiCallObservables()
-            {
-                var workspaceCall = false;
-                var workspaceFeaturesCall = false;
-                var userCall = false;
-                var clientCall = false;
-                var projectCall = false;
-                var timeEntriesCall = false;
-                var taskCall = false;
-                var tagCall = false;
-                var preferencesCall = false;
-
-                api.Workspaces.GetAll().Returns(Observable.Create<List<IWorkspace>>(o => { workspaceCall = true; return () => { }; }));
-                api.WorkspaceFeatures.GetAll().Returns(Observable.Create<List<IWorkspaceFeatureCollection>>(o => { workspaceFeaturesCall = true; return () => { }; }));
-                api.User.Get().Returns(Observable.Create<IUser>(o => { userCall = true; return () => { }; }));
-                api.Clients.GetAll().Returns(Observable.Create<List<IClient>>(o => { clientCall = true; return () => { }; }));
-                api.Projects.GetAll().Returns(Observable.Create<List<IProject>>(o => { projectCall = true; return () => { }; }));
-                api.TimeEntries.GetAll(Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
-                    .Returns(Observable.Create<List<ITimeEntry>>(o => { timeEntriesCall = true; return () => { }; }));
-                api.Tasks.GetAll().Returns(Observable.Create<List<ITask>>(o => { taskCall = true; return () => { }; }));
-                api.Tags.GetAll().Returns(Observable.Create<List<ITag>>(o => { tagCall = true; return () => { }; }));
-                api.Preferences.Get().Returns(Observable.Create<IPreferences>(o => { preferencesCall = true; return () => { }; }));
-
-                state.Start().Wait();
-
-                workspaceCall.Should().BeTrue();
-                workspaceFeaturesCall.Should().BeTrue();
-                userCall.Should().BeTrue();
-                clientCall.Should().BeTrue();
-                projectCall.Should().BeTrue();
-                timeEntriesCall.Should().BeTrue();
-                taskCall.Should().BeTrue();
-                tagCall.Should().BeTrue();
-                preferencesCall.Should().BeTrue();
             }
 
             [Fact, LogIfTooSlow]
@@ -198,8 +221,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
             [Fact, LogIfTooSlow]
             public async Task FetchesTwoMonthsOfTimeEntriesDataIncludingTwoDaysAfterNow()
             {
-                var sinceParameters = Substitute.For<ISinceParameterRepository>();
-                sinceParameters.Get<IDatabaseTimeEntry>().Returns(now.AddMonths(-8));
+                sinceParameters.Get<ITimeEntry>().Returns(now.AddMonths(-8));
 
                 await state.Start().SingleAsync();
 
@@ -208,6 +230,22 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
 
                 await api.TimeEntries.Received().GetAll(
                     Arg.Is<DateTimeOffset>(start => min <= now - start && now - start <= max), Arg.Is(now.AddDays(2)));
+            }
+
+            [Property]
+            public void ReturnsPreventServerOverloadWithCorrectDelayWhenTheLeakyBucketIsFull(TimeSpan delay)
+            {
+                leakyBucket.TryClaimFreeSlots(Arg.Any<int>(), out _)
+                    .Returns(x =>
+                    {
+                        x[1] = delay;
+                        return false;
+                    });
+
+                var transition = state.Start().SingleAsync().Wait();
+
+                transition.Result.Should().Be(state.PreventOverloadingServer);
+                var parameter = ((Transition<TimeSpan>)transition).Parameter;
             }
         }
     }
