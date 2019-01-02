@@ -25,7 +25,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         private readonly ISubject<Unit> midnight = new Subject<Unit>();
         private readonly ISubject<Unit> significantTimeChange = new Subject<Unit>();
 
-        private readonly TimeTrackedTodayInteractor interactor;
+        private readonly ObserveTimeTrackedTodayInteractor interactor;
         private readonly IThreadSafeTimeEntry[] timeEntries =
         {
             new MockTimeEntry { Start = now.AddDays(-1), Duration = 1 },
@@ -43,7 +43,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
             TimeService.SignificantTimeChangeObservable.Returns(significantTimeChange);
             TimeService.CurrentDateTime.Returns(now);
 
-            interactor = new TimeTrackedTodayInteractor(TimeService, DataSource.TimeEntries);
+            interactor = new ObserveTimeTrackedTodayInteractor(TimeService, DataSource.TimeEntries);
         }
 
         [Fact, LogIfTooSlow]

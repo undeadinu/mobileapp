@@ -8,12 +8,12 @@ using Toggl.Multivac.Extensions;
 
 namespace Toggl.Foundation.Interactors
 {
-    public sealed class TimeTrackedTodayInteractor : IInteractor<IObservable<TimeSpan>>
+    public sealed class ObserveTimeTrackedTodayInteractor : IInteractor<IObservable<TimeSpan>>
     {
         private readonly ITimeService timeService;
         private readonly ITimeEntriesSource timeEntries;
 
-        public TimeTrackedTodayInteractor(
+        public ObserveTimeTrackedTodayInteractor(
             ITimeService timeService,
             ITimeEntriesSource timeEntries)
         {
