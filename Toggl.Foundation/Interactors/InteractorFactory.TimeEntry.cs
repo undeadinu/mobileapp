@@ -67,5 +67,8 @@ namespace Toggl.Foundation.Interactors
 
         public IInteractor<IObservable<Unit>> ObserveTimeEntriesChanges()
             => new ObserveTimeEntriesChangesInteractor(dataSource);
+
+        public IInteractor<IObservable<TimeSpan>> ObserveTimeTrackedToday()
+            => new ObserveTimeTrackedTodayInteractor(timeService, dataSource.TimeEntries);
     }
 }
