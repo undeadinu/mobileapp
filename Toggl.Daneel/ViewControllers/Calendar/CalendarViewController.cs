@@ -19,6 +19,7 @@ namespace Toggl.Daneel.ViewControllers
     public sealed partial class CalendarViewController : ReactiveViewController<CalendarViewModel>
     {
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
+        private readonly ITimeService timeService;
 
         private CalendarCollectionViewLayout layout;
         private CalendarCollectionViewSource dataSource;
@@ -33,6 +34,7 @@ namespace Toggl.Daneel.ViewControllers
         public CalendarViewController()
             : base(nameof(CalendarViewController))
         {
+            timeService = Mvx.Resolve<ITimeService>();
         }
 
         public override void ViewDidLoad()
@@ -55,8 +57,6 @@ namespace Toggl.Daneel.ViewControllers
             GetStartedButton.Rx()
                 .BindAction(ViewModel.GetStarted)
                 .DisposedBy(DisposeBag);
-
-            var timeService = Mvx.Resolve<ITimeService>();
 
             dataSource = new CalendarCollectionViewSource(
                 timeService,
@@ -129,7 +129,6 @@ namespace Toggl.Daneel.ViewControllers
 
         private void updateScrollOffset()
         {
-            var timeService = Mvx.Resolve<ITimeService>();
             selectGoodScrollPoint(timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
         }
 
