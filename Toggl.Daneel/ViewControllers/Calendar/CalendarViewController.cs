@@ -124,11 +124,20 @@ namespace Toggl.Daneel.ViewControllers
             };
 
             layout.InvalidateCurrentTimeLayout();
+        }
+
+        public override void ViewDidAppear(bool animated)
+        {
             updateScrollOffset();
         }
 
         private void updateScrollOffset()
         {
+            if (CalendarCollectionView.ContentSize.Height == 0)
+            {
+                return;
+            }
+
             selectGoodScrollPoint(timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
         }
 
@@ -138,7 +147,8 @@ namespace Toggl.Daneel.ViewControllers
                 CalendarCollectionView.Frame.Height
                     - CalendarCollectionView.ContentInset.Top
                     - CalendarCollectionView.ContentInset.Bottom;
-            var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, frameHeight);
+            var hoursOnScreen = frameHeight / (CalendarCollectionView.ContentSize.Height / 24);
+            var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, hoursOnScreen);
 
             var centeredHourY = (centeredHour / 24) * CalendarCollectionView.ContentSize.Height;
             var scrollPointY = centeredHourY - frameHeight / 2;
@@ -147,9 +157,9 @@ namespace Toggl.Daneel.ViewControllers
             CalendarCollectionView.SetContentOffset(scrollPoint, false);
         }
 
-        private double calculateCenteredHour(double currentHour, double frameHeight)
+        private double calculateCenteredHour(double currentHour, double hoursOnScreen)
         {
-            var hoursPerHalfOfScreen = (frameHeight / (CalendarCollectionView.ContentSize.Height / 24)) / 2;
+            var hoursPerHalfOfScreen = hoursOnScreen / 2;
 
             if (currentHour < workingHoursStart)
             {
