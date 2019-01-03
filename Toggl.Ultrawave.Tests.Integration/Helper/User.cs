@@ -1,10 +1,10 @@
-﻿using System;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Toggl.Multivac.Extensions;
 using Toggl.Ultrawave.Network;
 using Toggl.Multivac.Models;
 using Toggl.Multivac;
+using Toggl.Ultrawave.Tests.Integration.Helper;
 
 namespace Toggl.Ultrawave.Tests.Integration
 {
@@ -24,7 +24,7 @@ namespace Toggl.Ultrawave.Tests.Integration
         }
 
         private static (Email email, Password password) generateEmailPassword()
-            => ($"{Guid.NewGuid()}@mocks.toggl.com".ToEmail(), "123456".ToPassword());
+            => (RandomEmail.GenerateValid(), "123456".ToPassword());
 
         private static async Task<IUser> createUser(Email email, Password password)
         {

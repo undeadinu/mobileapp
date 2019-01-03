@@ -6,6 +6,7 @@ using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.Ultrawave.Exceptions;
 using Toggl.Ultrawave.Network;
+using Toggl.Ultrawave.Tests.Integration.Helper;
 using Xunit;
 
 namespace Toggl.Ultrawave.Tests.Integration.BaseTests
@@ -44,7 +45,7 @@ namespace Toggl.Ultrawave.Tests.Integration.BaseTests
         {
             var (validApi, _) = await SetupTestUser();
             ValidApi = validApi;
-            var email = $"non-existing-email-{Guid.NewGuid()}@ironicmocks.toggl.com".ToEmail();
+            var email = RandomEmail.GenerateInvalid();
             var wrongCredentials = Credentials
                 .WithPassword(email, "123456789".ToPassword());
 

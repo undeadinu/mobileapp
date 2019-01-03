@@ -115,7 +115,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             public void FailsIfUserDoesNotExist()
             {
                 var api = TogglApiWith(Credentials.None);
-                var email = Email.From($"{Guid.NewGuid().ToString()}@domain.com");
+                var email = RandomEmail.GenerateValid();
 
                 Action resetInvalidEmail = () => api.User.ResetPassword(email).Wait();
 
@@ -181,7 +181,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             {
                 Action signingUp = () => unauthenticatedTogglApi
                     .User
-                    .SignUp(Email.From("dummy@email.com"), empty.ToPassword(), true, 237)
+                    .SignUp(RandomEmail.GenerateValid(), empty.ToPassword(), true, 237)
                     .Wait();
 
                 signingUp.Should().Throw<BadRequestException>();
@@ -194,7 +194,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [InlineData("            ")]
             public async Task SucceedsForAPasswordConsistingOfOnlyWhiteCharactersWhenItIsLongEnough(string seeminglyEmpty)
             {
-                var email = Email.From($"{Guid.NewGuid().ToString()}@email.com");
+                var email = RandomEmail.GenerateValid();
 
                 var user = await unauthenticatedTogglApi
                     .User
@@ -207,7 +207,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [Fact, LogTestInfo]
             public async Task CreatesANewUserAccount()
             {
-                var emailAddress = Email.From($"{Guid.NewGuid().ToString()}@address.com");
+                var emailAddress = RandomEmail.GenerateValid();
 
                 var user = await unauthenticatedTogglApi
                     .User
@@ -219,7 +219,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [Fact, LogTestInfo]
             public async Task FailsWhenTheEmailIsAlreadyTaken()
             {
-                var email = Email.From($"{Guid.NewGuid().ToString()}@address.com");
+                var email = RandomEmail.GenerateValid();
                 await unauthenticatedTogglApi.User.SignUp(email, "somePassword".ToPassword(), true, 237);
 
                 Action secondSigningUp = () => unauthenticatedTogglApi
@@ -233,7 +233,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [Fact, LogTestInfo]
             public async Task FailsWhenSigningUpWithTheSameEmailAndPasswordForTheSecondTime()
             {
-                var email = Email.From($"{Guid.NewGuid().ToString()}@address.com");
+                var email = RandomEmail.GenerateValid();
                 var password = "somePassword".ToPassword();
                 await unauthenticatedTogglApi.User.SignUp(email, password, true, 237);
 
@@ -245,7 +245,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [Fact, LogTestInfo]
             public async Task EnablesLoginForTheNewlyCreatedUserAccount()
             {
-                var emailAddress = Email.From($"{Guid.NewGuid().ToString()}@address.com");
+                var emailAddress = RandomEmail.GenerateValid();
                 var password = Guid.NewGuid().ToString().ToPassword();
 
                 var signedUpUser = await unauthenticatedTogglApi.User.SignUp(emailAddress, password, true, 237);
@@ -277,7 +277,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [Fact, LogTestInfo]
             public void FailsIfUserDidNotAcceptTermsAndConditions()
             {
-                var email = Email.From($"{Guid.NewGuid().ToString()}@email.com");
+                var email = RandomEmail.GenerateValid();
                 var password = "s3cr3tzzz".ToPassword();
                 var termsAccepted = false;
                 var countryId = 237;
@@ -297,7 +297,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [InlineData(250)]
             public async Task SucceedsForValidCountryId(int countryId)
             {
-                var email = Email.From($"{Guid.NewGuid().ToString()}@email.com");
+                var email = RandomEmail.GenerateValid();
                 var password = "s3cr3tzzz".ToPassword();
                 var termsNotAccepted = true;
 
@@ -316,7 +316,7 @@ namespace Toggl.Ultrawave.Tests.Integration
             [InlineData(1111111)]
             public void FailsIfCountryIdIsNotValid(int countryId)
             {
-                var email = Email.From($"{Guid.NewGuid().ToString()}@email.com");
+                var email = RandomEmail.GenerateValid();
                 var password = "s3cr3tzzz".ToPassword();
 
                 Action signingUp = () => unauthenticatedTogglApi

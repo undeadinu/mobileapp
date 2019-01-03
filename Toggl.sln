@@ -61,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toggl.Daneel.ExtensionKit",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toggl.Daneel.SiriExtension.UI", "Toggl.Daneel.SiriExtension.UI\Toggl.Daneel.SiriExtension.UI.csproj", "{BC329A24-95D6-4D02-95B5-2AA699D8873A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toggl.Foundation.Sync.Tests", "Toggl.Foundation.Sync.Tests\Toggl.Foundation.Sync.Tests.csproj", "{F08B55D7-0A7E-4F01-B6C6-CB5ACC76A194}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toggl.Foundation.Tests.Sync", "Toggl.Foundation.Tests.Sync\Toggl.Foundation.Tests.Sync.csproj", "{F08B55D7-0A7E-4F01-B6C6-CB5ACC76A194}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

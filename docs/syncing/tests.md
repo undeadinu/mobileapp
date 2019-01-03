@@ -8,7 +8,7 @@ To run the tests simply run `sh build.sh --target Tests.Sync`.
 
 Bitrise is configured to run sync tests once every day on the `develop` branch.
 
-It is easy and convenient to debug these tests using Rider. Just make sure to change `{CAKE_COMMIT_HASH}` in the `UserAgent` setup with some alphanumeric string before you run them (otherwise you will get a runtime error).
+It is easy and convenient to debug these tests using Rider.
 
 ## The Idea Of Syncing Tests
 

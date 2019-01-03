@@ -11,6 +11,6 @@ using Toggl.Multivac;
 [assembly: InternalsVisibleTo("Toggl.Ultrawave.Tests")]
 [assembly: InternalsVisibleTo("Toggl.Ultrawave.Tests.Integration")]
 [assembly: InternalsVisibleTo("Toggl.Foundation.Tests")]
-[assembly: InternalsVisibleTo("Toggl.Foundation.Sync.Tests")]
+[assembly: InternalsVisibleTo("Toggl.Foundation.Tests.Sync")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: LinkerSafe]

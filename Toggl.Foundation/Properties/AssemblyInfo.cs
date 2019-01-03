@@ -9,7 +9,7 @@ using Toggl.Multivac;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: InternalsVisibleTo("Toggl.Foundation.Tests")]
-[assembly: InternalsVisibleTo("Toggl.Foundation.Sync.Tests")]
+[assembly: InternalsVisibleTo("Toggl.Foundation.Tests.Sync")]
 [assembly: InternalsVisibleTo("SyncDiagramGenerator")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: LinkerSafe]

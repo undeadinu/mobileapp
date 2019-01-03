@@ -47,7 +47,7 @@ Also check if the meta data included below is readable and formatted well.";
             public async Task DoesAcceptFeedbackFromADifferentUserFromTheLoggedIn()
             {
                 var (togglApi, user) = await SetupTestUser();
-                var email = Email.From($"non-existing-email-{Guid.NewGuid()}@ironicmocks.toggl.com");
+                var email = RandomEmail.GenerateInvalid();
 
                 var message = defaultMessage +
                     "\n\nThis message was sent with an email address that is not associated with the user's account.";
