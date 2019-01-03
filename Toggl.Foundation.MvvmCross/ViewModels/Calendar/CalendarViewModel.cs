@@ -145,8 +145,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
                 orderingKey: item => item.StartTime,
                 groupingKey: _ => 0);
 
-            WorkingHoursStart = userPreferences.CalendarWorkingHoursStart;
-            WorkingHoursEnd = userPreferences.CalendarWorkingHoursEnd;
+            WorkingHoursStart = userPreferences.CalendarWorkingHoursStart.AsDriver(schedulerProvider);
+            WorkingHoursEnd = userPreferences.CalendarWorkingHoursEnd.AsDriver(schedulerProvider);
         }
 
         public void Init(string eventId)
