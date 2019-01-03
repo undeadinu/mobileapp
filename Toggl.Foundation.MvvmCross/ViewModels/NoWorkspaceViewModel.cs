@@ -73,14 +73,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         }
 
         private IObservable<Unit> createWorkspaceWithDefaultName()
-        {
-            return interactorFactory.CreateDefaultWorkspace().Execute()
-                .Do(() =>
-                {
-                    dataSource.SyncManager.ForceFullSync();
-                    close();
-                });
-        }
+            => interactorFactory.CreateDefaultWorkspace().Execute().Do(close);
 
         private void close()
         {

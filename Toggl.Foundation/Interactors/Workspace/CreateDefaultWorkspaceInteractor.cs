@@ -45,8 +45,8 @@ namespace Toggl.Foundation.Interactors
                 .FirstAsync()
                 .SelectMany(createWorkspace)
                 .SelectMany(updateDefaultWorkspace)
-                .SelectMany(_ => syncManager.PushSync())
-                .SelectMany(_ => syncManager.ForceFullSync())
+                .SelectMany(_ => syncManager.PushSync().LastAsync())
+                .SelectMany(_ => syncManager.ForceFullSync().LastAsync())
                 .SelectUnit();
 
         private IObservable<IThreadSafeUser> updateDefaultWorkspace(IThreadSafeWorkspace workspace)
