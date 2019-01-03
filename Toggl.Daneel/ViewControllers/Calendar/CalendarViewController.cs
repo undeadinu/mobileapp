@@ -1,5 +1,7 @@
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using CoreGraphics;
 using MvvmCross;
 using Toggl.Daneel.Extensions;
@@ -20,6 +22,7 @@ namespace Toggl.Daneel.ViewControllers
     {
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
         private readonly ITimeService timeService;
+        private readonly ISubject<Unit> updateScrollPosition = new Subject<Unit>();
 
         private CalendarCollectionViewLayout layout;
         private CalendarCollectionViewSource dataSource;
@@ -93,6 +96,7 @@ namespace Toggl.Daneel.ViewControllers
 
             ViewModel.WorkingHoursStart
                 .CombineLatest(ViewModel.WorkingHoursEnd, (start, end) => (start: start, end: end))
+                .CombineLatest(updateScrollPosition, (workingHours, _) => workingHours)
                 .Subscribe(workingHours => updateScrollOffset(workingHours.start, workingHours.end))
                 .DisposedBy(DisposeBag);
 
@@ -112,11 +116,9 @@ namespace Toggl.Daneel.ViewControllers
             layout.InvalidateCurrentTimeLayout();
         }
 
-        public override async void ViewDidAppear(bool animated)
+        public override void ViewDidAppear(bool animated)
         {
-            var start = await ViewModel.WorkingHoursStart.FirstAsync();
-            var end = await ViewModel.WorkingHoursEnd.FirstAsync();
-            updateScrollOffset(start, end);
+            updateScrollPosition.OnNext(Unit.Default);
         }
 
         private void updateScrollOffset(double workingHoursStart, double workingHoursEnd)
