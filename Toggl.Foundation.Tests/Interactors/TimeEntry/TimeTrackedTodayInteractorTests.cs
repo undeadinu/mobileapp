@@ -21,7 +21,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
     {
         private static readonly DateTimeOffset now = new DateTimeOffset(2018, 12, 31, 1, 2, 3, TimeSpan.Zero);
 
-        private readonly ISubject<Unit> timeEntryChanged = new Subject<Unit>();
+        private readonly ISubject<Unit> timeEntryChange = new Subject<Unit>();
         private readonly ISubject<Unit> midnight = new Subject<Unit>();
         private readonly ISubject<Unit> significantTimeChange = new Subject<Unit>();
 
@@ -36,7 +36,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
 
         public TimeTrackedTodayInteractorTests()
         {
-            DataSource.TimeEntries.Created.Returns(timeEntryChanged.Select(_ => new MockTimeEntry()));
+            DataSource.TimeEntries.Created.Returns(timeEntryChange.Select(_ => new MockTimeEntry()));
             DataSource.TimeEntries.Updated.Returns(Observable.Never<EntityUpdate<IThreadSafeTimeEntry>>());
             DataSource.TimeEntries.Deleted.Returns(Observable.Never<long>());
             TimeService.MidnightObservable.Returns(midnight.Select(_ => now));
@@ -60,32 +60,22 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         [Fact, LogIfTooSlow]
         public void RecalculatesTheSumOfTheDurationOfTheTimeEntriesStartedOnTheCurrentDayWhenTimeEntriesChange()
         {
-            var updatedTimeEntries = timeEntries.Concat(new[] { new MockTimeEntry { Start = now, Duration = 5 } });
-            DataSource.TimeEntries.GetAll(Arg.Any<Func<IDatabaseTimeEntry, bool>>())
-                .Returns(wherePredicateApplies(timeEntries), wherePredicateApplies(updatedTimeEntries));
-            var observer = Substitute.For<IObserver<TimeSpan>>();
-
-            interactor.Execute().Skip(1).Subscribe(observer);
-            timeEntryChanged.OnNext(Unit.Default);
-
-            observer.Received().OnNext(TimeSpan.FromSeconds(10));
+            recalculatesOn(timeEntryChange);
         }
 
         [Fact, LogIfTooSlow]
         public void RecalculatesTheSumOfTheDurationOfTheTimeEntriesOnMidnight()
         {
-            DataSource.TimeEntries.GetAll(Arg.Any<Func<IDatabaseTimeEntry, bool>>())
-                .Returns(wherePredicateApplies(timeEntries), wherePredicateApplies(timeEntries));
-            var observer = Substitute.For<IObserver<TimeSpan>>();
-
-            interactor.Execute().Skip(1).Subscribe(observer);
-            midnight.OnNext(Unit.Default);
-
-            observer.Received().OnNext(TimeSpan.FromSeconds(5));
+            recalculatesOn(midnight);
         }
 
         [Fact, LogIfTooSlow]
         public void RecalculatesTheSumOfTheDurationOfTheTimeEntriesWhenThereIsSignificantTimeChange()
+        {
+            recalculatesOn(significantTimeChange);
+        }
+
+        private void recalculatesOn(IObserver<Unit> trigger)
         {
             var updatedTimeEntries = timeEntries.Concat(new[] { new MockTimeEntry { Start = now, Duration = 5 } });
             DataSource.TimeEntries.GetAll(Arg.Any<Func<IDatabaseTimeEntry, bool>>())
@@ -93,7 +83,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
             var observer = Substitute.For<IObserver<TimeSpan>>();
 
             interactor.Execute().Skip(1).Subscribe(observer);
-            significantTimeChange.OnNext(Unit.Default);
+            trigger.OnNext(Unit.Default);
 
             observer.Received().OnNext(TimeSpan.FromSeconds(10));
         }
