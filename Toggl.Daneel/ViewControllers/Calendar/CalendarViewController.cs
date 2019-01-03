@@ -134,9 +134,7 @@ namespace Toggl.Daneel.ViewControllers
         private void updateScrollOffset()
         {
             if (CalendarCollectionView.ContentSize.Height == 0)
-            {
                 return;
-            }
 
             selectGoodScrollPoint(timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
         }
