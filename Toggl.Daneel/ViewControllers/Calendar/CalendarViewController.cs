@@ -26,9 +26,6 @@ namespace Toggl.Daneel.ViewControllers
         private CalendarCollectionViewEditItemHelper editItemHelper;
         private CalendarCollectionViewCreateFromSpanHelper createFromSpanHelper;
 
-        private int workingHoursStart;
-        private int workingHoursEnd;
-
         private readonly UIButton settingsButton = new UIButton(new CGRect(0, 0, 40, 50));
 
         public CalendarViewController()
@@ -95,19 +92,8 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(DisposeBag);
 
             ViewModel.WorkingHoursStart
-                .Subscribe(start =>
-                {
-                    workingHoursStart = start;
-                    updateScrollOffset();
-                })
-                .DisposedBy(DisposeBag);
-
-            ViewModel.WorkingHoursEnd
-                .Subscribe(end =>
-                {
-                    workingHoursEnd = end;
-                    updateScrollOffset();
-                })
+                .CombineLatest(ViewModel.WorkingHoursEnd, (start, end) => (start: start, end: end))
+                .Subscribe(workingHours => updateScrollOffset(workingHours.start, workingHours.end))
                 .DisposedBy(DisposeBag);
 
             CalendarCollectionView.LayoutIfNeeded();
@@ -126,27 +112,29 @@ namespace Toggl.Daneel.ViewControllers
             layout.InvalidateCurrentTimeLayout();
         }
 
-        public override void ViewDidAppear(bool animated)
+        public override async void ViewDidAppear(bool animated)
         {
-            updateScrollOffset();
+            var start = await ViewModel.WorkingHoursStart.FirstAsync();
+            var end = await ViewModel.WorkingHoursEnd.FirstAsync();
+            updateScrollOffset(start, end);
         }
 
-        private void updateScrollOffset()
+        private void updateScrollOffset(double workingHoursStart, double workingHoursEnd)
         {
             if (CalendarCollectionView.ContentSize.Height == 0)
                 return;
 
-            selectGoodScrollPoint(timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
+            selectGoodScrollPoint(workingHoursStart, workingHoursEnd, timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
         }
 
-        private void selectGoodScrollPoint(TimeSpan timeOfDay)
+        private void selectGoodScrollPoint(double workingHoursStart, double workingHoursEnd, TimeSpan timeOfDay)
         {
             var frameHeight =
                 CalendarCollectionView.Frame.Height
                     - CalendarCollectionView.ContentInset.Top
                     - CalendarCollectionView.ContentInset.Bottom;
             var hoursOnScreen = frameHeight / (CalendarCollectionView.ContentSize.Height / 24);
-            var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, hoursOnScreen);
+            var centeredHour = calculateCenteredHour(workingHoursStart, workingHoursEnd, timeOfDay.TotalHours, hoursOnScreen);
 
             var centeredHourY = (centeredHour / 24) * CalendarCollectionView.ContentSize.Height;
             var scrollPointY = centeredHourY - frameHeight / 2;
@@ -155,7 +143,7 @@ namespace Toggl.Daneel.ViewControllers
             CalendarCollectionView.SetContentOffset(scrollPoint, false);
         }
 
-        private double calculateCenteredHour(double currentHour, double hoursOnScreen)
+        private double calculateCenteredHour(double workingHoursStart, double workingHoursEnd, double currentHour, double hoursOnScreen)
         {
             var hoursPerHalfOfScreen = hoursOnScreen / 2;
 
