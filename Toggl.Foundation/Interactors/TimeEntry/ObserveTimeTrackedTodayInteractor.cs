@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Toggl.Foundation.DataSources;
@@ -25,14 +26,21 @@ namespace Toggl.Foundation.Interactors
         }
 
         public IObservable<TimeSpan> Execute()
-            => timeEntries.ItemsChanged()
-                .Merge(timeService.MidnightObservable.SelectUnit())
-                .Merge(timeService.SignificantTimeChangeObservable)
+            => updateIsNecessary()
                 .StartWith(Unit.Default)
-                .SelectMany(_ => calculateTimeTrackedToday())
+                .SelectMany(_ =>
+                    calculateTimeAlreadyTrackedToday().CombineLatest(
+                        observeElapsedTimeOfCurrentlyRunningTimeEntry(),
+                        (alreadyTrackedToday, currentlyRunningTimeEntryDuration) =>
+                            alreadyTrackedToday + currentlyRunningTimeEntryDuration))
                 .DistinctUntilChanged();
 
-        private IObservable<TimeSpan> calculateTimeTrackedToday()
+        private IObservable<Unit> updateIsNecessary()
+            => timeEntries.ItemsChanged().Debug("items_changed")
+                .Merge(timeService.MidnightObservable.SelectUnit().Debug("midnight"))
+                .Merge(timeService.SignificantTimeChangeObservable.Debug("significant_time_change"));
+
+        private IObservable<TimeSpan> calculateTimeAlreadyTrackedToday()
             => timeEntries.GetAll(timeEntry =>
                     timeEntry.Start.LocalDateTime.Date == timeService.CurrentDateTime.LocalDateTime.Date
                     && timeEntry.Duration != null)
@@ -40,5 +48,17 @@ namespace Toggl.Foundation.Interactors
                 .SelectMany(CommonFunctions.Identity)
                 .Sum(timeEntry => timeEntry.Duration ?? 0.0)
                 .Select(TimeSpan.FromSeconds);
+
+        private IObservable<TimeSpan> observeElapsedTimeOfCurrentlyRunningTimeEntry()
+            => timeEntries.GetAll(timeEntry =>
+                    timeEntry.Start.LocalDateTime.Date == timeService.CurrentDateTime.LocalDateTime.Date
+                    && timeEntry.Duration == null)
+                .Select(runningTimeEntries => runningTimeEntries.SingleOrDefault())
+                .SelectMany(timeEntry => timeEntry == null
+                    ? Observable.Return(TimeSpan.Zero)
+                    : timeService.CurrentDateTimeObservable
+                        .Select(now => now - timeEntry.Start)
+                        .StartWith(timeService.CurrentDateTime - timeEntry.Start));
+
     }
 }
