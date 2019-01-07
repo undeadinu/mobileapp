@@ -13,13 +13,22 @@ namespace Toggl.Daneel.ViewControllers
 	partial class AboutViewController
 	{
 		[Outlet]
+		UIKit.UILabel LicensesLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIView LicensesView { get; set; }
 
-        [Outlet]
-        UIKit.UIView PrivacyPolicyView { get; set; }
+		[Outlet]
+		UIKit.UILabel PrivacyPolicyLabel { get; set; }
 
-        [Outlet]
-        UIKit.UIView TermsOfServiceView { get; set; }
+		[Outlet]
+		UIKit.UIView PrivacyPolicyView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TermsOfServiceLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView TermsOfServiceView { get; set; }
 
 		[Outlet]
 		UIKit.NSLayoutConstraint TopConstraint { get; set; }
@@ -31,21 +40,34 @@ namespace Toggl.Daneel.ViewControllers
 				LicensesView = null;
 			}
 
-            if (PrivacyPolicyView != null)
-            {
-                PrivacyPolicyView.Dispose();
-                PrivacyPolicyView = null;
-            }
+			if (PrivacyPolicyView != null) {
+				PrivacyPolicyView.Dispose ();
+				PrivacyPolicyView = null;
+			}
 
-            if (TermsOfServiceView != null)
-            {
-                TermsOfServiceView.Dispose();
-                TermsOfServiceView = null;
-            }
+			if (PrivacyPolicyLabel != null) {
+				PrivacyPolicyLabel.Dispose ();
+				PrivacyPolicyLabel = null;
+			}
+
+			if (TermsOfServiceView != null) {
+				TermsOfServiceView.Dispose ();
+				TermsOfServiceView = null;
+			}
 
 			if (TopConstraint != null) {
 				TopConstraint.Dispose ();
 				TopConstraint = null;
+			}
+
+			if (LicensesLabel != null) {
+				LicensesLabel.Dispose ();
+				LicensesLabel = null;
+			}
+
+			if (TermsOfServiceLabel != null) {
+				TermsOfServiceLabel.Dispose ();
+				TermsOfServiceLabel = null;
 			}
 		}
 	}

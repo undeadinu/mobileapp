@@ -19,6 +19,10 @@ namespace Toggl.Daneel.ViewControllers
 
             Title = Resources.About;
 
+            PrivacyPolicyLabel.Text = Resources.PrivacyPolicy;
+            TermsOfServiceLabel.Text = Resources.TermsOfService;
+            LicensesLabel.Text = Resources.Licenses;
+
             LicensesView.Rx()
                 .BindAction(ViewModel.OpenLicensesView)
                 .DisposedBy(DisposeBag);
