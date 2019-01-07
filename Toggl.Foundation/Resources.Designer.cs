@@ -10,7 +10,6 @@
 
 namespace Toggl.Foundation {
     using System;
-    using System.Reflection;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
@@ -998,6 +997,24 @@ namespace Toggl.Foundation {
         public static string CreateClient {
             get {
                 return ResourceManager.GetString("CreateClient", resourceCulture);
+            }
+        }
+        
+        public static string NoWorries {
+            get {
+                return ResourceManager.GetString("NoWorries", resourceCulture);
+            }
+        }
+        
+        public static string EnableAccessLater {
+            get {
+                return ResourceManager.GetString("EnableAccessLater", resourceCulture);
+            }
+        }
+        
+        public static string ContinueWithoutAccess {
+            get {
+                return ResourceManager.GetString("ContinueWithoutAccess", resourceCulture);
             }
         }
     }

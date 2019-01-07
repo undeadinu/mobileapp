@@ -7,6 +7,8 @@ using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Multivac.Extensions;
 using Toggl.Foundation.MvvmCross.Extensions;
 using System.Reactive;
+using Foundation;
+using Toggl.Foundation;
 
 namespace Toggl.Daneel.ViewControllers.Calendar
 {
@@ -23,6 +25,10 @@ namespace Toggl.Daneel.ViewControllers.Calendar
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            HeadingLabel.Text = Resources.NoWorries;
+            MessageLabel.Text = Resources.EnableAccessLater;
+            ContinueWithoutAccessButton.SetTitle(Resources.ContinueWithoutAccess, UIControlState.Normal);
 
             var screenWidth = UIScreen.MainScreen.Bounds.Width;
             PreferredContentSize = new CGSize

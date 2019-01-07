@@ -498,4 +498,13 @@ account is not set up</value>
     <data name="CreateClient">
         <value>Create client</value>
     </data>
+    <data name="NoWorries">
+        <value>No worries</value>
+    </data>
+    <data name="EnableAccessLater">
+        <value>You can enable access later from the Settings.</value>
+    </data>
+    <data name="ContinueWithoutAccess">
+        <value>Continue without the access</value>
+    </data>
 </root>
