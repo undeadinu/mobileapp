@@ -507,4 +507,10 @@ account is not set up</value>
     <data name="ContinueWithoutAccess">
         <value>Continue without the access</value>
     </data>
+    <data name="AllowCalendarAccess">
+        <value>Allow Calendar access</value>
+    </data>
+    <data name="CalendarAccessExplanation">
+        <value>Toggl needs access to your calendar in order to display events. Events are visible to you only and won’t appear in Reports.</value>
+    </data>
 </root>

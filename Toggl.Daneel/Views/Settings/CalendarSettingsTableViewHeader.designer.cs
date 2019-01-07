@@ -16,7 +16,13 @@ namespace Toggl.Daneel
 		UIKit.UILabel CalendarPermissionStatusLabel { get; set; }
 
 		[Outlet]
+		UIKit.UILabel DescriptionLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIView EnableCalendarAccessView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TextLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -28,6 +34,16 @@ namespace Toggl.Daneel
 			if (EnableCalendarAccessView != null) {
 				EnableCalendarAccessView.Dispose ();
 				EnableCalendarAccessView = null;
+			}
+
+			if (TextLabel != null) {
+				TextLabel.Dispose ();
+				TextLabel = null;
+			}
+
+			if (DescriptionLabel != null) {
+				DescriptionLabel.Dispose ();
+				DescriptionLabel = null;
 			}
 		}
 	}

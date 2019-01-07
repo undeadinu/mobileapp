@@ -1017,5 +1017,17 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("ContinueWithoutAccess", resourceCulture);
             }
         }
+        
+        public static string AllowCalendarAccess {
+            get {
+                return ResourceManager.GetString("AllowCalendarAccess", resourceCulture);
+            }
+        }
+        
+        public static string CalendarAccessExplanation {
+            get {
+                return ResourceManager.GetString("CalendarAccessExplanation", resourceCulture);
+            }
+        }
     }
 }

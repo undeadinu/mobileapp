@@ -20,6 +20,8 @@ namespace Toggl.Daneel
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();
+            TextLabel.Text = Resources.AllowCalendarAccess;
+            DescriptionLabel.Text = Resources.CalendarAccessExplanation;
             EnableCalendarAccessTapped = EnableCalendarAccessView.Rx().Tap();
         }
 
