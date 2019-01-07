@@ -59,6 +59,5 @@ namespace Toggl.Foundation.Interactors
                     : timeService.CurrentDateTimeObservable
                         .Select(now => now - timeEntry.Start)
                         .StartWith(timeService.CurrentDateTime - timeEntry.Start));
-
     }
 }
