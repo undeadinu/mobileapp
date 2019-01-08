@@ -31,10 +31,18 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.NSLayoutConstraint ResetPasswordButtonBottomConstraint { get; set; }
 
 		[Outlet]
+		UIKit.UILabel SuccessMessageLabel { get; set; }
+
+		[Outlet]
 		UIKit.NSLayoutConstraint TopConstraint { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (ActivityIndicator != null) {
+				ActivityIndicator.Dispose ();
+				ActivityIndicator = null;
+			}
+
 			if (DoneCard != null) {
 				DoneCard.Dispose ();
 				DoneCard = null;
@@ -65,9 +73,9 @@ namespace Toggl.Daneel.ViewControllers
 				TopConstraint = null;
 			}
 
-			if (ActivityIndicator != null) {
-				ActivityIndicator.Dispose ();
-				ActivityIndicator = null;
+			if (SuccessMessageLabel != null) {
+				SuccessMessageLabel.Dispose ();
+				SuccessMessageLabel = null;
 			}
 		}
 	}

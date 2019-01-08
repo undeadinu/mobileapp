@@ -217,7 +217,7 @@ time entries will appear here.</value>
         <value>Please enter your email to reset your password.</value>
     </data>
     <data name="PasswordResetSuccess">
-        <value>We just sent you an email. Please follow the link in the email to reset your password.</value>
+        <value>Link sent. Please, check your email to reset the password.</value>
     </data>
     <data name="PasswordResetEmailDoesNotExistError">
         <value>Oops! Unknown email. Please check that it's entered correctly.</value>
@@ -563,5 +563,8 @@ account is not set up</value>
     </data>
     <data name="AddTags">
         <value>Add tags</value>
+    </data>
+    <data name="EmailAddress">
+        <value>Email Address</value>
     </data>
 </root>

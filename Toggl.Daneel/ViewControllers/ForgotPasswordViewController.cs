@@ -37,6 +37,9 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewDidLoad();
 
             Title = Resources.LoginForgotPassword;
+            ResetPasswordButton.SetTitle(Resources.GetPasswordResetLink, UIControlState.Normal);
+            EmailTextField.Placeholder = Resources.EmailAddress;
+            SuccessMessageLabel.Text = Resources.PasswordResetSuccess;
 
             prepareViews();
 

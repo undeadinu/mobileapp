@@ -1131,5 +1131,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("AddTags", resourceCulture);
             }
         }
+        
+        public static string EmailAddress {
+            get {
+                return ResourceManager.GetString("EmailAddress", resourceCulture);
+            }
+        }
     }
 }
