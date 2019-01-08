@@ -16,7 +16,16 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIStackView AddProjectAndTaskView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel AddProjectTaskLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel AddTagsLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIStackView AddTagsView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel BillableLabel { get; set; }
 
 		[Outlet]
 		UIKit.UISwitch BillableSwitch { get; set; }
@@ -27,6 +36,9 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UIView CategorizeWithProjectsBubbleView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel CategorizeWithProjectsLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIButton CloseButton { get; set; }
@@ -47,10 +59,16 @@ namespace Toggl.Daneel.ViewControllers
 		Toggl.Daneel.Views.TextViewWithPlaceholder DescriptionTextView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel DurationDescriptionLabel { get; set; }
+
+		[Outlet]
 		UIKit.UILabel DurationLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIView DurationView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel EndDescriptionLabel { get; set; }
 
 		[Outlet]
 		UIKit.UILabel EndTimeLabel { get; set; }
@@ -60,6 +78,9 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UILabel ErrorMessageLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel ErrorMessageTitleLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIView ErrorView { get; set; }
@@ -79,10 +100,16 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIStackView ScrollViewContent { get; set; }
 
 		[Outlet]
+		UIKit.UILabel StartDateDescriptionLabel { get; set; }
+
+		[Outlet]
 		UIKit.UILabel StartDateLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIView StartDateView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel StartDescriptionLabel { get; set; }
 
 		[Outlet]
 		UIKit.UILabel StartTimeLabel { get; set; }
@@ -101,6 +128,9 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UITextView TagsTextView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -234,11 +264,6 @@ namespace Toggl.Daneel.ViewControllers
 				StopButton = null;
 			}
 
-			if (TagsTextView != null) {
-				TagsTextView.Dispose ();
-				TagsTextView = null;
-			}
-
 			if (TagsContainerView != null) {
 				TagsContainerView.Dispose ();
 				TagsContainerView = null;
@@ -247,6 +272,61 @@ namespace Toggl.Daneel.ViewControllers
 			if (TagsSeparator != null) {
 				TagsSeparator.Dispose ();
 				TagsSeparator = null;
+			}
+
+			if (TagsTextView != null) {
+				TagsTextView.Dispose ();
+				TagsTextView = null;
+			}
+
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
+			}
+
+			if (BillableLabel != null) {
+				BillableLabel.Dispose ();
+				BillableLabel = null;
+			}
+
+			if (StartDateDescriptionLabel != null) {
+				StartDateDescriptionLabel.Dispose ();
+				StartDateDescriptionLabel = null;
+			}
+
+			if (DurationDescriptionLabel != null) {
+				DurationDescriptionLabel.Dispose ();
+				DurationDescriptionLabel = null;
+			}
+
+			if (StartDescriptionLabel != null) {
+				StartDescriptionLabel.Dispose ();
+				StartDescriptionLabel = null;
+			}
+
+			if (EndDescriptionLabel != null) {
+				EndDescriptionLabel.Dispose ();
+				EndDescriptionLabel = null;
+			}
+
+			if (ErrorMessageTitleLabel != null) {
+				ErrorMessageTitleLabel.Dispose ();
+				ErrorMessageTitleLabel = null;
+			}
+
+			if (AddProjectTaskLabel != null) {
+				AddProjectTaskLabel.Dispose ();
+				AddProjectTaskLabel = null;
+			}
+
+			if (CategorizeWithProjectsLabel != null) {
+				CategorizeWithProjectsLabel.Dispose ();
+				CategorizeWithProjectsLabel = null;
+			}
+
+			if (AddTagsLabel != null) {
+				AddTagsLabel.Dispose ();
+				AddTagsLabel = null;
 			}
 		}
 	}

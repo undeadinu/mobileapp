@@ -1083,5 +1083,53 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("ProjectName", resourceCulture);
             }
         }
+        
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        public static string Billable {
+            get {
+                return ResourceManager.GetString("Billable", resourceCulture);
+            }
+        }
+        
+        public static string Startdate {
+            get {
+                return ResourceManager.GetString("Startdate", resourceCulture);
+            }
+        }
+        
+        public static string Duration {
+            get {
+                return ResourceManager.GetString("Duration", resourceCulture);
+            }
+        }
+        
+        public static string AddProjectTask {
+            get {
+                return ResourceManager.GetString("AddProjectTask", resourceCulture);
+            }
+        }
+        
+        public static string ConfirmChanges {
+            get {
+                return ResourceManager.GetString("ConfirmChanges", resourceCulture);
+            }
+        }
+        
+        public static string CategorizeYourTimeWithProjects {
+            get {
+                return ResourceManager.GetString("CategorizeYourTimeWithProjects", resourceCulture);
+            }
+        }
+        
+        public static string AddTags {
+            get {
+                return ResourceManager.GetString("AddTags", resourceCulture);
+            }
+        }
     }
 }

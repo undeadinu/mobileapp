@@ -65,6 +65,19 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
+            TitleLabel.Text = Resources.Edit;
+            BillableLabel.Text = Resources.Billable;
+            StartDateDescriptionLabel.Text = Resources.Startdate;
+            DurationDescriptionLabel.Text = Resources.Duration;
+            StartDescriptionLabel.Text = Resources.Start;
+            EndDescriptionLabel.Text = Resources.End;
+            ErrorMessageTitleLabel.Text = Resources.Oops;
+            AddProjectTaskLabel.Text = Resources.AddProjectTask;
+            CategorizeWithProjectsLabel.Text = Resources.CategorizeYourTimeWithProjects;
+            AddTagsLabel.Text = Resources.AddTags;
+            DeleteButton.SetTitle(Resources.Delete, UIControlState.Normal);
+            ConfirmButton.SetTitle(Resources.ConfirmChanges, UIControlState.Normal);
+
             prepareViews();
             prepareOnboarding();
 

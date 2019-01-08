@@ -540,4 +540,28 @@ account is not set up</value>
     <data name="ProjectName">
         <value>Project Name</value>
     </data>
+    <data name="Edit">
+        <value>Edit</value>
+    </data>
+    <data name="Billable">
+        <value>Billable</value>
+    </data>
+    <data name="Startdate">
+        <value>Start date</value>
+    </data>
+    <data name="Duration">
+        <value>Duration</value>
+    </data>
+    <data name="AddProjectTask">
+        <value>Add project/task</value>
+    </data>
+    <data name="ConfirmChanges">
+        <value>Confirm changes</value>
+    </data>
+    <data name="CategorizeYourTimeWithProjects">
+        <value>Categorize your time with projects</value>
+    </data>
+    <data name="AddTags">
+        <value>Add tags</value>
+    </data>
 </root>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,34 +13,44 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EditViewController">
             <connections>
                 <outlet property="AddProjectAndTaskView" destination="kWe-VC-tlL" id="name-outlet-kWe-VC-tlL"/>
+                <outlet property="AddProjectTaskLabel" destination="FIb-bL-aFc" id="mVn-qn-bw3"/>
+                <outlet property="AddTagsLabel" destination="ZqB-O4-PPQ" id="MJZ-AJ-mr7"/>
                 <outlet property="AddTagsView" destination="5X6-NO-ZSm" id="name-outlet-5X6-NO-ZSm"/>
+                <outlet property="BillableLabel" destination="cR6-ds-kkj" id="QKV-YT-ODK"/>
                 <outlet property="BillableSwitch" destination="vWw-JK-JJ7" id="Oe0-yM-fOT"/>
                 <outlet property="BillableView" destination="aPm-jE-Ae4" id="name-outlet-aPm-jE-Ae4"/>
                 <outlet property="CategorizeWithProjectsBubbleView" destination="deH-jn-MoU" id="JnC-Lg-eBr"/>
+                <outlet property="CategorizeWithProjectsLabel" destination="Wi1-My-6o2" id="2Y5-tF-BGR"/>
                 <outlet property="CloseButton" destination="Pp0-YW-3Bg" id="saf-I0-QIJ"/>
                 <outlet property="ConfirmButton" destination="1PY-gD-iJQ" id="hzk-BQ-CGa"/>
                 <outlet property="ConfirmButtonBottomConstraint" destination="Mnj-ZD-MnV" id="oLa-0F-vc7"/>
                 <outlet property="DeleteButton" destination="iqc-QZ-Ds5" id="wUP-Jl-mPO"/>
                 <outlet property="DeleteButtonBottomConstraint" destination="BpP-xf-cUP" id="AbA-tp-mC5"/>
                 <outlet property="DescriptionTextView" destination="EBA-rV-Dfi" id="2NQ-aO-MK3"/>
+                <outlet property="DurationDescriptionLabel" destination="JUC-PY-YeK" id="AFg-DF-X3a"/>
                 <outlet property="DurationLabel" destination="EW6-cw-AXE" id="2Jc-0e-dzV"/>
                 <outlet property="DurationView" destination="QGD-ja-9Fl" id="rzp-lM-zsV"/>
+                <outlet property="EndDescriptionLabel" destination="Jm3-o3-8kP" id="E3g-f4-8cB"/>
                 <outlet property="EndTimeLabel" destination="SJr-Ox-SV2" id="aEn-1G-9xo"/>
                 <outlet property="EndTimeView" destination="lfx-NK-d5k" id="ZCV-go-v2W"/>
                 <outlet property="ErrorMessageLabel" destination="uu4-30-FWz" id="lTd-LA-s6J"/>
+                <outlet property="ErrorMessageTitleLabel" destination="20o-iH-vm8" id="zqr-a5-295"/>
                 <outlet property="ErrorView" destination="Mhn-ip-f09" id="yba-gj-HMU"/>
                 <outlet property="ProjectTaskClientLabel" destination="hhk-MD-ce8" id="K8D-9n-qvT"/>
                 <outlet property="RemainingCharacterCount" destination="QiN-bB-vR6" id="Eet-h5-kMs"/>
                 <outlet property="ScrollView" destination="Pzm-Vp-XJF" id="name-outlet-Pzm-Vp-XJF"/>
                 <outlet property="ScrollViewContent" destination="ezG-FV-3G1" id="5ej-vl-dVu"/>
+                <outlet property="StartDateDescriptionLabel" destination="60y-Zx-mBp" id="cP5-xF-qQ2"/>
                 <outlet property="StartDateLabel" destination="xIz-dZ-hk9" id="LbH-Ta-gLH"/>
                 <outlet property="StartDateView" destination="lpv-ow-dGv" id="aMx-7B-ozR"/>
+                <outlet property="StartDescriptionLabel" destination="0lZ-m7-Epd" id="k7y-82-meE"/>
                 <outlet property="StartTimeLabel" destination="cSu-PO-AWN" id="lkE-7f-YxW"/>
                 <outlet property="StartTimeView" destination="7j2-RA-OL0" id="0zw-Ae-xcp"/>
                 <outlet property="StopButton" destination="fcT-2a-vU7" id="zK4-aC-YP8"/>
                 <outlet property="TagsContainerView" destination="v6N-R9-g8f" id="iCP-y6-Tsf"/>
                 <outlet property="TagsSeparator" destination="3pA-bG-OvM" id="pux-Kc-p0S"/>
                 <outlet property="TagsTextView" destination="okG-ou-p4i" id="mLv-NG-ci7"/>
+                <outlet property="TitleLabel" destination="f5j-k9-aHB" id="dtB-1i-eeh"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
         </placeholder>
