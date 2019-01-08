@@ -9,6 +9,7 @@ using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using UIKit;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -31,6 +32,11 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            NameTakenErrorLabel.Text = Resources.NameTakenError;
+            TitleLabel.Text = Resources.NewProject;
+            NameTextField.Placeholder = Resources.ProjectName;
+            DoneButton.SetTitle(Resources.Create, UIControlState.Normal);
 
             var heightConverter = new BoolToConstantValueConverter<nfloat>(nameAlreadyTakenHeight, 0);
 

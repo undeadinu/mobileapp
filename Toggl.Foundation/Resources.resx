@@ -534,4 +534,10 @@ account is not set up</value>
     <data name="StartAndStopTime">
         <value>Start and stop times</value>
     </data>
+    <data name="NameTakenError">
+        <value>Sorry, this name is already taken</value>
+    </data>
+    <data name="ProjectName">
+        <value>Project Name</value>
+    </data>
 </root>

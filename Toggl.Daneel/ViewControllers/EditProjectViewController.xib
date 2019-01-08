@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,6 +16,7 @@
                 <outlet property="ColorCircleView" destination="oGf-TO-JiY" id="JzO-Jt-Pal"/>
                 <outlet property="ColorPickerOpeningView" destination="LTL-AP-fd8" id="Zk8-vs-iE1"/>
                 <outlet property="DoneButton" destination="8A6-l5-Nhc" id="XA1-Gk-OHy"/>
+                <outlet property="NameTakenErrorLabel" destination="AJK-6q-awO" id="6op-hg-nFh"/>
                 <outlet property="NameTextField" destination="bpV-JK-V6T" id="SjM-c5-Mes"/>
                 <outlet property="PrivateProjectSwitch" destination="wwu-Nj-fWo" id="KQO-e9-Mlb"/>
                 <outlet property="PrivateProjectSwitchContainer" destination="nGK-A1-PiV" id="J8N-nM-H6L"/>
@@ -32,7 +33,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New project" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J1c-05-myu">
-                    <rect key="frame" x="148" y="12" width="80" height="16"/>
+                    <rect key="frame" x="147.5" y="12" width="80" height="16"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="16" id="9Ph-1u-p65"/>
                     </constraints>
@@ -105,7 +106,7 @@
                     </constraints>
                 </view>
                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Aww-PX-j65" userLabel="ProjectNameUsedErrorView">
-                    <rect key="frame" x="-0.5" y="105" width="375" height="16"/>
+                    <rect key="frame" x="0.0" y="105" width="375" height="16"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icErrorSmall" translatesAutoresizingMaskIntoConstraints="NO" id="1E4-ZJ-mBC" userLabel="WarningIcon">
                             <rect key="frame" x="16" y="2.5" width="11" height="11"/>
@@ -115,7 +116,7 @@
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorry, this name is already taken" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJK-6q-awO" userLabel="Text">
-                            <rect key="frame" x="31" y="0.5" width="183.5" height="14.5"/>
+                            <rect key="frame" x="31" y="1" width="183.5" height="14.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <color key="textColor" red="0.96862745098039216" green="0.25098039215686274" blue="0.28627450980392155" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
@@ -169,7 +170,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wwu-Nj-fWo">
-                            <rect key="frame" x="310" y="8" width="51" height="31"/>
+                            <rect key="frame" x="310" y="8.5" width="51" height="31"/>
                         </switch>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

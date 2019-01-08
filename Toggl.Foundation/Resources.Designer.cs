@@ -1071,5 +1071,17 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("StartAndStopTime", resourceCulture);
             }
         }
+        
+        public static string NameTakenError {
+            get {
+                return ResourceManager.GetString("NameTakenError", resourceCulture);
+            }
+        }
+        
+        public static string ProjectName {
+            get {
+                return ResourceManager.GetString("ProjectName", resourceCulture);
+            }
+        }
     }
 }
