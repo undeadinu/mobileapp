@@ -31,6 +31,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UILabel EndDateLabel { get; set; }
 
 		[Outlet]
+		UIKit.UILabel EndLabel { get; set; }
+
+		[Outlet]
 		UIKit.UILabel EndTimeLabel { get; set; }
 
 		[Outlet]
@@ -49,10 +52,16 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UILabel StartDateLabel { get; set; }
 
 		[Outlet]
+		UIKit.UILabel StartLabel { get; set; }
+
+		[Outlet]
 		UIKit.UILabel StartTimeLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIView StartView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 
 		[Outlet]
 		Toggl.Daneel.Views.EditDuration.WheelForegroundView WheelView { get; set; }
@@ -109,6 +118,11 @@ namespace Toggl.Daneel.ViewControllers
 				SetEndButton = null;
 			}
 
+			if (StackView != null) {
+				StackView.Dispose ();
+				StackView = null;
+			}
+
 			if (StartDateLabel != null) {
 				StartDateLabel.Dispose ();
 				StartDateLabel = null;
@@ -129,9 +143,19 @@ namespace Toggl.Daneel.ViewControllers
 				WheelView = null;
 			}
 
-			if (StackView != null) {
-				StackView.Dispose ();
-				StackView = null;
+			if (StartLabel != null) {
+				StartLabel.Dispose ();
+				StartLabel = null;
+			}
+
+			if (EndLabel != null) {
+				EndLabel.Dispose ();
+				EndLabel = null;
+			}
+
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
 			}
 		}
 	}

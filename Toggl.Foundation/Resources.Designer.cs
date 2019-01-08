@@ -1047,5 +1047,29 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("GetStarted", resourceCulture);
             }
         }
+        
+        public static string Start {
+            get {
+                return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        public static string End {
+            get {
+                return ResourceManager.GetString("End", resourceCulture);
+            }
+        }
+        
+        public static string Stop {
+            get {
+                return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        public static string StartAndStopTime {
+            get {
+                return ResourceManager.GetString("StartAndStopTime", resourceCulture);
+            }
+        }
     }
 }

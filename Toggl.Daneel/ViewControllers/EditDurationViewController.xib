@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
-        <capability name="Self referencing constraints of the same attribute" minToolsVersion="5.1"/>
-        <capability name="Unknown constraint types" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -20,14 +16,17 @@
                 <outlet property="DatePickerContainer" destination="F4n-kX-vKH" id="sph-o3-Fl4"/>
                 <outlet property="DurationInput" destination="azJ-VB-or1" id="4GX-5G-08p"/>
                 <outlet property="EndDateLabel" destination="dnH-HN-nZN" id="xeT-eF-geD"/>
+                <outlet property="EndLabel" destination="7Qu-p8-1T7" id="6xi-Lc-T4R"/>
                 <outlet property="EndTimeLabel" destination="cF2-5n-ALR" id="TKS-Wd-udF"/>
                 <outlet property="EndView" destination="0dl-6I-qsd" id="Was-Np-sRf"/>
                 <outlet property="SaveButton" destination="hUN-Vx-fPV" id="TDs-c1-h7g"/>
                 <outlet property="SetEndButton" destination="hBU-VY-jwW" id="fig-Eh-QxW"/>
                 <outlet property="StackView" destination="bRk-TA-ikl" id="BjS-fH-s9k"/>
                 <outlet property="StartDateLabel" destination="NF4-WI-ivb" id="57b-4B-SdK"/>
+                <outlet property="StartLabel" destination="4Go-Wr-YCP" id="25u-uy-Eep"/>
                 <outlet property="StartTimeLabel" destination="Ui6-4d-DCo" id="mQR-PF-EMI"/>
                 <outlet property="StartView" destination="3rQ-79-Xf7" id="8q4-hK-qC9"/>
+                <outlet property="TitleLabel" destination="TaT-PX-4SO" id="i7D-3G-3CM"/>
                 <outlet property="WheelView" destination="5uR-7c-EpB" id="bqa-4a-ysm"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
@@ -86,7 +85,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="icEndLabel" translatesAutoresizingMaskIntoConstraints="NO" id="xO0-Bb-VWh">
-                                            <rect key="frame" x="54" y="8" width="9" height="9"/>
+                                            <rect key="frame" x="54.5" y="7.5" width="9" height="9"/>
                                         </imageView>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MTr-8e-VhT">
                                             <rect key="frame" x="-7.5" y="24" width="159" height="31"/>
@@ -154,10 +153,10 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="icStartLabel" translatesAutoresizingMaskIntoConstraints="NO" id="Rb0-t8-ESu">
-                                            <rect key="frame" x="51" y="7.5" width="9" height="10"/>
+                                            <rect key="frame" x="51" y="7" width="9" height="10"/>
                                         </imageView>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f2y-9L-nF2">
-                                            <rect key="frame" x="17" y="24" width="109" height="31.5"/>
+                                            <rect key="frame" x="17.5" y="24" width="109" height="31.5"/>
                                             <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -255,7 +254,7 @@
                                             </constraints>
                                         </imageView>
                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" text="0:00:00" textAlignment="center" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="azJ-VB-or1" customClass="DurationField">
-                                            <rect key="frame" x="31" y="3" width="85" height="27"/>
+                                            <rect key="frame" x="31" y="2.5" width="85" height="27"/>
                                             <nil key="textColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                             <textInputTraits key="textInputTraits"/>

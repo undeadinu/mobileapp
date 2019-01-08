@@ -522,4 +522,16 @@ account is not set up</value>
     <data name="GetStarted">
         <value>Get started</value>
     </data>
+    <data name="Start">
+        <value>Start</value>
+    </data>
+    <data name="End">
+        <value>End</value>
+    </data>
+    <data name="Stop">
+        <value>Stop</value>
+    </data>
+    <data name="StartAndStopTime">
+        <value>Start and stop times</value>
+    </data>
 </root>
