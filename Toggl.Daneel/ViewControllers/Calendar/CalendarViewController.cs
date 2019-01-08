@@ -36,6 +36,10 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
+            TitleLabel.Text = Resources.Welcome;
+            DescriptionLabel.Text = Resources.CalendarFeatureDescription;
+            GetStartedButton.SetTitle(Resources.GetStarted, UIControlState.Normal);
+
             settingsButton.SetImage(UIImage.FromBundle("icSettings"), UIControlState.Normal);
 
             ViewModel

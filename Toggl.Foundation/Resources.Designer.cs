@@ -1029,5 +1029,23 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("CalendarAccessExplanation", resourceCulture);
             }
         }
+        
+        public static string Welcome {
+            get {
+                return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        public static string CalendarFeatureDescription {
+            get {
+                return ResourceManager.GetString("CalendarFeatureDescription", resourceCulture);
+            }
+        }
+        
+        public static string GetStarted {
+            get {
+                return ResourceManager.GetString("GetStarted", resourceCulture);
+            }
+        }
     }
 }

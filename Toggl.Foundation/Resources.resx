@@ -513,4 +513,13 @@ account is not set up</value>
     <data name="CalendarAccessExplanation">
         <value>Toggl needs access to your calendar in order to display events. Events are visible to you only and won’t appear in Reports.</value>
     </data>
+    <data name="Welcome">
+        <value>Welcome</value>
+    </data>
+    <data name="CalendarFeatureDescription">
+        <value>Calendar feature links to calendars on your device so that you can see events and turn these to time entries.</value>
+    </data>
+    <data name="GetStarted">
+        <value>Get started</value>
+    </data>
 </root>
