@@ -25,10 +25,9 @@ namespace Toggl.Foundation.Login
 
         private ITogglDataSource cachedDataSource;
         private ISubject<ITogglDataSource> userLoggedInSubject = new Subject<ITogglDataSource>();
-        private ISubject<Unit> userLoggedOutSubject = new Subject<Unit>();
 
         public IObservable<ITogglDataSource> UserLoggedIn => userLoggedInSubject.AsObservable();
-        public IObservable<Unit> UserLoggedOut => userLoggedOutSubject.AsObservable();
+        public ISubject<Unit> UserLoggedOut { get; } = new Subject<Unit>();
 
         public UserAccessManager(
             IApiFactory apiFactory,

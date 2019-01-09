@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive;
+using System.Reactive.Subjects;
 using Toggl.Foundation.DataSources;
 using Toggl.Multivac;
 
@@ -8,7 +9,7 @@ namespace Toggl.Foundation.Login
     public interface IUserAccessManager
     {
         IObservable<ITogglDataSource> UserLoggedIn { get; }
-        IObservable<Unit> UserLoggedOut { get; }
+        ISubject<Unit> UserLoggedOut { get; }
 
         ITogglDataSource GetDataSourceIfLoggedIn();
 
