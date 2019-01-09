@@ -4,6 +4,7 @@ using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Views;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Presentation.Attributes;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 
@@ -19,6 +20,9 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.Startdate;
+            CloseButton.SetTitle(Resources.Save, UIControlState.Normal);
 
             prepareDatePicker();
 
