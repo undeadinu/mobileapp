@@ -1491,5 +1491,17 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("AddProjectBubbleText", resourceCulture);
             }
         }
+        
+        public static string ReviewTheTerms {
+            get {
+                return ResourceManager.GetString("ReviewTheTerms", resourceCulture);
+            }
+        }
+        
+        public static string IAgree {
+            get {
+                return ResourceManager.GetString("IAgree", resourceCulture);
+            }
+        }
     }
 }

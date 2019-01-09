@@ -14,6 +14,7 @@
                 <outlet property="AcceptButton" destination="RrZ-Vk-tMu" id="Tf9-uI-eNe"/>
                 <outlet property="CloseButton" destination="1NO-KZ-6hI" id="ICD-k4-4Vm"/>
                 <outlet property="TextView" destination="qWn-lE-wo1" id="pgv-Gi-n6G"/>
+                <outlet property="TitleLabel" destination="X23-9x-2S6" id="WbI-6O-bNF"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
         </placeholder>

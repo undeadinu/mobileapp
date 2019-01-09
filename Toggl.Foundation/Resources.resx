@@ -749,4 +749,10 @@ account is not set up</value>
     <data name="AddProjectBubbleText">
         <value>Add a project and tags on the fly</value>
     </data>
+    <data name="ReviewTheTerms">
+        <value>Review the Terms</value>
+    </data>
+    <data name="IAgree">
+        <value>I agree</value>
+    </data>
 </root>

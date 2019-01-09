@@ -20,6 +20,9 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UITextView TextView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -36,6 +39,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (TextView != null) {
 				TextView.Dispose ();
 				TextView = null;
+			}
+
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
 			}
 		}
 	}
