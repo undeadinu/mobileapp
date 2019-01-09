@@ -195,6 +195,9 @@ time entries will appear here.</value>
     <data name="AddFilterProjects">
         <value>Add/filter project</value>
     </data>
+    <data name="AddFilterClients">
+        <value>Add/filter clients</value>
+    </data>
     <data name="CreateTag">
         <value>Create tag</value>
     </data>
@@ -652,5 +655,8 @@ account is not set up</value>
     </data>
     <data name="FirstDayOfTheWeek">
         <value>First day of the week</value>
+    </data>
+    <data name="Clients">
+        <value>Clients</value>
     </data>
 </root>

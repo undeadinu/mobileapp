@@ -400,6 +400,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string AddFilterClients {
+            get {
+                return ResourceManager.GetString("AddFilterClients", resourceCulture);
+            }
+        }
+        
         public static string CreateTag {
             get {
                 return ResourceManager.GetString("CreateTag", resourceCulture);
@@ -1303,6 +1309,12 @@ namespace Toggl.Foundation {
         public static string FirstDayOfTheWeek {
             get {
                 return ResourceManager.GetString("FirstDayOfTheWeek", resourceCulture);
+            }
+        }
+        
+        public static string Clients {
+            get {
+                return ResourceManager.GetString("Clients", resourceCulture);
             }
         }
     }
