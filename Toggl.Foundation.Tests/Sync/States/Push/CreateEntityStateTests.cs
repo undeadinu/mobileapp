@@ -59,7 +59,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
             var persistedEntity = ((Transition<IThreadSafeTestModel>)transition).Parameter;
 
             dataSource.Received().ChangeId(entity.Id, withPositiveId.Id);
-            transition.Result.Should().Be(state.Finished);
+            transition.Result.Should().Be(state.Done);
             persistedEntity.Id.Should().Be(withPositiveId.Id);
             persistedEntity.SyncStatus.Should().Be(SyncStatus.InSync);
         }

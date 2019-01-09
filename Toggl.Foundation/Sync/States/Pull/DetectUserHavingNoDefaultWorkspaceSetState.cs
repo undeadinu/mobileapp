@@ -6,15 +6,15 @@ using Toggl.Multivac;
 
 namespace Toggl.Foundation.Sync.States.Pull
 {
-    internal sealed class NoDefaultWorkspaceDetectingState : ISyncState
+    internal sealed class DetectUserHavingNoDefaultWorkspaceSetState : ISyncState
     {
         private readonly ITogglDataSource dataSource;
         private readonly IAnalyticsService analyticsService;
 
-        public StateResult Continue { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
         public StateResult NoDefaultWorkspaceDetected { get; } = new StateResult();
 
-        public NoDefaultWorkspaceDetectingState(
+        public DetectUserHavingNoDefaultWorkspaceSetState(
             ITogglDataSource dataSource,
             IAnalyticsService analyticsService)
         {
@@ -30,7 +30,7 @@ namespace Toggl.Foundation.Sync.States.Pull
                 .Select(user => user.DefaultWorkspaceId.HasValue)
                 .Do(trackNoDefaultWorkspaceIfNeeded)
                 .Select(userHasDefaultWorkspace => userHasDefaultWorkspace
-                    ? Continue.Transition()
+                    ? Done.Transition()
                     : NoDefaultWorkspaceDetected.Transition());
 
         private void trackNoDefaultWorkspaceIfNeeded(bool userHasDefaultWorkspace)

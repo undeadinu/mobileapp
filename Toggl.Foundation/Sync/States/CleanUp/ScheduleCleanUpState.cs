@@ -8,7 +8,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
     {
         private readonly ISyncStateQueue queue;
 
-        public StateResult<IFetchObservables> CleanUpScheduled { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
 
         public ScheduleCleanUpState(ISyncStateQueue queue)
         {
@@ -19,7 +19,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
         public IObservable<ITransition> Start(IFetchObservables fetch)
         {
             queue.QueueCleanUp();
-            return Observable.Return(CleanUpScheduled.Transition(fetch));
+            return Observable.Return(Done.Transition(fetch));
         }
     }
 }

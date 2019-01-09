@@ -6,7 +6,7 @@ using Toggl.PrimeRadiant;
 
 namespace Toggl.Foundation.Sync.States.Push
 {
-    internal sealed class PushOneEntityState<T> : ISyncState<T>
+    internal sealed class ChooseSyncOperationState<T> : ISyncState<T>
         where T : class, IDatabaseSyncable, IThreadSafeModel
     {
         public StateResult<T> CreateEntity { get; } = new StateResult<T>();

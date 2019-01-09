@@ -8,19 +8,19 @@ using Toggl.PrimeRadiant;
 
 namespace Toggl.Foundation.Sync.States.Push
 {
-    internal sealed class PushSingleState<T> : IPushState<T>
+    internal sealed class LookForSingletonChangeToPushState<T> : ILookForChangeToPushState<T>
         where T : class, IThreadSafeModel, IDatabaseSyncable
     {
         private readonly ISingletonDataSource<T> dataSource;
 
-        public StateResult<T> PushEntity { get; } = new StateResult<T>();
+        public StateResult<T> ChangeFound { get; } = new StateResult<T>();
 
-        public StateResult NothingToPush { get; } = new StateResult();
+        public StateResult NoMoreChanges { get; } = new StateResult();
 
-        public PushSingleState(ISingletonDataSource<T> dataSource)
+        public LookForSingletonChangeToPushState(ISingletonDataSource<T> dataSource)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
-        
+
             this.dataSource = dataSource;
         }
 
@@ -31,7 +31,7 @@ namespace Toggl.Foundation.Sync.States.Push
                 .SingleOrDefaultAsync()
                 .Select(entity =>
                     entity != null
-                        ? (ITransition)PushEntity.Transition(entity)
-                        : NothingToPush.Transition());
+                        ? (ITransition)ChangeFound.Transition(entity)
+                        : NoMoreChanges.Transition());
     }
 }

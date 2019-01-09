@@ -5,7 +5,7 @@ using Toggl.Ultrawave.Exceptions;
 
 namespace Toggl.Foundation.Sync.States.Push
 {
-    public sealed class TryResolveClientErrorState<T> : ISyncState<(Exception Error, T Entity)>
+    public sealed class ProcessClientErrorState<T> : ISyncState<(Exception Error, T Entity)>
         where T : class, IThreadSafeModel
     {
         public StateResult<TooManyRequestsException> UnresolvedTooManyRequests { get; }

@@ -22,7 +22,7 @@ namespace Toggl.Foundation.Sync.States.Pull
 
         public StateResult<MarkWorkspacesAsInaccessibleParams> WorkspaceAccessLost { get; } = new StateResult<MarkWorkspacesAsInaccessibleParams>();
 
-        public StateResult<IFetchObservables> Continue { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
 
         public DetectLosingAccessToWorkspacesState(IDataSource<IThreadSafeWorkspace, IDatabaseWorkspace> dataSource, IAnalyticsService analyticsService)
         {
@@ -38,7 +38,7 @@ namespace Toggl.Foundation.Sync.States.Pull
                 .SelectMany(workspacesWhichWereNotFetched)
                 .Select(lostWorkspaces => lostWorkspaces.Any()
                     ? processLostWorkspaces(lostWorkspaces, fetchObservables)
-                    : Continue.Transition(fetchObservables));
+                    : Done.Transition(fetchObservables));
 
         private IObservable<IList<IThreadSafeWorkspace>> workspacesWhichWereNotFetched(List<IWorkspace> fetchedWorkspaces)
             => allStoredWorkspaces()

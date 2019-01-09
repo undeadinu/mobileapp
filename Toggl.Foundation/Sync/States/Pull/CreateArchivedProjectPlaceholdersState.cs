@@ -24,7 +24,7 @@ namespace Toggl.Foundation.Sync.States.Pull
 
         private readonly IAnalyticsService analyticsService;
 
-        public StateResult<IFetchObservables> FinishedPersisting { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
 
         public CreateArchivedProjectPlaceholdersState(
             IDataSource<IThreadSafeProject, IDatabaseProject> dataSource,
@@ -46,7 +46,7 @@ namespace Toggl.Foundation.Sync.States.Pull
                 .SelectMany(createProjectPlaceholder)
                 .Count()
                 .Track(analyticsService.ProjectPlaceholdersCreated)
-                .SelectValue(FinishedPersisting.Transition(fetch));
+                .SelectValue(Done.Transition(fetch));
 
         private IObservable<bool> hasUnknownProject(ITimeEntry timeEntry)
             => timeEntry.ProjectId.HasValue

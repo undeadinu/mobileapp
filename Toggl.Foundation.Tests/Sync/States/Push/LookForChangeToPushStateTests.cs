@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Toggl.Foundation.Tests.Sync.States.Push
 {
-    public sealed class PushStateTests
+    public sealed class LookForChangeToPushStateTests
     {
         private readonly IDataSource<IThreadSafeTestModel, IDatabaseTestModel> dataSource
             = Substitute.For<IDataSource<IThreadSafeTestModel, IDatabaseTestModel>>();
@@ -19,7 +19,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         [Fact, LogIfTooSlow]
         public void ConstructorThrowsWithNullDataSource()
         {
-            Action creatingWithNullArgument = () => new PushState<IDatabaseTestModel, IThreadSafeTestModel>(null);
+            Action creatingWithNullArgument = () => new LookForChangeToPushState<IDatabaseTestModel, IThreadSafeTestModel>(null);
 
             creatingWithNullArgument.Should().Throw<ArgumentNullException>();
         }
@@ -27,19 +27,19 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         [Fact, LogIfTooSlow]
         public void ReturnsNothingToPushTransitionWhenTheRepositoryReturnsNoEntity()
         {
-            var state = new PushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
+            var state = new LookForChangeToPushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
             dataSource.GetAll(Arg.Any<Func<IDatabaseTestModel, bool>>())
                 .Returns(Observable.Return(new IThreadSafeTestModel[0]));
 
             var transition = state.Start().SingleAsync().Wait();
 
-            transition.Result.Should().Be(state.NothingToPush);
+            transition.Result.Should().Be(state.NoMoreChanges);
         }
 
         [Fact, LogIfTooSlow]
         public void ReturnsPushEntityTransitionWhenTheRepositoryReturnsSomeEntity()
         {
-            var state = new PushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
+            var state = new LookForChangeToPushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
             var entity = new TestModel(1, SyncStatus.SyncNeeded);
             dataSource.GetAll(Arg.Any<Func<IDatabaseTestModel, bool>>())
                 .Returns(Observable.Return(new[] { entity }));
@@ -47,14 +47,14 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
             var transition = state.Start().SingleAsync().Wait();
             var parameter = ((Transition<IThreadSafeTestModel>)transition).Parameter;
 
-            transition.Result.Should().Be(state.PushEntity);
+            transition.Result.Should().Be(state.ChangeFound);
             parameter.Should().BeEquivalentTo(entity, options => options.IncludingProperties());
         }
 
         [Fact, LogIfTooSlow]
         public void ThrowsWhenRepositoryThrows()
         {
-            var state = new PushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
+            var state = new LookForChangeToPushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
             dataSource.GetAll(Arg.Any<Func<IDatabaseTestModel, bool>>())
                 .Returns(Observable.Throw<IEnumerable<IThreadSafeTestModel>>(new Exception()));
 
@@ -67,7 +67,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         public void ReturnsPushEntityTransitionWithTheOldestEntity()
         {
             var at = new DateTimeOffset(2017, 9, 1, 12, 34, 56, TimeSpan.Zero);
-            var state = new PushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
+            var state = new LookForChangeToPushState<IDatabaseTestModel, IThreadSafeTestModel>(dataSource);
             var entity = new TestModel { At = at, SyncStatus = SyncStatus.SyncNeeded };
             var entity2 = new TestModel { At = at.AddDays(-2), SyncStatus = SyncStatus.SyncNeeded };
             var entity3 = new TestModel { At = at.AddDays(-1), SyncStatus = SyncStatus.SyncNeeded };
@@ -77,7 +77,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
             var transition = state.Start().SingleAsync().Wait();
             var parameter = ((Transition<IThreadSafeTestModel>)transition).Parameter;
 
-            transition.Result.Should().Be(state.PushEntity);
+            transition.Result.Should().Be(state.ChangeFound);
             parameter.Should().BeEquivalentTo(entity2, options => options.IncludingProperties());
         }
     }

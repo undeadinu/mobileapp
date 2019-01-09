@@ -11,7 +11,7 @@ namespace Toggl.Foundation.Sync.States.Pull
     {
         private readonly ISinceParameterRepository sinceParameterRepository;
 
-        public StateResult<IEnumerable<IWorkspace>> Continue { get; } = new StateResult<IEnumerable<IWorkspace>>();
+        public StateResult<IEnumerable<IWorkspace>> Done { get; } = new StateResult<IEnumerable<IWorkspace>>();
 
         public ResetSinceParamsState(ISinceParameterRepository sinceParameterRepository)
         {
@@ -22,7 +22,7 @@ namespace Toggl.Foundation.Sync.States.Pull
         public IObservable<ITransition> Start(IEnumerable<IWorkspace> workspaces)
         {
             sinceParameterRepository.Reset();
-            return Observable.Return(Continue.Transition(workspaces));
+            return Observable.Return(Done.Transition(workspaces));
         }
     }
 }

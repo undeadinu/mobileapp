@@ -36,7 +36,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
 
             var transition = await state.Start(fetchObservables);
 
-            transition.Result.Should().Be(state.FinishedPersisting);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
 
             var transition = await state.Start(fetchObservables);
 
-            transition.Result.Should().Be(state.FinishedPersisting);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact]

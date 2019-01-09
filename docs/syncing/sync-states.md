@@ -1,5 +1,26 @@
-Sample sync state
-=================
+Sync state
+==========
+
+The sync states are classes which implement the `ISyncState` or the `ISyncState<T>` interface. The generic parameter of the latter is the type of input the state receives in the `Start` method.
+
+The state's responsibility is to create an observable which should start executing once an observer subscribes to it. The observable should emit exactly once and it should emit a transition containing some result.
+
+Naming conventions
+------------------
+
+There are two naming conventions:
+
+1. The name of the state should start with a verb. Some examples from our codebase are:
+    - `DeleteOldTimeEntriesState`
+    - `TrackInaccessibleDataAfterCleanUpState`
+    - `DetectLosingAccessToWorkspacesState`
+    - `PersistNewWorkspacesState`
+    - `CreateEntityState`
+    - `MarkEntityAsUnsyncableState`
+2. If the state has a result which has no parameter or if the parameter is the same as the input of the state it should be called `Done` unless there is a good reason not to. The name of the result should also refer to what happened in the state and not to what needs to be done with the result.
+
+Example
+-------
 
 Below you will find an example of a state which would make an API request and return a different result based on the response.
 

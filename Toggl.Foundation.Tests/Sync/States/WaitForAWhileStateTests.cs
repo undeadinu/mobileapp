@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Toggl.Foundation.Tests.Sync.States
 {
-    public sealed class DelayStateTests
+    public sealed class WaitForAWhileStateTests
     {
         public sealed class TheConstructor
         {
@@ -24,7 +24,7 @@ namespace Toggl.Foundation.Tests.Sync.States
                 var scheduler = useScheduler ? Substitute.For<IScheduler>() : null;
                 var analyticsService = useAnalyticsService ? Substitute.For<IAnalyticsService>() : null;
 
-                Action createDelayState = () => new DelayState(scheduler, analyticsService);
+                Action createDelayState = () => new WaitForAWhileState(scheduler, analyticsService);
 
                 createDelayState.Should().Throw<ArgumentNullException>();
             }
@@ -40,7 +40,7 @@ namespace Toggl.Foundation.Tests.Sync.States
             public void DoesNotContinueBeforeTheDelayIsOver(TimeSpan delay)
             {
                 var observer = scheduler.CreateObserver<ITransition>();
-                var state = new DelayState(scheduler, analyticsService);
+                var state = new WaitForAWhileState(scheduler, analyticsService);
 
                 state.Start(delay.ToPositive()).Subscribe(observer);
                 scheduler.AdvanceBy(delay.ToPositive().Ticks - 10);
@@ -53,7 +53,7 @@ namespace Toggl.Foundation.Tests.Sync.States
             public void CompletesWhenTheDelayIsOver(TimeSpan delay)
             {
                 var observer = scheduler.CreateObserver<ITransition>();
-                var state = new DelayState(scheduler, analyticsService);
+                var state = new WaitForAWhileState(scheduler, analyticsService);
 
                 state.Start(delay.ToPositive()).Subscribe(observer);
                 scheduler.AdvanceBy(delay.ToPositive().Ticks);
@@ -66,19 +66,19 @@ namespace Toggl.Foundation.Tests.Sync.States
             public void ReturnsTheContinueTransition(TimeSpan delay)
             {
                 var observer = scheduler.CreateObserver<ITransition>();
-                var state = new DelayState(scheduler, analyticsService);
+                var state = new WaitForAWhileState(scheduler, analyticsService);
 
                 state.Start(delay.ToPositive()).Subscribe(observer);
                 scheduler.AdvanceBy(delay.ToPositive().Ticks);
 
-                observer.Messages.First().Value.Value.Result.Should().Be(state.Continue);
+                observer.Messages.First().Value.Value.Result.Should().Be(state.Done);
             }
 
             [Theory]
             [MemberData(nameof(Delays))]
             public void TracksTheDurationOfTheDelay(TimeSpan delay)
             {
-                var state = new DelayState(scheduler, analyticsService);
+                var state = new WaitForAWhileState(scheduler, analyticsService);
                 var seconds = (int)delay.TotalSeconds;
 
                 state.Start(delay.ToPositive()).Subscribe();

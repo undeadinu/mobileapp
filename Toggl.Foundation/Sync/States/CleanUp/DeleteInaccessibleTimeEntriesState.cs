@@ -11,7 +11,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
     {
         private readonly ITimeEntriesSource dataSource;
 
-        public StateResult FinishedDeleting { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public DeleteInaccessibleTimeEntriesState(ITimeEntriesSource dataSource)
         {
@@ -23,7 +23,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
             => dataSource
                 .GetAll(suitableForDeletion, includeInaccessibleEntities: true)
                 .SelectMany(dataSource.DeleteAll)
-                .Select(_ => FinishedDeleting.Transition());
+                .Select(_ => Done.Transition());
 
         private bool suitableForDeletion(IDatabaseTimeEntry timeEntry)
             => timeEntry.IsInaccessible && isSynced(timeEntry);

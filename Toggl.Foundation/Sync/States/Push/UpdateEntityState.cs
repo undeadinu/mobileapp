@@ -29,7 +29,7 @@ namespace Toggl.Foundation.Sync.States.Push
 
         public StateResult<TThreadsafeModel> EntityChanged { get; } = new StateResult<TThreadsafeModel>();
 
-        public StateResult<TThreadsafeModel> Finished { get; } = new StateResult<TThreadsafeModel>();
+        public StateResult<TThreadsafeModel> Done { get; } = new StateResult<TThreadsafeModel>();
 
         public UpdateEntityState(
             IUpdatingApiClient<TModel> api,
@@ -80,7 +80,7 @@ namespace Toggl.Foundation.Sync.States.Push
                 switch (result)
                 {
                     case UpdateResult<TThreadsafeModel> u when u.OriginalId == originalEntity.Id:
-                        return Observable.Return(Finished.Transition(extractFrom(result)));
+                        return Observable.Return(Done.Transition(extractFrom(result)));
 
                     case IgnoreResult<TThreadsafeModel> i when i.Id == originalEntity.Id:
                         return Observable.Return(EntityChanged.Transition(originalEntity));

@@ -17,7 +17,7 @@ namespace Toggl.Foundation.Sync.States.Pull
     {
         private readonly IDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource;
 
-        public StateResult<IFetchObservables> Continue { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
 
         public DeleteInaccessibleRunningTimeEntryState(IDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource)
         {
@@ -31,7 +31,7 @@ namespace Toggl.Foundation.Sync.States.Pull
                 .SelectMany(CommonFunctions.Identity)
                 .SelectMany(deleteIfNeeded)
                 .ToList()
-                .Select(_ => Continue.Transition(fetch));
+                .Select(_ => Done.Transition(fetch));
 
         private bool inaccessibleSyncedRunningTimeEntry(IDatabaseTimeEntry timeEntry)
             => timeEntry.IsInaccessible &&

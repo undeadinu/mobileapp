@@ -7,7 +7,7 @@ using Toggl.Foundation.Sync.States.Push;
 
 namespace Toggl.Foundation.Tests.Sync.States
 {
-    public sealed class PushOneEntityStateTests
+    public sealed class ChooseSyncOperationStateTests
     {
         [Fact, LogIfTooSlow]
         public void ThrowsWhenEntityIsNull()
@@ -65,7 +65,7 @@ namespace Toggl.Foundation.Tests.Sync.States
             ((Transition<IThreadSafeTestModel>)transition).Parameter.Should().Be(entity);
         }
 
-        private PushOneEntityState<IThreadSafeTestModel> createState()
-            => new PushOneEntityState<IThreadSafeTestModel>();
+        private ChooseSyncOperationState<IThreadSafeTestModel> createState()
+            => new ChooseSyncOperationState<IThreadSafeTestModel>();
     }
 }

@@ -14,7 +14,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
         private readonly ITogglDataSource dataSource;
         private readonly IAnalyticsService analyticsService;
 
-        public StateResult Continue { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public TrackInaccessibleWorkspacesAfterCleanUpState(ITogglDataSource dataSource, IAnalyticsService analyticsService)
         {
@@ -31,6 +31,6 @@ namespace Toggl.Foundation.Sync.States.CleanUp
                 .GetAll(ws => ws.IsInaccessible, includeInaccessibleEntities: true)
                 .Select(data => data.Count())
                 .Track(analyticsService.WorkspacesInaccesibleAfterCleanUp)
-                .SelectValue(Continue.Transition());
+                .SelectValue(Done.Transition());
     }
 }

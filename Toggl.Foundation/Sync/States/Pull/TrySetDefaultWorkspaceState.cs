@@ -17,7 +17,7 @@ namespace Toggl.Foundation.Sync.States.Pull
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
 
-        public StateResult Continue { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public TrySetDefaultWorkspaceState(ITimeService timeService, ITogglDataSource dataSource)
         {
@@ -34,7 +34,7 @@ namespace Toggl.Foundation.Sync.States.Pull
                 .GetAll()
                 .Select(getDefaulWorkspaceIfPossible)
                 .SelectMany(setDefaultWorkspace)
-                .Select(_ => Continue.Transition());
+                .Select(_ => Done.Transition());
 
         private IThreadSafeWorkspace getDefaulWorkspaceIfPossible(IEnumerable<IThreadSafeWorkspace> workspaces)
             => workspaces.Count() == 1

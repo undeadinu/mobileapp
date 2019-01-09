@@ -22,7 +22,7 @@ namespace Toggl.Foundation.Sync.States.Pull
         private readonly IRateLimiter limiter;
 
         public StateResult<TimeSpan> PreventOverloadingServer { get; } = new StateResult<TimeSpan>();
-        public StateResult<IFetchObservables> FetchStarted { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
 
         public FetchAllSinceState(
             ITogglApi api,
@@ -48,7 +48,7 @@ namespace Toggl.Foundation.Sync.States.Pull
 
             var observables = fetchInWaves();
 
-            observer.CompleteWith(FetchStarted.Transition(observables));
+            observer.CompleteWith(Done.Transition(observables));
             return () => { };
         });
 

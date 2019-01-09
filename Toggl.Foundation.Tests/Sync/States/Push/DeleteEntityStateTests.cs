@@ -48,7 +48,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
 
             var transition = state.Start(dirtyEntity).SingleAsync().Wait();
 
-            transition.Result.Should().Be(state.DeletingFinished);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact, LogIfTooSlow]

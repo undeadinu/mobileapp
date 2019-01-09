@@ -14,7 +14,7 @@ namespace Toggl.Foundation.Sync.States.Push
     {
         private IDataSource<TThreadsafeModel, TDatabaseModel> dataSource { get; }
 
-        public StateResult Deleted { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public StateResult DeletingFailed { get; } = new StateResult();
 
@@ -25,7 +25,7 @@ namespace Toggl.Foundation.Sync.States.Push
 
         public IObservable<ITransition> Start(TThreadsafeModel entity)
             => delete(entity)
-                .Select(_ => Deleted.Transition())
+                .Select(_ => Done.Transition())
                 .Catch((Exception e) => Observable.Return(DeletingFailed.Transition()));
 
         private IObservable<Unit> delete(TThreadsafeModel entity)

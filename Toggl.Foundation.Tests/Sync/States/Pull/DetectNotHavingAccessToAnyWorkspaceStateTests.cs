@@ -17,17 +17,17 @@ using Toggl.Foundation.Models.Interfaces;
 
 namespace Toggl.Foundation.Tests.Sync.States.Pull
 {
-    public sealed class NoWorkspaceExceptionsThrowingStateTests
+    public sealed class DetectNotHavingAccessToAnyWorkspaceStateTests
     {
         private readonly IFetchObservables fetchObservables = Substitute.For<IFetchObservables>();
 
         private readonly ITogglDataSource dataSource = Substitute.For<ITogglDataSource>();
 
-        private readonly NoWorkspaceDetectingState state;
+        private readonly DetectNotHavingAccessToAnyWorkspaceState state;
 
-        public NoWorkspaceExceptionsThrowingStateTests()
+        public DetectNotHavingAccessToAnyWorkspaceStateTests()
         {
-            state = new NoWorkspaceDetectingState(dataSource);
+            state = new DetectNotHavingAccessToAnyWorkspaceState(dataSource);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
 
             var transition = await state.Start(fetchObservables);
 
-            transition.Result.Should().Be(state.Continue);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact, LogIfTooSlow]

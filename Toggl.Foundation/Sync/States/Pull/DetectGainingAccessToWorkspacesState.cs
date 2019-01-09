@@ -21,7 +21,7 @@ namespace Toggl.Foundation.Sync.States.Pull
 
         private readonly Func<IInteractor<IObservable<bool>>> hasFinishedSyncBefore;
 
-        public StateResult<IFetchObservables> Continue { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
         public StateResult<IEnumerable<IWorkspace>> NewWorkspacesDetected { get; } = new StateResult<IEnumerable<IWorkspace>>();
 
         public DetectGainingAccessToWorkspacesState(
@@ -56,7 +56,7 @@ namespace Toggl.Foundation.Sync.States.Pull
         }
 
         private ITransition continueTransition(IFetchObservables fetch)
-            => Continue.Transition(fetch);
+            => Done.Transition(fetch);
 
         private IObservable<IEnumerable<IWorkspace>> persistedWorkspaces()
             => dataSource.GetAll().SelectMany(CommonFunctions.Identity).ToList();

@@ -48,7 +48,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
             {
                 var transition = state.Start().SingleAsync().Wait();
 
-                transition.Result.Should().Be(state.FetchStarted);
+                transition.Result.Should().Be(state.Done);
             }
 
             [Fact, LogIfTooSlow]

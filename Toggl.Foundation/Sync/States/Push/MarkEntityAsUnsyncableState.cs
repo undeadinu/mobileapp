@@ -9,16 +9,16 @@ using Toggl.Ultrawave.Exceptions;
 
 namespace Toggl.Foundation.Sync.States.Push
 {
-    internal sealed class UnsyncableEntityState<T> : ISyncState<(Exception Reason, T Entity)>
+    internal sealed class MarkEntityAsUnsyncableState<T> : ISyncState<(Exception Reason, T Entity)>
         where T : IThreadSafeModel
     {
         private readonly IBaseDataSource<T> dataSource;
 
         private readonly Func<T, string, T> createUnsyncableFrom;
 
-        public StateResult<T> MarkedAsUnsyncable { get; } = new StateResult<T>();
+        public StateResult<T> Done { get; } = new StateResult<T>();
 
-        public UnsyncableEntityState(
+        public MarkEntityAsUnsyncableState(
             IBaseDataSource<T> dataSource,
             Func<T, string, T> createUnsyncableFrom)
         {
@@ -52,6 +52,6 @@ namespace Toggl.Foundation.Sync.States.Push
                 .OfType<UpdateResult<T>>()
                 .Select(result => result.Entity)
                 .DefaultIfEmpty(entity)
-                .Select(unsyncable => MarkedAsUnsyncable.Transition(unsyncable));
+                .Select(unsyncable => Done.Transition(unsyncable));
     }
 }

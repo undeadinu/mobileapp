@@ -21,7 +21,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
             var state = new EnsureFetchSingletonSucceededState<ITestModel>();
             var transition = await state.Start(fetchObservables);
 
-            transition.Result.Should().Be(state.Continue);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Theory, LogIfTooSlow]

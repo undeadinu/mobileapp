@@ -7,13 +7,13 @@ using Toggl.Foundation.DataSources;
 
 namespace Toggl.Foundation.Sync.States.Pull
 {
-    internal sealed class NoWorkspaceDetectingState : ISyncState<IFetchObservables>
+    internal sealed class DetectNotHavingAccessToAnyWorkspaceState : ISyncState<IFetchObservables>
     {
-        public StateResult<IFetchObservables> Continue { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
 
         private readonly ITogglDataSource dataSource;
 
-        public NoWorkspaceDetectingState(ITogglDataSource dataSource)
+        public DetectNotHavingAccessToAnyWorkspaceState(ITogglDataSource dataSource)
         {
             this.dataSource = dataSource;
         }
@@ -21,7 +21,7 @@ namespace Toggl.Foundation.Sync.States.Pull
         public IObservable<ITransition> Start(IFetchObservables fetch)
             => dataSource.Workspaces.GetAll()
                 .Select(workspaces => workspaces.Any()
-                    ? Continue.Transition(fetch)
+                    ? Done.Transition(fetch)
                     : throw new NoWorkspaceException());
     }
 }

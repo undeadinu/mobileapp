@@ -10,20 +10,20 @@ using Toggl.PrimeRadiant;
 
 namespace Toggl.Foundation.Sync.States.Push
 {
-    internal sealed class PushState<TDatabaseModel, TThreadsafeModel> : IPushState<TThreadsafeModel>
+    internal sealed class LookForChangeToPushState<TDatabaseModel, TThreadsafeModel> : ILookForChangeToPushState<TThreadsafeModel>
         where TDatabaseModel : IDatabaseSyncable
         where TThreadsafeModel : class, TDatabaseModel, ILastChangedDatable, IThreadSafeModel
     {
         private readonly IDataSource<TThreadsafeModel, TDatabaseModel> dataSource;
 
-        public StateResult<TThreadsafeModel> PushEntity { get; } = new StateResult<TThreadsafeModel>();
+        public StateResult<TThreadsafeModel> ChangeFound { get; } = new StateResult<TThreadsafeModel>();
 
-        public StateResult NothingToPush { get; } = new StateResult();
+        public StateResult NoMoreChanges { get; } = new StateResult();
 
-        public PushState(IDataSource<TThreadsafeModel, TDatabaseModel> dataSource)
+        public LookForChangeToPushState(IDataSource<TThreadsafeModel, TDatabaseModel> dataSource)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
-        
+
             this.dataSource = dataSource;
         }
 
@@ -32,8 +32,8 @@ namespace Toggl.Foundation.Sync.States.Push
                 .SingleAsync()
                 .Select(entity =>
                     entity != null
-                        ? (ITransition)PushEntity.Transition(entity)
-                        : NothingToPush.Transition());
+                        ? (ITransition)ChangeFound.Transition(entity)
+                        : NoMoreChanges.Transition());
 
         private IObservable<TThreadsafeModel> getOldestUnsynced()
             => dataSource

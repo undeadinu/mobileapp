@@ -16,13 +16,13 @@ using Toggl.Ultrawave.Network;
 
 namespace Toggl.Foundation.Tests.Sync.States.Push
 {
-    public sealed class TryResolveClientErrorStateTests
+    public sealed class ProcessClientErrorStateTests
     {
         [Fact, LogIfTooSlow]
         public void ThrowsWhenExceptionIsNotAClientErrorException()
         {
             var exception = new Exception();
-            var state = new TryResolveClientErrorState<TestModel>();
+            var state = new ProcessClientErrorState<TestModel>();
             var model = new TestModel(1, SyncStatus.SyncNeeded);
 
             Action tryResolve = () => state.Start((exception, model)).Wait();
@@ -34,7 +34,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         public async Task ReturnsCheckServerStatusTransitionWhenTheErrorIsTooManyRequestsException()
         {
             var exception = new TooManyRequestsException(Substitute.For<IRequest>(), Substitute.For<IResponse>());
-            var state = new TryResolveClientErrorState<TestModel>();
+            var state = new ProcessClientErrorState<TestModel>();
             var model = new TestModel(1, SyncStatus.SyncNeeded);
 
             var transition = await state.Start((exception, model));
@@ -46,7 +46,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         [MemberData(nameof(ClientErrorExceptions))]
         public async Task ReturnsMarkAsUnsyncableWhenTheErrorIsAClientErrorExceptionOtherThanTooManyRequests(Exception exception)
         {
-            var state = new TryResolveClientErrorState<TestModel>();
+            var state = new ProcessClientErrorState<TestModel>();
             var model = new TestModel(1, SyncStatus.SyncNeeded);
 
             var transition = await state.Start((exception, model));

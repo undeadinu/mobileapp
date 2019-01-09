@@ -13,20 +13,20 @@ using Xunit;
 
 namespace Toggl.Foundation.Tests.Sync.States
 {
-    public sealed class SinceDateUpdatingStateTests
+    public sealed class UpdateSinceDateStateTests
     {
         private readonly ISinceParameterRepository sinceParameterRepository =
             Substitute.For<ISinceParameterRepository>();
 
-        private readonly SinceDateUpdatingState<ITestModel> state;
+        private readonly UpdateSinceDateState<ITestModel> state;
 
         private readonly DateTimeOffset now = new DateTimeOffset(2017, 04, 05, 12, 34, 56, TimeSpan.Zero);
 
         private readonly DateTimeOffset at = new DateTimeOffset(2017, 09, 01, 12, 34, 56, TimeSpan.Zero);
 
-        public SinceDateUpdatingStateTests()
+        public UpdateSinceDateStateTests()
         {
-            state = new SinceDateUpdatingState<ITestModel>(sinceParameterRepository);
+            state = new UpdateSinceDateState<ITestModel>(sinceParameterRepository);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Toggl.Foundation.Tests.Sync.States
 
             var transition = await state.Start(fetchObservables);
 
-            transition.Result.Should().Be(state.Finished);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact, LogIfTooSlow]

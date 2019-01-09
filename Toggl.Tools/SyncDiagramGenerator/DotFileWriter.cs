@@ -10,16 +10,15 @@ namespace SyncDiagramGenerator
     {
         private static readonly string[] subGraphStartNodes =
         {
-            "PushState", "PushSingleState",
+            "LookForChangeToPushState", "LookForSingletonChangeToPushState",
             "EnsureFetchListSucceededState", "EnsureFetchSingletonSucceededState",
-            "SevereApiExceptionsRethrowingState",
             "TryFetchInaccessibleProjectsState",
         };
 
         private static readonly string[] subGraphTerminationNodes =
         {
             "FetchAllSinceState", "DeadEndState", "Loose End",
-            "DelayState",
+            "WaitForAWhileState",
         };
 
         public void WriteToFile(string outPath, List<Node> nodes, List<Edge> edges)

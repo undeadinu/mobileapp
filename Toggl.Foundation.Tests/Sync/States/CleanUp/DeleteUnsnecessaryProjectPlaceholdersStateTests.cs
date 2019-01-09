@@ -40,7 +40,7 @@ namespace Toggl.Foundation.Tests.Sync.States.CleanUp
 
             var transition = await state.Start();
 
-            transition.Result.Should().Be(state.FinishedDeleting);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact, LogIfTooSlow]
@@ -51,7 +51,7 @@ namespace Toggl.Foundation.Tests.Sync.States.CleanUp
 
             var transition = await state.Start();
 
-            transition.Result.Should().Be(state.FinishedDeleting);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact, LogIfTooSlow]

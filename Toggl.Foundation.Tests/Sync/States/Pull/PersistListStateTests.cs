@@ -37,7 +37,7 @@ namespace Toggl.Foundation.Tests.Sync.States
 
             var transition = await state.Start(observables).SingleAsync();
 
-            transition.Result.Should().Be(state.FinishedPersisting);
+            transition.Result.Should().Be(state.Done);
         }
 
         [Fact, LogIfTooSlow]

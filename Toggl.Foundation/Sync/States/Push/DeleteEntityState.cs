@@ -26,7 +26,7 @@ namespace Toggl.Foundation.Sync.States.Push
         private readonly ILeakyBucket leakyBucket;
         private readonly IRateLimiter limiter;
 
-        public StateResult DeletingFinished { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public DeleteEntityState(
             IDeletingApiClient<TModel> api,
@@ -56,7 +56,7 @@ namespace Toggl.Foundation.Sync.States.Push
                 .SelectMany(_ => dataSource.Delete(entity.Id))
                 .Track(AnalyticsService.EntitySynced, Delete, entity.GetSafeTypeName())
                 .Track(AnalyticsService.EntitySyncStatus, entity.GetSafeTypeName(), $"{Delete}:{Resources.Success}")
-                .Select(_ => DeletingFinished.Transition())
+                .Select(_ => Done.Transition())
                 .Catch(Fail(entity, Delete));
         }
 

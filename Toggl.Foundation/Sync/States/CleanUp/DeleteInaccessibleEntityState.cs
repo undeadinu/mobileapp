@@ -16,7 +16,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
     {
         private readonly IDataSource<TInterface, TDatabaseInterface> dataSource;
 
-        public StateResult FinishedDeleting { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public DeleteInaccessibleEntityState(
             IDataSource<TInterface, TDatabaseInterface> dataSource)
@@ -31,7 +31,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
                 .WhereAsync(SuitableForDeletion)
                 .ToList()
                 .SelectMany(dataSource.DeleteAll)
-                .SelectValue(FinishedDeleting.Transition());
+                .SelectValue(Done.Transition());
 
         protected abstract IObservable<bool> SuitableForDeletion(TInterface entity);
 

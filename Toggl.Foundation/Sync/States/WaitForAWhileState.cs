@@ -6,14 +6,14 @@ using Toggl.Multivac;
 
 namespace Toggl.Foundation.Sync.States
 {
-    public sealed class DelayState : ISyncState<TimeSpan>
+    public sealed class WaitForAWhileState : ISyncState<TimeSpan>
     {
         private readonly IScheduler scheduler;
         private readonly IAnalyticsService analyticsService;
 
-        public StateResult Continue { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
-        public DelayState(IScheduler scheduler, IAnalyticsService analyticsService)
+        public WaitForAWhileState(IScheduler scheduler, IAnalyticsService analyticsService)
         {
             Ensure.Argument.IsNotNull(scheduler, nameof(scheduler));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
@@ -23,7 +23,7 @@ namespace Toggl.Foundation.Sync.States
         }
 
         public IObservable<ITransition> Start(TimeSpan delay)
-            => Observable.Return(Continue.Transition())
+            => Observable.Return(Done.Transition())
                 .Do(_ => analyticsService.RateLimitingDelayDuringSyncing.Track((int)delay.TotalSeconds))
                 .Delay(delay, scheduler);
     }

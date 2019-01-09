@@ -16,7 +16,7 @@ namespace Toggl.Foundation.Sync.States.Pull
     {
         private readonly IDataSource<IThreadSafeWorkspace, IDatabaseWorkspace> dataSource;
 
-        public StateResult FinishedPersisting { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public PersistNewWorkspacesState(IDataSource<IThreadSafeWorkspace, IDatabaseWorkspace> dataSource)
         {
@@ -30,7 +30,7 @@ namespace Toggl.Foundation.Sync.States.Pull
                 .Select(Workspace.Clean)
                 .SelectMany(createOrUpdate)
                 .ToList()
-                .SelectValue(FinishedPersisting.Transition());
+                .SelectValue(Done.Transition());
 
         private IObservable<IThreadSafeWorkspace> createOrUpdate(IThreadSafeWorkspace workspace)
             => dataSource

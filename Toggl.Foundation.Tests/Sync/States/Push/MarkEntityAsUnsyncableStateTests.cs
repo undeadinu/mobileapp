@@ -2,21 +2,21 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FsCheck;
+using FsCheck.Xunit;
 using NSubstitute;
+using Toggl.Foundation.DataSources.Interfaces;
 using Toggl.Foundation.Sync;
+using Toggl.Foundation.Sync.States.Push;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant;
 using Toggl.Ultrawave.Exceptions;
 using Toggl.Ultrawave.Network;
 using Xunit;
-using FsCheck;
-using FsCheck.Xunit;
-using Toggl.Foundation.DataSources.Interfaces;
-using Toggl.Foundation.Sync.States.Push;
 
-namespace Toggl.Foundation.Tests.Sync.States
+namespace Toggl.Foundation.Tests.Sync.States.Push
 {
-    public sealed class UnsyncableEntityStateTests
+    public sealed class MarkEntityAsUnsyncableStateTests
     {
         private readonly IBaseDataSource<IThreadSafeTestModel> dataSource
             = Substitute.For<IBaseDataSource<IThreadSafeTestModel>>();
@@ -27,7 +27,7 @@ namespace Toggl.Foundation.Tests.Sync.States
         {
             var entity = hasEntity ? new TestModel(-1, SyncStatus.SyncNeeded) : (IThreadSafeTestModel)null;
             Exception reason = hasReason ? new ApiException(request, response, "Test.") : null;
-            var state = new UnsyncableEntityState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
+            var state = new MarkEntityAsUnsyncableState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
 
             Action callingStart = () => state.Start((reason, entity)).SingleAsync().Wait();
 
@@ -37,7 +37,7 @@ namespace Toggl.Foundation.Tests.Sync.States
         [Fact, LogIfTooSlow]
         public void ThrowsWhenDatabaseOperationFails()
         {
-            var state = new UnsyncableEntityState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
+            var state = new MarkEntityAsUnsyncableState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
             dataSource
                 .OverwriteIfOriginalDidNotChange(null, null)
                 .ReturnsForAnyArgs(_ => throw new TestException());
@@ -51,7 +51,7 @@ namespace Toggl.Foundation.Tests.Sync.States
         [Fact, LogIfTooSlow]
         public void ThrowsWhenTheReasonExceptionIsNotAnApiException()
         {
-            var state = new UnsyncableEntityState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
+            var state = new MarkEntityAsUnsyncableState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
             var exception = new TestException();
 
             Action callingStart = () => state.Start(
@@ -67,7 +67,7 @@ namespace Toggl.Foundation.Tests.Sync.States
             var response = Substitute.For<IResponse>();
             response.RawData.Returns(message.Get);
             var reason = new BadRequestException(request, response);
-            var state = new UnsyncableEntityState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
+            var state = new MarkEntityAsUnsyncableState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
             prepareBatchUpdate(entity);
 
             var transition = state.Start((reason, entity)).SingleAsync().Wait();
@@ -80,7 +80,7 @@ namespace Toggl.Foundation.Tests.Sync.States
         public async Task TheSyncStatusOfTheEntityChangesToSyncFailedWhenEverythingWorks()
         {
             var entity = new TestModel(1, SyncStatus.SyncNeeded);
-            var state = new UnsyncableEntityState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
+            var state = new MarkEntityAsUnsyncableState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
             prepareBatchUpdate(entity);
 
             var transition = await state.Start((new BadRequestException(request, response), entity)).SingleAsync();
@@ -93,7 +93,7 @@ namespace Toggl.Foundation.Tests.Sync.States
         public async Task TheUpdatedEntityHasTheSameIdAsTheOriginalEntity()
         {
             var entity = new TestModel(1, SyncStatus.SyncNeeded);
-            var state = new UnsyncableEntityState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
+            var state = new MarkEntityAsUnsyncableState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
             prepareBatchUpdate(entity);
 
             await state.Start((new BadRequestException(request, response), entity)).SingleAsync();
@@ -110,7 +110,7 @@ namespace Toggl.Foundation.Tests.Sync.States
         {
             var entity = new TestModel(1, SyncStatus.SyncNeeded);
             var reason = new BadRequestException(request, response);
-            var state = new UnsyncableEntityState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
+            var state = new MarkEntityAsUnsyncableState<IThreadSafeTestModel>(dataSource, TestModel.Unsyncable);
             prepareBatchUpdate(entity);
 
             var transition = state.Start((reason, entity)).SingleAsync().Wait();

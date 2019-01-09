@@ -17,7 +17,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
 
         private readonly IObservableDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> timeEntriesDataSource;
 
-        public StateResult FinishedDeleting { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         public DeleteUnnecessaryProjectPlaceholdersState(IDataSource<IThreadSafeProject, IDatabaseProject> projectsDataSource, IObservableDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> timeEntriesDataSource)
         {
@@ -35,7 +35,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
                 .Where(project => project != null)
                 .ToList()
                 .SelectMany(projectsDataSource.DeleteAll)
-                .SelectValue(FinishedDeleting.Transition());
+                .SelectValue(Done.Transition());
 
         private IObservable<IThreadSafeProject> notReferencedByAnyTimeEntryOrNull(IThreadSafeProject project)
             => timeEntriesDataSource.GetAll(timeEntry => timeEntry.ProjectId == project.Id)

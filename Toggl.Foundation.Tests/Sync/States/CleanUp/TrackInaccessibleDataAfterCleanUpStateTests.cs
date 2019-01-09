@@ -189,7 +189,7 @@ namespace Toggl.Foundation.Tests.Sync.States.CleanUp
 
                 var state = new TrackInaccessibleDataAfterCleanUpState(dataSource, analyticsService);
                 var transition = await state.Start().SingleAsync();
-                transition.Result.Should().Be(state.Continue);
+                transition.Result.Should().Be(state.Done);
             }
         }
     }

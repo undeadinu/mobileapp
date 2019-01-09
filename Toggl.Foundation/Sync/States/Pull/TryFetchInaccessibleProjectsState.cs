@@ -26,7 +26,7 @@ namespace Toggl.Foundation.Sync.States.Pull
 
         public StateResult<IFetchObservables> FetchNext { get; } = new StateResult<IFetchObservables>();
 
-        public StateResult<IFetchObservables> FinishedPersisting { get; } = new StateResult<IFetchObservables>();
+        public StateResult<IFetchObservables> Done { get; } = new StateResult<IFetchObservables>();
 
         public StateResult<ApiException> ErrorOccured { get; } = new StateResult<ApiException>();
 
@@ -49,7 +49,7 @@ namespace Toggl.Foundation.Sync.States.Pull
         public IObservable<ITransition> Start(IFetchObservables fetch)
             => getProjectsWhichNeedsRefetching()
                 .SelectMany(projects => projects == null
-                    ? Observable.Return(FinishedPersisting.Transition(fetch))
+                    ? Observable.Return(Done.Transition(fetch))
                     : refetch(projects).SelectValue(FetchNext.Transition(fetch)))
                 .OnErrorReturnResult(ErrorOccured);
 

@@ -8,19 +8,19 @@ using Toggl.PrimeRadiant.Models;
 
 namespace Toggl.Foundation.Sync.States.CleanUp
 {
-    internal class DeleteOldEntriesState : ISyncState
+    internal class DeleteOldTimeEntriesState : ISyncState
     {
         private const byte daysInWeek = 7;
         private const byte weeksToQuery = 8;
         private const byte daysToQuery = daysInWeek * weeksToQuery;
         private static readonly TimeSpan thresholdPeriod = TimeSpan.FromDays(daysToQuery);
 
-        public StateResult FinishedDeleting { get; } = new StateResult();
+        public StateResult Done { get; } = new StateResult();
 
         private readonly ITimeService timeService;
         private readonly IObservableDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource;
 
-        public DeleteOldEntriesState(ITimeService timeService, IObservableDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource)
+        public DeleteOldTimeEntriesState(ITimeService timeService, IObservableDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
@@ -33,7 +33,7 @@ namespace Toggl.Foundation.Sync.States.CleanUp
             dataSource
                 .GetAll(suitableForDeletion)
                 .SelectMany(dataSource.DeleteAll)
-                .Select(_ => FinishedDeleting.Transition());
+                .Select(_ => Done.Transition());
 
         private bool suitableForDeletion(IDatabaseTimeEntry timeEntry)
             => calculateDelta(timeEntry) > thresholdPeriod

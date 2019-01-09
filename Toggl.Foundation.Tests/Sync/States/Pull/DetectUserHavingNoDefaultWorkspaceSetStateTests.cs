@@ -11,15 +11,15 @@ using Xunit;
 
 namespace Toggl.Foundation.Tests.Sync.States.Pull
 {
-    public sealed class NoDefaultWorkspaceDetectingStateTests
+    public sealed class DetectUserHavingNoDefaultWorkspaceSetStateTests
     {
         private readonly ITogglDataSource dataSource = Substitute.For<ITogglDataSource>();
         private readonly IAnalyticsService analyticsService = Substitute.For<IAnalyticsService>();
-        private readonly NoDefaultWorkspaceDetectingState state;
+        private readonly DetectUserHavingNoDefaultWorkspaceSetState setState;
 
-        public NoDefaultWorkspaceDetectingStateTests()
+        public DetectUserHavingNoDefaultWorkspaceSetStateTests()
         {
-            state = new NoDefaultWorkspaceDetectingState(dataSource, analyticsService);
+            setState = new DetectUserHavingNoDefaultWorkspaceSetState(dataSource, analyticsService);
         }
 
         [Fact, LogIfTooSlow]
@@ -27,9 +27,9 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
         {
             setupUserWithDefaultWorkspace(1);
 
-            var transition = await state.Start();
+            var transition = await setState.Start();
 
-            transition.Result.Should().BeSameAs(state.Continue);
+            transition.Result.Should().BeSameAs(setState.Done);
         }
 
         [Fact, LogIfTooSlow]
@@ -37,9 +37,9 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
         {
             setupUserWithDefaultWorkspace(null);
 
-            var transition = await state.Start();
+            var transition = await setState.Start();
 
-            transition.Result.Should().BeSameAs(state.NoDefaultWorkspaceDetected);
+            transition.Result.Should().BeSameAs(setState.NoDefaultWorkspaceDetected);
         }
 
         [Fact, LogIfTooSlow]
@@ -47,7 +47,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
         {
             setupUserWithDefaultWorkspace(null);
 
-            await state.Start();
+            await setState.Start();
 
             analyticsService.NoDefaultWorkspace.Received().Track();
         }
@@ -57,7 +57,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Pull
         {
             setupUserWithDefaultWorkspace(666);
 
-            await state.Start();
+            await setState.Start();
 
             analyticsService.NoDefaultWorkspace.DidNotReceive().Track();
         }

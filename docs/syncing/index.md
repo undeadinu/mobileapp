@@ -10,7 +10,7 @@ The recommended reading order is this:
 5. [State queue](state-queue.md)
 6. [Sync manager](sync-manager.md)
 7. [Transitions configuration](transitions-configuration.md)
-8. [Sample sync state](example.md)
+8. [Sync states](sync-states.md)
 9. [Syncing tests](tests.md)
 10. [Rate limiting](rate-limiting.md)
 11. [Background sync](bg-sync.md)

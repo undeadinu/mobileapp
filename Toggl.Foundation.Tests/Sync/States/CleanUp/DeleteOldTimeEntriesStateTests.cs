@@ -15,18 +15,18 @@ using Xunit;
 
 namespace Toggl.Foundation.Tests.Sync.States.CleanUp
 {
-    public sealed class DeleteOldEntriesStateTests
+    public sealed class DeleteOldTimeEntriesStateTests
     {
         private readonly DateTimeOffset now = DateTimeOffset.UtcNow;
 
         private readonly ITimeService timeService = Substitute.For<ITimeService>();
         private readonly ITimeEntriesSource dataSource = Substitute.For<ITimeEntriesSource>();
 
-        private readonly DeleteOldEntriesState state;
+        private readonly DeleteOldTimeEntriesState state;
 
-        public DeleteOldEntriesStateTests()
+        public DeleteOldTimeEntriesStateTests()
         {
-            state = new DeleteOldEntriesState(timeService, dataSource);
+            state = new DeleteOldTimeEntriesState(timeService, dataSource);
 
             timeService.CurrentDateTime.Returns(now);
         }

@@ -4,6 +4,6 @@ namespace Toggl.Foundation.Sync.States.Pull
 {
     public interface IPersistState : ISyncState<IFetchObservables>
     {
-        StateResult<IFetchObservables> FinishedPersisting { get; }
+        StateResult<IFetchObservables> Done { get; }
     }
 }
