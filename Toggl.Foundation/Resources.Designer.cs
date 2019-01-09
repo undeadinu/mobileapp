@@ -418,6 +418,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string Workspace {
+            get {
+                return ResourceManager.GetString("Workspace", resourceCulture);
+            }
+        }
+        
         public static string Workspaces {
             get {
                 return ResourceManager.GetString("Workspaces", resourceCulture);
@@ -1417,6 +1423,60 @@ namespace Toggl.Foundation {
         public static string Send {
             get {
                 return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
+        
+        public static string YourProfile {
+            get {
+                return ResourceManager.GetString("YourProfile", resourceCulture);
+            }
+        }
+        
+        public static string FormatSettings {
+            get {
+                return ResourceManager.GetString("FormatSettings", resourceCulture);
+            }
+        }
+        
+        public static string Use24HourClock {
+            get {
+                return ResourceManager.GetString("Use24HourClock", resourceCulture);
+            }
+        }
+        
+        public static string ManualMode {
+            get {
+                return ResourceManager.GetString("ManualMode", resourceCulture);
+            }
+        }
+        
+        public static string ManualModeDescription {
+            get {
+                return ResourceManager.GetString("ManualModeDescription", resourceCulture);
+            }
+        }
+        
+        public static string SmartAlerts {
+            get {
+                return ResourceManager.GetString("SmartAlerts", resourceCulture);
+            }
+        }
+        
+        public static string SubmitFeedback {
+            get {
+                return ResourceManager.GetString("SubmitFeedback", resourceCulture);
+            }
+        }
+        
+        public static string LoggingOutSecurely {
+            get {
+                return ResourceManager.GetString("LoggingOutSecurely", resourceCulture);
+            }
+        }
+        
+        public static string SignOutOfToggl {
+            get {
+                return ResourceManager.GetString("SignOutOfToggl", resourceCulture);
             }
         }
     }

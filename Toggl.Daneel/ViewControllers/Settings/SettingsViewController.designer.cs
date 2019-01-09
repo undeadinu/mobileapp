@@ -13,6 +13,9 @@ namespace Toggl.Daneel.ViewControllers
 	partial class SettingsViewController
 	{
 		[Outlet]
+		UIKit.UILabel AboutCellLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIView AboutView { get; set; }
 
 		[Outlet]
@@ -25,16 +28,25 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.NSLayoutConstraint CalendarSectionTopConstraint { get; set; }
 
 		[Outlet]
+		UIKit.UILabel CalendarSettingsCellLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIView CalendarSettingsSection { get; set; }
 
 		[Outlet]
 		UIKit.UIView CalendarSettingsView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel DateFormatCellLabel { get; set; }
+
+		[Outlet]
 		UIKit.UILabel DateFormatLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIView DateFormatView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel DurationFormatCellLabel { get; set; }
 
 		[Outlet]
 		UIKit.UILabel DurationFormatLabel { get; set; }
@@ -49,10 +61,25 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView EmailView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel FeedbackToastTextLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel FeedbackToastTitleLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIView FeedbackView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel FirstDayOfTheWeekCellLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel FormatSettingsHeaderLabel { get; set; }
+
+		[Outlet]
 		UIKit.UILabel FormatSettingsTitle { get; set; }
+
+		[Outlet]
+		UIKit.UILabel HelpCellLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIView HelpView { get; set; }
@@ -80,6 +107,12 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.NSLayoutConstraint LogoutVerticalOffsetConstraint { get; set; }
 
 		[Outlet]
+		UIKit.UILabel ManualModeCellLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel ManualModeDescriptionLabel { get; set; }
+
+		[Outlet]
 		UIKit.UISwitch ManualModeSwitch { get; set; }
 
 		[Outlet]
@@ -93,6 +126,12 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UIView SendFeedbackSuccessView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel SmartAlertCellLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel SubmitFeedbackCellLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIImageView SyncedIcon { get; set; }
@@ -125,13 +164,22 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView TwentyFourHourClockView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel Use24HourClockCellLabel { get; set; }
+
+		[Outlet]
 		UIKit.UILabel VersionLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel WorkspaceCellLabel { get; set; }
 
 		[Outlet]
 		UIKit.UILabel WorkspaceLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIView WorkspaceView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel YourProfileCellLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -255,6 +303,11 @@ namespace Toggl.Daneel.ViewControllers
 				ManualModeView = null;
 			}
 
+			if (NotificationSettingsView != null) {
+				NotificationSettingsView.Dispose ();
+				NotificationSettingsView = null;
+			}
+
 			if (ScrollView != null) {
 				ScrollView.Dispose ();
 				ScrollView = null;
@@ -263,11 +316,6 @@ namespace Toggl.Daneel.ViewControllers
 			if (SendFeedbackSuccessView != null) {
 				SendFeedbackSuccessView.Dispose ();
 				SendFeedbackSuccessView = null;
-			}
-
-			if (NotificationSettingsView != null) {
-				NotificationSettingsView.Dispose ();
-				NotificationSettingsView = null;
 			}
 
 			if (SyncedIcon != null) {
@@ -333,6 +381,86 @@ namespace Toggl.Daneel.ViewControllers
 			if (WorkspaceView != null) {
 				WorkspaceView.Dispose ();
 				WorkspaceView = null;
+			}
+
+			if (YourProfileCellLabel != null) {
+				YourProfileCellLabel.Dispose ();
+				YourProfileCellLabel = null;
+			}
+
+			if (WorkspaceCellLabel != null) {
+				WorkspaceCellLabel.Dispose ();
+				WorkspaceCellLabel = null;
+			}
+
+			if (FormatSettingsHeaderLabel != null) {
+				FormatSettingsHeaderLabel.Dispose ();
+				FormatSettingsHeaderLabel = null;
+			}
+
+			if (DateFormatCellLabel != null) {
+				DateFormatCellLabel.Dispose ();
+				DateFormatCellLabel = null;
+			}
+
+			if (Use24HourClockCellLabel != null) {
+				Use24HourClockCellLabel.Dispose ();
+				Use24HourClockCellLabel = null;
+			}
+
+			if (DurationFormatCellLabel != null) {
+				DurationFormatCellLabel.Dispose ();
+				DurationFormatCellLabel = null;
+			}
+
+			if (FirstDayOfTheWeekCellLabel != null) {
+				FirstDayOfTheWeekCellLabel.Dispose ();
+				FirstDayOfTheWeekCellLabel = null;
+			}
+
+			if (ManualModeCellLabel != null) {
+				ManualModeCellLabel.Dispose ();
+				ManualModeCellLabel = null;
+			}
+
+			if (ManualModeDescriptionLabel != null) {
+				ManualModeDescriptionLabel.Dispose ();
+				ManualModeDescriptionLabel = null;
+			}
+
+			if (CalendarSettingsCellLabel != null) {
+				CalendarSettingsCellLabel.Dispose ();
+				CalendarSettingsCellLabel = null;
+			}
+
+			if (SmartAlertCellLabel != null) {
+				SmartAlertCellLabel.Dispose ();
+				SmartAlertCellLabel = null;
+			}
+
+			if (SubmitFeedbackCellLabel != null) {
+				SubmitFeedbackCellLabel.Dispose ();
+				SubmitFeedbackCellLabel = null;
+			}
+
+			if (AboutCellLabel != null) {
+				AboutCellLabel.Dispose ();
+				AboutCellLabel = null;
+			}
+
+			if (HelpCellLabel != null) {
+				HelpCellLabel.Dispose ();
+				HelpCellLabel = null;
+			}
+
+			if (FeedbackToastTitleLabel != null) {
+				FeedbackToastTitleLabel.Dispose ();
+				FeedbackToastTitleLabel = null;
+			}
+
+			if (FeedbackToastTextLabel != null) {
+				FeedbackToastTextLabel.Dispose ();
+				FeedbackToastTextLabel = null;
 			}
 		}
 	}

@@ -1,31 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SettingsViewController">
             <connections>
+                <outlet property="AboutCellLabel" destination="oPI-UC-N6W" id="ORR-Po-Hk2"/>
                 <outlet property="AboutView" destination="8oj-5n-iTi" id="KSe-ue-jsZ"/>
                 <outlet property="BeginningOfWeekLabel" destination="RVi-in-fBC" id="M3J-Hk-Ldn"/>
                 <outlet property="BeginningOfWeekView" destination="kdM-dN-ITR" id="m5n-6w-mNR"/>
                 <outlet property="CalendarSectionTopConstraint" destination="mPt-KY-FaZ" id="ekY-Gk-ctr"/>
+                <outlet property="CalendarSettingsCellLabel" destination="TQi-7l-nWd" id="d3x-5u-g5a"/>
                 <outlet property="CalendarSettingsSection" destination="oNB-p4-T5l" id="Ytt-6z-9iM"/>
                 <outlet property="CalendarSettingsView" destination="DTp-wG-K74" id="tGk-ja-zEL"/>
+                <outlet property="DateFormatCellLabel" destination="n7s-OS-TkS" id="PQM-rn-CrL"/>
                 <outlet property="DateFormatLabel" destination="r8K-YX-WXp" id="XCV-aX-BTw"/>
                 <outlet property="DateFormatView" destination="nzY-Jz-v47" id="YqL-dN-rSk"/>
+                <outlet property="DurationFormatCellLabel" destination="5WF-Us-bad" id="AaF-Vz-tOJ"/>
                 <outlet property="DurationFormatLabel" destination="IxG-Y7-NAD" id="tGd-C3-I9W"/>
                 <outlet property="DurationFormatView" destination="ere-6M-VNs" id="TmR-bd-WiO"/>
                 <outlet property="EmailLabel" destination="g2O-kd-BSs" id="rGH-7g-250"/>
                 <outlet property="EmailView" destination="x3h-xq-GmG" id="dUK-XO-Vs2"/>
+                <outlet property="FeedbackToastTextLabel" destination="Xjj-dL-R3z" id="twg-Fq-OTg"/>
+                <outlet property="FeedbackToastTitleLabel" destination="5Oo-uJ-3bC" id="2rX-vC-CVf"/>
                 <outlet property="FeedbackView" destination="mmI-mx-iUP" id="R6U-Ap-C30"/>
+                <outlet property="FirstDayOfTheWeekCellLabel" destination="96P-KZ-Tkw" id="FNe-Sy-dL6"/>
+                <outlet property="FormatSettingsHeaderLabel" destination="KrT-vw-rEA" id="QLW-sw-zY5"/>
                 <outlet property="FormatSettingsTitle" destination="KrT-vw-rEA" id="bbN-1m-Bus"/>
+                <outlet property="HelpCellLabel" destination="oQ1-Pk-03L" id="Nc5-Bp-TGl"/>
                 <outlet property="HelpView" destination="ijY-ma-1Ul" id="Sdn-k0-StR"/>
                 <outlet property="LoggingOutActivityIndicatorView" destination="qYE-D7-hWS" id="i7D-aw-z8c"/>
                 <outlet property="LoggingOutIndicator" destination="qYE-D7-hWS" id="qPl-XA-dj4"/>
@@ -34,11 +43,15 @@
                 <outlet property="LogoutButton" destination="L2S-P3-jra" id="name-outlet-L2S-P3-jra"/>
                 <outlet property="LogoutContainerView" destination="7XI-te-r4v" id="wFV-tE-5A5"/>
                 <outlet property="LogoutVerticalOffsetConstraint" destination="XRr-pw-oi7" id="Hgl-cb-Po2"/>
+                <outlet property="ManualModeCellLabel" destination="ddO-Cq-NYS" id="DdH-hR-ycp"/>
+                <outlet property="ManualModeDescriptionLabel" destination="OGc-fM-VQ8" id="wWc-Dj-XRV"/>
                 <outlet property="ManualModeSwitch" destination="ohF-qt-ZZa" id="xth-Kj-iue"/>
                 <outlet property="ManualModeView" destination="oxz-tC-Puw" id="lbe-hw-A8S"/>
                 <outlet property="NotificationSettingsView" destination="taq-h9-x0G" id="3je-rW-ChT"/>
                 <outlet property="ScrollView" destination="fDP-ob-6P0" id="ARR-dd-Woy"/>
                 <outlet property="SendFeedbackSuccessView" destination="lLQ-ez-Mpw" id="lHr-i2-pKo"/>
+                <outlet property="SmartAlertCellLabel" destination="vZb-rZ-97C" id="rEn-ka-ebD"/>
+                <outlet property="SubmitFeedbackCellLabel" destination="7KY-Cw-c2h" id="ZRg-UQ-hX7"/>
                 <outlet property="SyncedIcon" destination="2Xf-GA-0Ym" id="BfG-Gy-Dva"/>
                 <outlet property="SyncedLabel" destination="iJW-AF-Ph9" id="3St-Va-wwC"/>
                 <outlet property="SyncedView" destination="mJh-gC-yPW" id="OZ2-Nh-oY5"/>
@@ -49,9 +62,12 @@
                 <outlet property="TopConstraint" destination="9A2-rU-Dgd" id="qOq-Ja-AVY"/>
                 <outlet property="TwentyFourHourClockSwitch" destination="dDv-0e-Fkg" id="5TU-Z6-8gG"/>
                 <outlet property="TwentyFourHourClockView" destination="Ul3-j2-RlO" id="ZpY-2q-dnX"/>
+                <outlet property="Use24HourClockCellLabel" destination="abX-c9-kDI" id="XlI-3l-Gql"/>
                 <outlet property="VersionLabel" destination="RJm-Ug-MzA" id="F61-tK-Hdj"/>
+                <outlet property="WorkspaceCellLabel" destination="UxZ-v0-Q9w" id="Lu3-kd-3q9"/>
                 <outlet property="WorkspaceLabel" destination="jyw-Ko-d1E" id="Vs8-Gb-9cU"/>
                 <outlet property="WorkspaceView" destination="gKP-Qz-N9c" id="zak-eR-od4"/>
+                <outlet property="YourProfileCellLabel" destination="cDT-0o-Tcp" id="QEB-Ya-fRH"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
         </placeholder>
@@ -132,7 +148,7 @@
                                             <rect key="frame" x="0.0" y="46" width="414" height="44"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Workspace" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UxZ-v0-Q9w">
-                                                    <rect key="frame" x="16" y="12.666666666666671" width="76.666666666666671" height="18"/>
+                                                    <rect key="frame" x="16" y="13" width="76.666666666666671" height="18"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="76.5" id="86K-EB-0El"/>
                                                     </constraints>
@@ -226,7 +242,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icArrowRight" translatesAutoresizingMaskIntoConstraints="NO" id="qNF-PS-UXp">
-                                                    <rect key="frame" x="393" y="16.333333333333343" width="5" height="10"/>
+                                                    <rect key="frame" x="393" y="17" width="5" height="10"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="10" id="gLr-aA-Avb"/>
                                                         <constraint firstAttribute="width" constant="5" id="ohc-A6-SJp"/>
@@ -255,13 +271,13 @@
                                             <rect key="frame" x="0.0" y="92.666666666666657" width="414" height="44"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use 24-hour Clock" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="abX-c9-kDI">
-                                                    <rect key="frame" x="16" y="12.333333333333343" width="130" height="18"/>
+                                                    <rect key="frame" x="16" y="13" width="130" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dDv-0e-Fkg">
-                                                    <rect key="frame" x="349" y="6.3333333333333428" width="51" height="31"/>
+                                                    <rect key="frame" x="349" y="6.6666666666666856" width="51" height="31"/>
                                                 </switch>
                                             </subviews>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -284,20 +300,20 @@
                                             <rect key="frame" x="0.0" y="137.66666666666666" width="414" height="44"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Duration format" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5WF-Us-bad">
-                                                    <rect key="frame" x="16" y="13.333333333333343" width="108" height="18"/>
+                                                    <rect key="frame" x="16" y="13.000000000000028" width="108" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icArrowRight" translatesAutoresizingMaskIntoConstraints="NO" id="AGc-rV-ieD">
-                                                    <rect key="frame" x="393" y="16.333333333333343" width="5" height="10"/>
+                                                    <rect key="frame" x="393" y="17.000000000000028" width="5" height="10"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="10" id="Cg8-h8-KnJ"/>
                                                         <constraint firstAttribute="width" constant="5" id="lYh-cK-ftu"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Classic (47:06 min)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IxG-Y7-NAD">
-                                                    <rect key="frame" x="252" y="12.333333333333343" width="133" height="18"/>
+                                                    <rect key="frame" x="252" y="13.000000000000028" width="133" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.36862745099999999" green="0.35686274509999999" blue="0.35686274509999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -325,20 +341,20 @@
                                             <rect key="frame" x="0.0" y="182.66666666666669" width="414" height="44"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="First day of the week" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="96P-KZ-Tkw">
-                                                    <rect key="frame" x="16" y="13.333333333333314" width="143" height="18"/>
+                                                    <rect key="frame" x="16" y="13" width="143" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icArrowRight" translatesAutoresizingMaskIntoConstraints="NO" id="ogu-L2-1je">
-                                                    <rect key="frame" x="393" y="16.333333333333314" width="5" height="10"/>
+                                                    <rect key="frame" x="393" y="17" width="5" height="10"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="5" id="D7s-G3-8yb"/>
                                                         <constraint firstAttribute="height" constant="10" id="rRF-G3-IiW"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Monday" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RVi-in-fBC">
-                                                    <rect key="frame" x="330" y="12.333333333333314" width="55" height="18"/>
+                                                    <rect key="frame" x="330" y="13" width="55" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.36862745099999999" green="0.35686274509999999" blue="0.35686274509999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -411,13 +427,13 @@
                                             <rect key="frame" x="0.0" y="25" width="414" height="44"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Manual mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ddO-Cq-NYS">
-                                                    <rect key="frame" x="16" y="12.333333333333314" width="93" height="18"/>
+                                                    <rect key="frame" x="16" y="13" width="93" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ohF-qt-ZZa">
-                                                    <rect key="frame" x="349" y="6.3333333333333144" width="51" height="31"/>
+                                                    <rect key="frame" x="349" y="6.6666666666666288" width="51" height="31"/>
                                                 </switch>
                                             </subviews>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -617,7 +633,7 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RJm-Ug-MzA">
-                                                    <rect key="frame" x="365.66666666666669" y="13.333333333333371" width="19.333333333333314" height="18"/>
+                                                    <rect key="frame" x="365.66666666666669" y="13" width="19.333333333333314" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" red="0.36862745098039218" green="0.35686274509803922" blue="0.35686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -705,7 +721,7 @@
                                     <rect key="frame" x="0.0" y="710" width="414" height="92.333333333333371"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" restorationIdentifier="SyncingView" translatesAutoresizingMaskIntoConstraints="NO" id="305">
-                                            <rect key="frame" x="168.33333333333334" y="0.0" width="78" height="14.333333333333334"/>
+                                            <rect key="frame" x="168" y="0.0" width="78" height="14.333333333333334"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Syncing..." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FaX-g8-EOP">
                                                     <rect key="frame" x="0.0" y="0.0" width="56" height="14.333333333333334"/>
@@ -740,7 +756,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="icDoneSmall" translatesAutoresizingMaskIntoConstraints="NO" id="2Xf-GA-0Ym">
-                                                    <rect key="frame" x="50.333333333333343" y="2.3333333333333712" width="12" height="9"/>
+                                                    <rect key="frame" x="50.333333333333343" y="2.6666666666666288" width="12" height="9"/>
                                                 </imageView>
                                             </subviews>
                                             <constraints>
@@ -753,7 +769,7 @@
                                             </constraints>
                                         </view>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9pV-m0-9wY">
-                                            <rect key="frame" x="120.33333333333331" y="0.0" width="174" height="14.333333333333334"/>
+                                            <rect key="frame" x="120" y="0.0" width="174" height="14.333333333333334"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Logging you out securely..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="agY-8S-Buy">
                                                     <rect key="frame" x="0.0" y="0.0" width="152" height="14.333333333333334"/>

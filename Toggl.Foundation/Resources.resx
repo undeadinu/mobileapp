@@ -204,6 +204,9 @@ time entries will appear here.</value>
     <data name="CreateProject">
         <value>Create project</value>
     </data>
+    <data name="Workspace">
+        <value>Workspace</value>
+    </data>
     <data name="Workspaces">
         <value>Workspaces</value>
     </data>
@@ -712,5 +715,32 @@ account is not set up</value>
     </data>
     <data name="Send">
         <value>Send</value>
+    </data>
+    <data name="YourProfile">
+        <value>Your Profile</value>
+    </data>
+    <data name="FormatSettings">
+        <value>Format settings</value>
+    </data>
+    <data name="Use24HourClock">
+        <value>Use 24-hour Clock</value>
+    </data>
+    <data name="ManualMode">
+        <value>Manual mode</value>
+    </data>
+    <data name="ManualModeDescription">
+        <value>You can add your data manually, instead of tracking in real time.</value>
+    </data>
+    <data name="SmartAlerts">
+        <value>Smart Alerts</value>
+    </data>
+    <data name="SubmitFeedback">
+        <value>Submit Feedback</value>
+    </data>
+    <data name="LoggingOutSecurely">
+        <value>Logging you out securely...</value>
+    </data>
+    <data name="SignOutOfToggl">
+        <value>Sign out of Toggl</value>
     </data>
 </root>

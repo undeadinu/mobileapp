@@ -4,6 +4,7 @@ using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -26,6 +27,27 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            YourProfileCellLabel.Text = Resources.YourProfile;
+            WorkspaceCellLabel.Text = Resources.Workspace;
+            FormatSettingsHeaderLabel.Text = Resources.FormatSettings;
+            DateFormatCellLabel.Text = Resources.DateFormat;
+            Use24HourClockCellLabel.Text = Resources.Use24HourClock;
+            DurationFormatCellLabel.Text = Resources.DurationFormat;
+            FirstDayOfTheWeekCellLabel.Text = Resources.FirstDayOfTheWeek;
+            ManualModeCellLabel.Text = Resources.ManualMode;
+            ManualModeDescriptionLabel.Text = Resources.ManualModeDescription;
+            CalendarSettingsCellLabel.Text = Resources.CalendarSettingsTitle;
+            SmartAlertCellLabel.Text = Resources.SmartAlerts;
+            SubmitFeedbackCellLabel.Text = Resources.SubmitFeedback;
+            AboutCellLabel.Text = Resources.About;
+            HelpCellLabel.Text = Resources.Help;
+            LoggingOutLabel.Text = Resources.LoggingOutSecurely;
+            SyncingLabel.Text = Resources.Syncing;
+            SyncedLabel.Text = Resources.SyncCompleted;
+            FeedbackToastTitleLabel.Text = Resources.DoneWithExclamationMark.ToUpper();
+            FeedbackToastTextLabel.Text = Resources.ThankYouForTheFeedback;
+            LogoutButton.SetTitle(Resources.SignOutOfToggl, UIControlState.Normal);
 
             prepareViews();
 
