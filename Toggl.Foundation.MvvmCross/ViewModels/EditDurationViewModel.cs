@@ -125,15 +125,18 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public DateTimeOffset MaximumStopTime => StartTime.AddHours(MaxTimeEntryDurationInHours);
 
-        public IMvxAsyncCommand SaveCommand { get; }
 
-        public IMvxAsyncCommand CloseCommand { get; }
 
-        public IMvxCommand EditStartTimeCommand { get; }
 
-        public IMvxCommand EditStopTimeCommand { get; }
 
-        public IMvxCommand StopEditingTimeCommand { get; }
+
+
+
+        public UIAction Save { get; }
+        public UIAction Close { get; }
+        public UIAction EditStartTime { get; }
+        public UIAction EditStopTime { get; }
+        public UIAction StopEditingTime { get; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory)
         {
@@ -149,12 +152,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.analyticsService = analyticsService;
             this.rxActionFactory = rxActionFactory;
 
-            SaveCommand = new MvxAsyncCommand(save);
-            CloseCommand = new MvxAsyncCommand(close);
-
-            EditStartTimeCommand = new MvxCommand(editStartTime);
-            EditStopTimeCommand = new MvxCommand(editStopTime);
-            StopEditingTimeCommand = new MvxCommand(stopEditingTime);
+            Save = rxActionFactory.FromAsync(save);
+            Close = rxActionFactory.FromAsync(close);
+            EditStartTime = rxActionFactory.FromAction(editStartTime);
+            EditStopTime = rxActionFactory.FromAction(editStopTime);
+            StopEditingTime = rxActionFactory.FromAction(stopEditingTime);
         }
 
         public override void Prepare(EditDurationParameters parameter)

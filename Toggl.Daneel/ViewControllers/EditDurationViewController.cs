@@ -59,9 +59,15 @@ namespace Toggl.Daneel.ViewControllers
 
             var bindingSet = this.CreateBindingSet<EditDurationViewController, EditDurationViewModel>();
 
-            //Commands
-            bindingSet.Bind(SaveButton).To(vm => vm.SaveCommand);
-            bindingSet.Bind(CloseButton).To(vm => vm.CloseCommand);
+            // Actions
+            SaveButton.Rx()
+                .BindAction(ViewModel.Save)
+                .DisposedBy(disposeBag);
+
+            CloseButton.Rx()
+                .BindAction(ViewModel.Close)
+                .DisposedBy(disposeBag);
+
 
             //Start and stop date/time
             bindingSet.Bind(StartTimeLabel)
@@ -84,22 +90,23 @@ namespace Toggl.Daneel.ViewControllers
                           vm => vm.StopTime,
                           vm => vm.DateFormat);
 
-            //Editing start and end time
-            bindingSet.Bind(StartView)
-                      .For(v => v.BindTap())
-                      .To(vm => vm.EditStartTimeCommand);
+            // Editing start and end time
+            StartView.Rx()
+                .BindAction(ViewModel.EditStartTime)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(EndView)
-                      .For(v => v.BindTap())
-                      .To(vm => vm.EditStopTimeCommand);
+            EndView.Rx()
+                .BindAction(ViewModel.EditStopTime)
+                .DisposedBy(disposeBag);
 
             bindingSet.Bind(SetEndButton)
                       .For(v => v.BindVisibility())
                       .To(vm => vm.IsRunning)
                       .WithConversion(inverseBoolConverter);
 
-            bindingSet.Bind(SetEndButton)
-                      .To(vm => vm.EditStopTimeCommand);
+            SetEndButton.Rx()
+                .BindAction(ViewModel.EditStopTime)
+                .DisposedBy(disposeBag);
 
             //Visibility
             bindingSet.Bind(EndTimeLabel)
@@ -259,7 +266,7 @@ namespace Toggl.Daneel.ViewControllers
 
         public async Task<bool> Dismiss()
         {
-            await ViewModel.CloseCommand.ExecuteAsync();
+            ViewModel.Close.Execute();
             return true;
         }
 
@@ -320,7 +327,7 @@ namespace Toggl.Daneel.ViewControllers
                 DurationInput.ResignFirstResponder();
 
             if (ViewModel.IsEditingTime)
-                ViewModel.StopEditingTimeCommand.Execute();
+                ViewModel.StopEditingTime.Execute();
         }
 
         private void startTimeChanging(Unit _)
