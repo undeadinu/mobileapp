@@ -1341,5 +1341,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("DateFormat", resourceCulture);
             }
         }
+        
+        public static string SelectDefaultWorkspaceDescription {
+            get {
+                return ResourceManager.GetString("SelectDefaultWorkspaceDescription", resourceCulture);
+            }
+        }
     }
 }

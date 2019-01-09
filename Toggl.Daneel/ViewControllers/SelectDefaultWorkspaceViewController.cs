@@ -4,6 +4,7 @@ using CoreGraphics;
 using Toggl.Daneel.Cells;
 using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Daneel.ViewSources;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 
@@ -23,6 +24,9 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            HeadingLabel.Text = Resources.SetDefaultWorkspace;
+            DescriptionLabel.Text = Resources.SelectDefaultWorkspaceDescription;
 
             View.ClipsToBounds = true;
 

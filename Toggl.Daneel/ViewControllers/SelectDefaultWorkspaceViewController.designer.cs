@@ -13,6 +13,12 @@ namespace Toggl.Daneel.ViewControllers
 	partial class SelectDefaultWorkspaceViewController
 	{
 		[Outlet]
+		UIKit.UILabel DescriptionLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel HeadingLabel { get; set; }
+
+		[Outlet]
 		UIKit.UITableView WorkspacesTableView { get; set; }
 		
 		void ReleaseDesignerOutlets ()
@@ -20,6 +26,16 @@ namespace Toggl.Daneel.ViewControllers
 			if (WorkspacesTableView != null) {
 				WorkspacesTableView.Dispose ();
 				WorkspacesTableView = null;
+			}
+
+			if (HeadingLabel != null) {
+				HeadingLabel.Dispose ();
+				HeadingLabel = null;
+			}
+
+			if (DescriptionLabel != null) {
+				DescriptionLabel.Dispose ();
+				DescriptionLabel = null;
 			}
 		}
 	}
