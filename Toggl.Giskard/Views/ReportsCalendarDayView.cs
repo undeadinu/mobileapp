@@ -20,6 +20,7 @@ namespace Toggl.Giskard.Views
         private readonly int verticalPadding;
 
         private bool isToday;
+
         public bool IsToday
         {
             get => isToday;
@@ -31,6 +32,7 @@ namespace Toggl.Giskard.Views
         }
 
         private bool isSelected;
+
         public bool IsSelected
         {
             get => isSelected;
@@ -42,6 +44,7 @@ namespace Toggl.Giskard.Views
         }
 
         private bool roundLeft;
+
         public bool RoundLeft
         {
             get => roundLeft;
@@ -53,6 +56,7 @@ namespace Toggl.Giskard.Views
         }
 
         private bool roundRight;
+
         public bool RoundRight
         {
             get => roundRight;
@@ -68,6 +72,11 @@ namespace Toggl.Giskard.Views
         {
         }
 
+        public ReportsCalendarDayView(Context context)
+            : this(context, null)
+        {
+        }
+
         public ReportsCalendarDayView(Context context, IAttributeSet attrs)
             : this(context, attrs, 0)
         {
@@ -76,8 +85,8 @@ namespace Toggl.Giskard.Views
         public ReportsCalendarDayView(Context context, IAttributeSet attrs, int defStyle)
             : base(context, attrs, defStyle)
         {
-            cornerRadius = (int)22.DpToPixels(context);
-            verticalPadding = (int)6.DpToPixels(context);
+            cornerRadius = (int) 22.DpToPixels(context);
+            verticalPadding = (int) 6.DpToPixels(context);
             selectedPaint = new Paint
             {
                 Flags = PaintFlags.AntiAlias,

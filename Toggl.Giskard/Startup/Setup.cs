@@ -91,6 +91,7 @@ namespace Toggl.Giskard
             var permissionsService = new PermissionsServiceAndroid();
             var calendarService = new CalendarServiceAndroid(permissionsService);
             var automaticSyncingService = new AutomaticSyncingService(backgroundService, timeService, analyticsService);
+            var errorHandlingService = new ErrorHandlingService(navigationService, settingsStorage);
 
             ApplicationContext.RegisterReceiver(new TimezoneChangedBroadcastReceiver(timeService),
                 new IntentFilter(Intent.ActionTimezoneChanged));
@@ -132,7 +133,8 @@ namespace Toggl.Giskard
                     .WithNavigationService(navigationService)
                     .WithPermissionsService(permissionsService)
                     .WithAccessRestrictionStorage(settingsStorage)
-                    .WithErrorHandlingService(new ErrorHandlingService(navigationService, settingsStorage))
+                    .WithErrorHandlingService(errorHandlingService)
+                    .WithSyncErrorHandlingService(new SyncErrorHandlingService(errorHandlingService))
                     .WithRxActionFactory(new RxActionFactory(schedulerProvider))
                     .Build();
 

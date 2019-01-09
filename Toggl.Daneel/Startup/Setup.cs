@@ -92,6 +92,7 @@ namespace Toggl.Daneel
             var backgroundSyncService = new BackgroundSyncServiceIos();
             var backgroundService = new BackgroundService(timeService);
             var automaticSyncingService = new AutomaticSyncingService(backgroundService, timeService, analyticsService);
+            var errorHandlingService = new ErrorHandlingService(navigationService, settingsStorage);
 
             var foundation =
                 TogglFoundation
@@ -131,7 +132,8 @@ namespace Toggl.Daneel
                     .WithPermissionsService(permissionsService)
                     .WithAccessRestrictionStorage(settingsStorage)
                     .WithPasswordManagerService<OnePasswordServiceIos>()
-                    .WithErrorHandlingService(new ErrorHandlingService(navigationService, settingsStorage))
+                    .WithErrorHandlingService(errorHandlingService)
+                    .WithSyncErrorHandlingService(new SyncErrorHandlingService(errorHandlingService))
                     .WithFeedbackService(new FeedbackService(userAgent, mailService, dialogService, platformInfo))
                     .WithRxActionFactory(new RxActionFactory(schedulerProvider))
                     .Build();

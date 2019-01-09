@@ -21,11 +21,11 @@ _Note: we only support all of these operations for time entries, the other entit
 Each of the individual states simply create a HTTP request and if it is successful then the local entity is updated with the entity data in the body of the HTTP response (using the `ignoreIfChangedLocally` conflict resolution).
 
 If the server reports an error, we try to resolve the situation according to the type of error:
-- for server errors we enter the retry loop
-- for the client error `429 Too Many Requests` we also enter the retry loop
+- for server errors we stop the current syncing process
+- for the client error `429 Too Many Requests` we also stop the current syncing process
 - for other client errors we mark the entity as unsyncable and skip it until the user resolves the error in the app
 
-The retry loop works the same way it does in the pull loop - it uses the same code.
+If our internal leaky bucket overflows (the minute leaky bucket) we wait until the bucket has a free slot and then we continue pushing from the very start (from workspaces).
 
 If pushing of a new entity fails and another entity depends on this entity (e.g., syncing of a new project fails and it is used by a new time entry, which should also be synced) then we don't propagate the "unsyncable" state any further, but we can be sure that syncing of that entity fails as well, because its dependency is not known to the server, and it will be marked as "unsyncable" as well.
 

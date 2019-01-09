@@ -65,15 +65,14 @@ _Note: we might move the pruning to a separate loop in the future._
 Retry loop
 ----------
 
-When a `ServerErrorException` or `ClientErrorException` other than `ApiDeprecatedException`, `ClientDeprecatedException` or `UnauthorizedException` is thrown during the processing of the HTTP request, the retry loop kicks in.
+We use [rate limiting](rate-limiting.md) to minimize the chance of overflowing the server's leaky bucket.
 
-The retry loop checks what the `/status` endpoint of the API server returns:
-- `200 OK` - exit the retry loop
-- `500 Internal server error` - wait for the next "slow delay" and try again
-    - slow delay starts with _60 seconds_ and then it is calculated using this formula: `previousDelay * rand(1.5, 2)`
-- _otherwise_ wait for the next "fast delay" and try again
-    - fast delay starts with _10 seconds_ and then it is calculated using this formula: `previousDelay * rand(1, 1.5)`
+If our internal leaky bucket overflows (the minute bucket) and we think that sending more requests to the server would cause a `429 Too Many Requests` client error we stop sending requests and wait until we think we will have a free slot and then repeat try again.
 
+Handling errors
+---------------
+
+When a `ServerErrorException` or a `ClientErrorException` is caught we stop the syncing process. The `ApiDeprecatedException`, `ClientDeprecatedException`, or `UnauthorizedException` errors need to be handled carefully because they have important implications for the user (either the user has to update the app or he needs to login again).
 
 Where everything is implemented in the code
 -------------------------------------------
@@ -87,8 +86,6 @@ Individual states are instances of the `PersistSingletonState` (user, preference
 This basic logic is then wrapped in `SinceDateUpdatingPersistState` for the entities for which we store the `since` date. All states are wrapped with `ApiExceptionCatchingPersistState` which catches known exceptions and leads into the retry loop.
 
 The logic of creating project placeholders is implemented in the `CreateArchivedProjectPlaceholdersState` and fetching the details of these projects using the reports API is done in `TryFetchInaccessibleProjectsState`.
-
-Retry loop uses the `CheckServerStatusState` and the `ResetAPIDelayState`.
 
 The states are instantiated and connected in the `Toggl.Foundation.TogglSyncManagerFactory` class.
 

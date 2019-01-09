@@ -96,11 +96,9 @@ namespace Toggl.Daneel.ViewControllers
                 .BindAction(ViewModel.SelectWorkspace)
                 .DisposedBy(DisposeBag);
 
-            var bindingSet = this.CreateBindingSet<ReportsViewController, ReportsViewModel>();
-
-            bindingSet.Bind(source).To(vm => vm.Segments);
-
-            bindingSet.Apply();
+            ViewModel.SegmentsObservable
+                .Subscribe(segments => source.ItemsSource = segments)
+                .DisposedBy(DisposeBag);
         }
 
         protected override void Dispose(bool disposing)

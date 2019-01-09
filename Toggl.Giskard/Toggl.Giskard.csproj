@@ -292,6 +292,7 @@
     <Compile Include="Activities\SendFeedbackActivity.ViewBinds.cs">
       <DependentUpon>SendFeedbackActivity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Adapters\ReportsCalendarShortcutAdapter.cs" />
     <Compile Include="Adapters\SelectCreatableEntityRecyclerAdapter.cs" />
     <Compile Include="Adapters\SelectTagsRecyclerAdapter.cs" />
     <Compile Include="Activities\SelectProjectActivity.cs" />
@@ -302,6 +303,7 @@
     <Compile Include="Extensions\PopupOffsets.cs" />
     <Compile Include="Extensions\PopupWindowWithDefaultGravityExtenstions.cs" />
     <Compile Include="Extensions\Reactive\HueSaturationPickerViewExtensions.cs" />
+    <Compile Include="Extensions\Reactive\PagerExtensions.cs" />
     <Compile Include="Extensions\TracingExtensions.cs" />
     <Compile Include="Extensions\Reactive\RecyclerViewExtensions.cs" />
     <Compile Include="Extensions\Reactive\ValueSliderViewExtensions.cs" />
@@ -324,7 +326,6 @@
     <Compile Include="Services\GoogleServiceAndroid.cs" />
     <Compile Include="Services\DialogServiceAndroid.cs" />
     <Compile Include="Services\BrowserServiceAndroid.cs" />
-    <Compile Include="Activities\OnboardingActivity.cs" />
     <Compile Include="Activities\LoginActivity.cs" />
     <Compile Include="Activities\LoginActivity.ViewBinds.cs">
       <DependentUpon>LoginActivity.cs</DependentUpon>
@@ -337,8 +338,10 @@
     <Compile Include="ViewHelpers\BarChartDayLabel.cs" />
     <Compile Include="ViewHelpers\CopyLessSpannableFactory.cs" />
     <Compile Include="ViewHelpers\MainRecyclerViewTouchCallback.cs" />
+    <Compile Include="ViewHelpers\ReportsSummaryData.cs" />
     <Compile Include="ViewHelpers\SimpleRecyclerViewScrollChangeListener.cs" />
     <Compile Include="ViewHelpers\SuggestionsRecyclerViewSnapHelper.cs" />
+    <Compile Include="ViewHolders\CalendarDayCellViewHolder.cs" />
     <Compile Include="ViewHolders\Client\ClientCreationSelectionViewHolder.cs" />
     <Compile Include="ViewHolders\Client\ClientSelectionViewHolder.cs" />
     <Compile Include="ViewHelpers\TimeEntryCollectionViewModel.cs" />
@@ -349,7 +352,12 @@
     <Compile Include="ViewHolders\MainLogSuggestionItemViewHolder.cs" />
     <Compile Include="ViewHolders\MainLogSuggestionsListViewHolder.cs" />
     <Compile Include="ViewHolders\GuardedMvxRecyclerViewHolder.cs" />
+    <Compile Include="ViewHolders\ReportsCalendarShortcutCellViewHolder.cs" />
+    <Compile Include="ViewHolders\ReportsHeaderCellViewHolder.cs" />
+    <Compile Include="ViewHolders\ReportsItemCellViewHolder.cs" />
+    <Compile Include="ViewHolders\ReportsWorkspaceNameViewHolder.cs" />
     <Compile Include="Views\BarChartView.cs" />
+    <Compile Include="Views\ReportsCalendarView.cs" />
     <Compile Include="Views\SelectProjectRecyclerView.cs" />
     <Compile Include="Adapters\MainRecyclerAdapter.cs" />
     <Compile Include="Views\SelectTagsRecyclerView.cs" />
@@ -413,14 +421,12 @@
     <Compile Include="Extensions\ViewExtensions.cs" />
     <Compile Include="TemplateSelectors\ReportsTemplateSelector.cs" />
     <Compile Include="Activities\ReportsActivity.cs" />
-    <Compile Include="Views\ReportsRecyclerView.cs" />
     <Compile Include="Converters\ReportPercentageLabelValueConverter.cs" />
     <Compile Include="Converters\ReportTimeSpanLabelValueConverter.cs" />
     <Compile Include="Bindings\ViewWidthPercentageTargetBinding.cs" />
     <Compile Include="Views\PieChartView.cs" />
     <Compile Include="Views\ReportsRecyclerViewHolder.cs" />
     <Compile Include="Startup\TogglBindingBuilder.cs" />
-    <Compile Include="Fragments\ReportsCalendarFragment.cs" />
     <Compile Include="Views\ReportsLinearLayout.cs" />
     <Compile Include="Views\ReportsCalendarDayView.cs" />
     <Compile Include="Adapters\ReportsCalendarRecyclerAdapter.cs" />
@@ -513,7 +519,7 @@
       <DependentUpon>SelectDefaultWorkspaceFragment.cs</DependentUpon>
     </Compile>
     <Compile Include="ViewHolders\MainLogUserFeedbackViewHolder.cs" />
-    <Compile Include="Extensions\Reactive\ImageViewExtensions.cs" />      
+    <Compile Include="Extensions\Reactive\ImageViewExtensions.cs" />
     <Compile Include="Extensions\TimeEntryExtensions.cs" />
     <Compile Include="PlatformInfoAndroid.cs" />
     <Compile Include="Startup\ApplicationLifecycleObserver.cs" />
@@ -600,7 +606,6 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\add_new.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\add_new.png" />
     <AndroidResource Include="Resources\layout\MainActivity.axml" />
-    <AndroidResource Include="Resources\layout\OnboardingActivity.axml" />
     <AndroidResource Include="Resources\layout\LoginActivity.axml" />
     <AndroidResource Include="Resources\values\Styles.xml" />
     <AndroidResource Include="Resources\values-v23\Styles.xml" />
@@ -972,6 +977,9 @@
     <AndroidResource Include="Resources\drawable-xhdpi\add_white.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\add_white.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\add_white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\ReportsCalendarView.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />

@@ -1,14 +1,24 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Threading;
+using MvvmCross.Base;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Views;
-using Toggl.Daneel.Converters;
 using Toggl.Daneel.Extensions;
+using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Presentation.Attributes;
-using Toggl.Daneel.Views.Reports;
 using Toggl.Daneel.ViewSources;
-using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Converters;
+using Toggl.Foundation.MvvmCross.Extensions;
+using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar;
+using Toggl.Multivac.Extensions;
 using UIKit;
 
 namespace Toggl.Daneel.ViewControllers
@@ -17,6 +27,9 @@ namespace Toggl.Daneel.ViewControllers
     public partial class ReportsCalendarViewController : MvxViewController<ReportsCalendarViewModel>, IUICollectionViewDelegate
     {
         private bool calendarInitialized;
+        private readonly CompositeDisposable disposeBag = new CompositeDisposable();
+        private ReportsCalendarCollectionViewSource calendarCollectionViewSource;
+        private List<ReportsCalendarPageViewModel> pendingMonthsUpdate;
 
         public ReportsCalendarViewController()
             : base(nameof(ReportsCalendarViewController), null)
@@ -27,58 +40,73 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
-            var calendarCollectionViewSource = new ReportsCalendarCollectionViewSource(CalendarCollectionView);
+            calendarCollectionViewSource = new ReportsCalendarCollectionViewSource(CalendarCollectionView);
             var calendarCollectionViewLayout = new ReportsCalendarCollectionViewLayout();
+            CalendarCollectionView.Delegate = calendarCollectionViewSource;
             CalendarCollectionView.DataSource = calendarCollectionViewSource;
             CalendarCollectionView.CollectionViewLayout = calendarCollectionViewLayout;
 
             var quickSelectCollectionViewSource = new ReportsCalendarQuickSelectCollectionViewSource(QuickSelectCollectionView);
             QuickSelectCollectionView.Source = quickSelectCollectionViewSource;
 
-            setupDayHeaders();
+            ViewModel.DayHeadersObservable
+                .Subscribe(setupDayHeaders)
+                .DisposedBy(disposeBag);
 
-            var bindingSet = this.CreateBindingSet<ReportsCalendarViewController, ReportsCalendarViewModel>();
+            ViewModel.MonthsObservable
+                .Subscribe(calendarCollectionViewSource.UpdateMonths)
+                .DisposedBy(disposeBag);
 
-            //Calendar collection view
-            bindingSet.Bind(calendarCollectionViewSource).To(vm => vm.Months);
-            bindingSet.Bind(calendarCollectionViewSource)
-                      .For(v => v.CellTappedCommand)
-                      .To(vm => vm.CalendarDayTappedCommand);
+            calendarCollectionViewSource.DayTaps
+                .Subscribe(ViewModel.SelectDay.Inputs)
+                .DisposedBy(disposeBag);
 
-            //Quick select collection view
-            bindingSet.Bind(quickSelectCollectionViewSource).To(vm => vm.QuickSelectShortcuts);
-            bindingSet.Bind(quickSelectCollectionViewSource)
-                      .For(v => v.SelectionChangedCommand)
-                      .To(vm => vm.QuickSelectCommand);
+            ViewModel.HighlightedDateRangeObservable
+                .Subscribe(calendarCollectionViewSource.UpdateSelection)
+                .DisposedBy(disposeBag);
 
-            //Text
-            bindingSet.Bind(CurrentYearLabel).To(vm => vm.CurrentMonth.Year);
-            bindingSet.Bind(CurrentMonthLabel)
-                      .To(vm => vm.CurrentMonth.Month)
-                      .WithConversion(new IntToMonthNameValueConverter());
+            ViewModel.CurrentMonthObservable
+                .Select(month => month.Year.ToString())
+                .Subscribe(CurrentYearLabel.Rx().Text())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Apply();
+            ViewModel.CurrentMonthObservable
+                .Select(month => month.Month)
+                .Select(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName)
+                .Subscribe(CurrentMonthLabel.Rx().Text())
+                .DisposedBy(disposeBag);
+
+            ViewModel.SelectedDateRangeObservable
+                .Subscribe(quickSelectCollectionViewSource.UpdateSelection)
+                .DisposedBy(disposeBag);
+
+            quickSelectCollectionViewSource.ShortcutTaps
+                .Subscribe(ViewModel.SelectShortcut.Inputs)
+                .DisposedBy(disposeBag);
+
+            ViewModel.QuickSelectShortcutsObservable
+                .Subscribe(quickSelectCollectionViewSource.UpdateShortcuts)
+                .DisposedBy(disposeBag);
         }
 
         public override void DidMoveToParentViewController(UIViewController parent)
         {
             base.DidMoveToParentViewController(parent);
 
-            var rowCountConverter = new ReportsCalendarRowCountToCalendarHeightConverter(
-                ReportsCalendarCollectionViewLayout.CellHeight,
-                View.Bounds.Height - CalendarCollectionView.Bounds.Height
-            );
             //The constraint isn't available before DidMoveToParentViewController
+
+            var rowHeight = ReportsCalendarCollectionViewLayout.CellHeight;
+            var additionalHeight = View.Bounds.Height - CalendarCollectionView.Bounds.Height;
+
             var heightConstraint = View
                 .Superview
                 .Constraints
                 .Single(c => c.FirstAttribute == NSLayoutAttribute.Height);
 
-            this.CreateBinding(heightConstraint)
-                .For(v => v.BindAnimatedConstant())
-                .To<ReportsCalendarViewModel>(vm => vm.RowsInCurrentMonth)
-                .WithConversion(rowCountConverter, null)
-                .Apply();
+            ViewModel.RowsInCurrentMonthObservable
+                .Select(rows => rows * rowHeight + additionalHeight)
+                .Subscribe(heightConstraint.Rx().ConstantAnimated())
+                .DisposedBy(disposeBag);
         }
 
         public override void ViewDidLayoutSubviews()
@@ -87,24 +115,35 @@ namespace Toggl.Daneel.ViewControllers
 
             if (calendarInitialized) return;
 
-            //This binding needs the calendar to be in it's final size to work properly
-            this.CreateBinding(CalendarCollectionView)
-                .For(v => v.BindCurrentPage())
-                .To<ReportsCalendarViewModel>(vm => vm.CurrentPage)
-                .Apply();
+            calendarCollectionViewSource.DecelerationEndedObservable
+                .Subscribe(ViewModel.SetCurrentPage)
+                .DisposedBy(disposeBag);
+
+            ViewModel.CurrentPageObservable
+                .Subscribe(CalendarCollectionView.Rx().CurrentPageObserver())
+                .DisposedBy(disposeBag);
 
             calendarInitialized = true;
         }
 
-        private void setupDayHeaders()
+        private void setupDayHeaders(IReadOnlyList<string> dayHeaders)
         {
-            DayHeader0.Text = ViewModel.DayHeaderFor(0);
-            DayHeader1.Text = ViewModel.DayHeaderFor(1);
-            DayHeader2.Text = ViewModel.DayHeaderFor(2);
-            DayHeader3.Text = ViewModel.DayHeaderFor(3);
-            DayHeader4.Text = ViewModel.DayHeaderFor(4);
-            DayHeader5.Text = ViewModel.DayHeaderFor(5);
-            DayHeader6.Text = ViewModel.DayHeaderFor(6);
+            DayHeader0.Text = dayHeaders[0];
+            DayHeader1.Text = dayHeaders[1];
+            DayHeader2.Text = dayHeaders[2];
+            DayHeader3.Text = dayHeaders[3];
+            DayHeader4.Text = dayHeaders[4];
+            DayHeader5.Text = dayHeaders[5];
+            DayHeader6.Text = dayHeaders[6];
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (!disposing)
+            {
+                disposeBag.Dispose();
+            }
         }
     }
 }

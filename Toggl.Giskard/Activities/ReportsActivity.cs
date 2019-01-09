@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Reactive.Disposables;
+using System.Collections.Generic;
+using System.Reactive.Linq;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Support.V7.Widget;
-using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.ViewModels.Reports;
+using Toggl.Foundation.Reports;
+using Toggl.Giskard.Adapters;
 using Toggl.Giskard.Extensions.Reactive;
 using Toggl.Giskard.ViewHelpers;
-using Toggl.Giskard.Views;
 using Toggl.Multivac.Extensions;
-using Observable = System.Reactive.Linq.Observable;
 
 namespace Toggl.Giskard.Activities
 {
@@ -20,12 +20,10 @@ namespace Toggl.Giskard.Activities
     [Activity(Theme = "@style/AppTheme",
         ScreenOrientation = ScreenOrientation.Portrait,
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
-    public sealed partial class ReportsActivity : MvxAppCompatActivity<ReportsViewModel>
+    public sealed partial class ReportsActivity : ReactiveActivity<ReportsViewModel>
     {
-        private ReportsRecyclerView reportsRecyclerView;
-        private ReportsLinearLayout reportsMainContainer;
-
-        public CompositeDisposable DisposeBag { get; } = new CompositeDisposable();
+        private static readonly TimeSpan toggleCalendarThrottleDuration = TimeSpan.FromMilliseconds(300);
+        private ReportsRecyclerAdapter reportsRecyclerAdapter;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -33,33 +31,52 @@ namespace Toggl.Giskard.Activities
             SetContentView(Resource.Layout.ReportsActivity);
             OverridePendingTransition(Resource.Animation.abc_slide_in_right, Resource.Animation.abc_fade_out);
 
-            reportsRecyclerView = FindViewById<ReportsRecyclerView>(Resource.Id.ReportsActivityRecyclerView);
-            reportsMainContainer = FindViewById<ReportsLinearLayout>(Resource.Id.ReportsActivityMainContainer);
-            reportsMainContainer.CalendarContainer = FindViewById(Resource.Id.ReportsCalendarContainer);
-
-            initializeViews();
+            InitializeViews();
+            setupToolbar();
 
             selectWorkspaceFAB.Rx().Tap()
                 .Subscribe(ViewModel.SelectWorkspace.Inputs)
                 .DisposedBy(DisposeBag);
 
-            ViewModel.WorkspaceNameObservable
-                .Subscribe(workspaceName.Rx().TextObserver())
-                .DisposedBy(DisposeBag);
+            calendarView.SetupWith(ViewModel.CalendarViewModel);
 
-            Observable.CombineLatest(
-                    ViewModel.StartDate,
+            setupReportsRecyclerView();
+            ViewModel.StartDate.CombineLatest(
                     ViewModel.EndDate,
                     ViewModel.WorkspaceHasBillableFeatureEnabled,
                     ViewModel.BarChartViewModel.DateFormat,
                     ViewModel.BarChartViewModel.Bars,
                     ViewModel.BarChartViewModel.MaximumHoursPerBar,
                     ViewModel.BarChartViewModel.HorizontalLegend,
-                    (startDate, endDate, workspaceIsBillable, dateFormat, bars, maximumHoursPerBar, horizontalLegend) => new BarChartData(startDate, endDate, workspaceIsBillable, dateFormat, bars, maximumHoursPerBar, horizontalLegend))
-                .Subscribe(reportsRecyclerView.ReportsRecyclerAdapter.UpdateBarChart)
+                    BarChartData.Create)
+                .Subscribe(reportsRecyclerAdapter.UpdateBarChart)
                 .DisposedBy(DisposeBag);
 
-            setupToolbar();
+            ViewModel.WorkspaceNameObservable
+                .Subscribe(reportsRecyclerAdapter.UpdateWorkspaceName)
+                .DisposedBy(DisposeBag);
+
+            ViewModel.SegmentsObservable.CombineLatest(
+                    ViewModel.ShowEmptyStateObservable,
+                    ViewModel.TotalTimeObservable,
+                    ViewModel.TotalTimeIsZeroObservable,
+                    ViewModel.BillablePercentageObservable,
+                    ReportsSummaryData.Create)
+                .Subscribe(reportsRecyclerAdapter.UpdateReportsSummary)
+                .DisposedBy(DisposeBag);
+
+            reportsRecyclerAdapter.SummaryCardClicks
+                .Subscribe(ViewModel.HideCalendar)
+                .DisposedBy(DisposeBag);
+
+            toolbarCurrentDateRangeText.Rx().Tap()
+                .Throttle(toggleCalendarThrottleDuration)
+                .Subscribe(ViewModel.ToggleCalendar)
+                .DisposedBy(DisposeBag);
+
+            ViewModel.CurrentDateRangeStringObservable
+                .Subscribe(toolbarCurrentDateRangeText.Rx().TextObserver())
+                .DisposedBy(DisposeBag);
         }
 
         public override void OnEnterAnimationComplete()
@@ -72,6 +89,13 @@ namespace Toggl.Giskard.Activities
         {
             base.Finish();
             OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_slide_out_right);
+        }
+
+        private void setupReportsRecyclerView()
+        {
+            reportsRecyclerAdapter = new ReportsRecyclerAdapter(this);
+            reportsRecyclerView.SetLayoutManager(new LinearLayoutManager(this));
+            reportsRecyclerView.SetAdapter(reportsRecyclerAdapter);
         }
 
         private void setupToolbar()
@@ -94,11 +118,6 @@ namespace Toggl.Giskard.Activities
         internal void ToggleCalendarState(bool forceHide)
         {
             reportsMainContainer.ToggleCalendar(forceHide);
-        }
-
-        internal void RecalculateCalendarHeight()
-        {
-            reportsMainContainer.RecalculateCalendarHeight();
         }
     }
 }

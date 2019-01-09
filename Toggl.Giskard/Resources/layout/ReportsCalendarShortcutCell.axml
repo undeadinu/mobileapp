@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TextView
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    local:MvxBind="Text Title; DrawableColor ReportsCalendarShortcutBackgroundColor(Selected)"
     tools:text="This week"
     android:textSize="14sp"
     android:gravity="center"

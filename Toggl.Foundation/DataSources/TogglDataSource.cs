@@ -22,17 +22,14 @@ namespace Toggl.Foundation.DataSources
     {
         private readonly ITogglDatabase database;
         private readonly INotificationService notificationService;
-        private readonly IErrorHandlingService errorHandlingService;
         private readonly IApplicationShortcutCreator shortcutCreator;
 
         private bool isLoggedIn;
-        private IDisposable errorHandlingDisposable;
 
         public TogglDataSource(
             ITogglApi api,
             ITogglDatabase database,
             ITimeService timeService,
-            IErrorHandlingService errorHandlingService,
             Func<ITogglDataSource, ISyncManager> createSyncManager,
             INotificationService notificationService,
             IApplicationShortcutCreator shortcutCreator,
@@ -42,7 +39,6 @@ namespace Toggl.Foundation.DataSources
             Ensure.Argument.IsNotNull(database, nameof(database));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(notificationService, nameof(notificationService));
-            Ensure.Argument.IsNotNull(errorHandlingService, nameof(errorHandlingService));
             Ensure.Argument.IsNotNull(createSyncManager, nameof(createSyncManager));
             Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
@@ -50,7 +46,6 @@ namespace Toggl.Foundation.DataSources
             this.database = database;
             this.shortcutCreator = shortcutCreator;
             this.notificationService = notificationService;
-            this.errorHandlingService = errorHandlingService;
 
             User = new UserDataSource(database.User);
             Tags = new TagsDataSource(database.Tags);
@@ -63,7 +58,6 @@ namespace Toggl.Foundation.DataSources
             TimeEntries = new TimeEntriesDataSource(database.TimeEntries, timeService, analyticsService);
 
             SyncManager = createSyncManager(this);
-            errorHandlingDisposable = SyncManager.Errors.Subscribe(onSyncError);
 
             ReportsProvider = new ReportsProvider(api, database);
 
@@ -125,18 +119,5 @@ namespace Toggl.Foundation.DataSources
                 .GetAll(entity => entity.SyncStatus != SyncStatus.InSync)
                 .Select(unsynced => unsynced.Any())
                 .SingleAsync();
-
-        private void onSyncError(Exception exception)
-        {
-            if (!errorHandlingService.TryHandleDeprecationError(exception)
-                && !errorHandlingService.TryHandleUnauthorizedError(exception)
-                && !errorHandlingService.TryHandleNoWorkspaceError(exception)
-                && !errorHandlingService.TryHandleNoDefaultWorkspaceError(exception))
-            {
-                throw new ArgumentException(
-                    $"{nameof(TogglDataSource)} could not handle unknown sync error {exception.GetType().FullName}.",
-                    exception);
-            }
-        }
     }
 }

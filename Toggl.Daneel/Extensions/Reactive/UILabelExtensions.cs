@@ -12,5 +12,8 @@ namespace Toggl.Daneel.Extensions.Reactive
 
         public static Action<NSAttributedString> AttributedText(this IReactive<UILabel> reactive)
             => text => reactive.Base.AttributedText = text;
+
+        public static Action<UIColor> TextColor(this IReactive<UILabel> reactive)
+            => color => reactive.Base.TextColor = color;
     }
 }

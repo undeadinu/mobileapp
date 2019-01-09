@@ -5,15 +5,18 @@ using MvvmCross.Platforms.Ios.Binding.Views;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
+using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar.QuickSelectShortcuts;
 using UIKit;
 
 namespace Toggl.Daneel.Views.Reports
 {
-    public sealed partial class ReportsCalendarQuickSelectViewCell : MvxCollectionViewCell
+    public sealed partial class ReportsCalendarQuickSelectViewCell : ReactiveCollectionViewCell<ReportsCalendarBaseQuickSelectShortcut>
     {
         public static readonly NSString Key = new NSString(nameof(ReportsCalendarQuickSelectViewCell));
         public static readonly UINib Nib;
+
+        private ReportsDateRangeParameter currentDateRange;
 
         static ReportsCalendarQuickSelectViewCell()
         {
@@ -31,36 +34,24 @@ namespace Toggl.Daneel.Views.Reports
             base.AwakeFromNib();
 
             TitleLabel.Font = UIFont.SystemFontOfSize(13, UIFontWeight.Medium);
+        }
 
-            this.DelayBind(() =>
-            {
-                var backgroundColorConverter = new BoolToConstantValueConverter<UIColor>(
-                    Color.ReportsCalendar.QuickSelect.SelectedBackground.ToNativeColor(),
-                    Color.ReportsCalendar.QuickSelect.UnselectedBackground.ToNativeColor()
-                );
-                var titleColorConverter = new BoolToConstantValueConverter<UIColor>(
-                    Color.ReportsCalendar.QuickSelect.SelectedTitle.ToNativeColor(),
-                    Color.ReportsCalendar.QuickSelect.UnselectedTitle.ToNativeColor()
-                );
+        public void UpdateSelectedDateRange(ReportsDateRangeParameter dateRange)
+        {
+            currentDateRange = dateRange;
+        }
 
-                var bindingSet = this.CreateBindingSet<ReportsCalendarQuickSelectViewCell, ReportsCalendarBaseQuickSelectShortcut>();
+        protected override void UpdateView()
+        {
+            TitleLabel.Text = Item.Title;
 
-                //Text
-                bindingSet.Bind(TitleLabel).To(vm => vm.Title);
+            ContentView.BackgroundColor = Item.IsSelected(currentDateRange)
+                ? Color.ReportsCalendar.QuickSelect.SelectedBackground.ToNativeColor()
+                : Color.ReportsCalendar.QuickSelect.UnselectedBackground.ToNativeColor();
 
-                //Color
-                bindingSet.Bind(ContentView)
-                          .For(v => v.BackgroundColor)
-                          .To(vm => vm.Selected)
-                          .WithConversion(backgroundColorConverter);
-
-                bindingSet.Bind(TitleLabel)
-                          .For(v => v.TextColor)
-                          .To(vm => vm.Selected)
-                          .WithConversion(titleColorConverter);
-
-                bindingSet.Apply();
-            });
+            TitleLabel.TextColor = Item.IsSelected(currentDateRange)
+                ? Color.ReportsCalendar.QuickSelect.SelectedTitle.ToNativeColor()
+                : Color.ReportsCalendar.QuickSelect.UnselectedTitle.ToNativeColor();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Toggl.Giskard.ViewHelpers
         public readonly BarChartDayLabel[] HorizontalLabels;
         public readonly bool WorkspaceIsBillable;
 
-        public BarChartData(DateTimeOffset startDate, DateTimeOffset endDate, bool workspaceIsBillable, DateFormat dateFormat, BarViewModel[] bars, int maximumHoursPerBar, DateTimeOffset[] horizontalLegend)
+        private BarChartData(DateTimeOffset startDate, DateTimeOffset endDate, bool workspaceIsBillable, DateFormat dateFormat, BarViewModel[] bars, int maximumHoursPerBar, DateTimeOffset[] horizontalLegend)
         {
             StartDate = startDate.ToString(dateFormat.Short);
             EndDate = endDate.ToString(dateFormat.Short);
@@ -33,5 +33,8 @@ namespace Toggl.Giskard.ViewHelpers
                 HorizontalLabels = new BarChartDayLabel[0];
             }
         }
+
+        public static BarChartData Create(DateTimeOffset startDate, DateTimeOffset endDate, bool workspaceIsBillable, DateFormat dateFormat, BarViewModel[] bars, int maximumHoursPerBar, DateTimeOffset[] horizontalLegend)
+            => new BarChartData(startDate, endDate, workspaceIsBillable, dateFormat, bars, maximumHoursPerBar, horizontalLegend);
     }
 }

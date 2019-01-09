@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Tests.Extensions;
 using Toggl.Foundation.Tests.Generators;
+using Toggl.Multivac.Extensions;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -13,7 +15,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class OnboardingViewModelTest : BaseViewModelTests<OnboardingViewModel>
         {
             protected override OnboardingViewModel CreateViewModel()
-                => new OnboardingViewModel(NavigationService, OnboardingStorage, AnalyticsService);
+                => new OnboardingViewModel(
+                    NavigationService,
+                    OnboardingStorage,
+                    AnalyticsService,
+                    RxActionFactory,
+                    SchedulerProvider);
         }
 
         public sealed class TheConstructor : OnboardingViewModelTest
@@ -21,14 +28,21 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Theory, LogIfTooSlow]
             [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
-                bool useNavigationService, bool useOnboardingStorage, bool useAnalyticsService)
+                bool useNavigationService,
+                bool useOnboardingStorage,
+                bool useAnalyticsService,
+                bool useRxActionFactory,
+                bool useSchedulerProvider)
             {
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
+                var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new OnboardingViewModel(navigationService, onboardingStorage, analyticsService);
+                    () => new OnboardingViewModel(navigationService, onboardingStorage, analyticsService,
+                        rxActionFactory, schedulerProvider);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -38,24 +52,29 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheCurrentPageProperty : OnboardingViewModelTest
         {
             [Fact, LogIfTooSlow]
-            public void DoesNotAllowUsersToSetItsValueToAValueGreaterThanTheNumberOfPagesMinusOne()
+            public async Task DoesNotAllowUsersToSetItsValueToAValueGreaterThanTheNumberOfPagesMinusOne()
             {
-                ViewModel.CurrentPage = OnboardingViewModel.TrackPage;
+                await ViewModel.Initialize();
+                var observer = TestScheduler.CreateObserver<int>();
+                ViewModel.CurrentPage.Subscribe(observer);
 
-                ViewModel.CurrentPage = ViewModel.NumberOfPages;
-                ViewModel.CurrentPage = ViewModel.NumberOfPages + 1;
+                await ViewModel.ChangePage(int.MaxValue);
+                TestScheduler.Start();
 
-                ViewModel.CurrentPage.Should().Be(OnboardingViewModel.TrackPage);
+                observer.LastValue().Should().Be(OnboardingViewModel.ReportsPage);
             }
 
             [Fact, LogIfTooSlow]
-            public void DoesNotAllowUsersToSetItsValueToANegativeNumber()
+            public async Task DoesNotAllowUsersToSetItsValueToANegativeNumber()
             {
-                ViewModel.CurrentPage = OnboardingViewModel.TrackPage;
+                await ViewModel.Initialize();
+                var observer = TestScheduler.CreateObserver<int>();
+                ViewModel.CurrentPage.Subscribe(observer);
 
-                ViewModel.CurrentPage = -1;
+                await ViewModel.ChangePage(-1);
+                TestScheduler.Start();
 
-                ViewModel.CurrentPage.Should().Be(OnboardingViewModel.TrackPage);
+                observer.LastValue().Should().Be(OnboardingViewModel.TrackPage);
             }
         }
 
@@ -65,12 +84,17 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData(OnboardingViewModel.TrackPage)]
             [InlineData(OnboardingViewModel.MostUsedPage)]
             [InlineData(OnboardingViewModel.ReportsPage)]
-            public void OnlyReturnsTrueForTheFirstPage(int page)
+            public async Task OnlyReturnsTrueForTheFirstPage(int page)
             {
-                ViewModel.CurrentPage = page;
+                await ViewModel.Initialize();
+                var observer = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsFirstPage.Subscribe(observer);
+
+                await ViewModel.ChangePage(page);
+                TestScheduler.Start();
 
                 var expected = page == 0;
-                ViewModel.IsFirstPage.Should().Be(expected);
+                observer.LastValue().Should().Be(expected);
             }
         }
 
@@ -80,21 +104,26 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData(OnboardingViewModel.TrackPage)]
             [InlineData(OnboardingViewModel.MostUsedPage)]
             [InlineData(OnboardingViewModel.ReportsPage)]
-            public void OnlyReturnsTrueInThePageWhoseIndexEqualsToTheNumberOfPagesMinusOne(int page)
+            public async Task OnlyReturnsTrueInThePageWhoseIndexEqualsToTheNumberOfPagesMinusOne(int page)
             {
-                ViewModel.CurrentPage = page;
+                await ViewModel.Initialize();
+                var observer = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsLastPage.Subscribe(observer);
+
+                await ViewModel.ChangePage(page);
+                TestScheduler.Start();
 
                 var expected = page == ViewModel.NumberOfPages - 1;
-                ViewModel.IsLastPage.Should().Be(expected);
+                observer.LastValue().Should().Be(expected);
             }
         }
 
-        public sealed class TheSkipCommand : OnboardingViewModelTest
+        public sealed class TheSkipAction : OnboardingViewModelTest
         {
             [Fact, LogIfTooSlow]
             public async Task NavigatesToTheLoginPage()
             {
-                await ViewModel.SkipCommand.ExecuteAsync();
+                ViewModel.SkipOnboarding.Execute();
 
                 await NavigationService.Received().Navigate<LoginViewModel>();
             }
@@ -105,34 +134,45 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData(OnboardingViewModel.ReportsPage, nameof(OnboardingViewModel.ReportsPage))]
             public async Task CallsTheAnalyticsServiceIndicatingTheCurrentPage(int page, string expectedPageName)
             {
-                ViewModel.CurrentPage = page;
+                await ViewModel.Initialize();
 
-                await ViewModel.SkipCommand.ExecuteAsync();
+                await ViewModel.ChangePage(page);
+                TestScheduler.Start();
+
+                ViewModel.SkipOnboarding.Execute();
 
                 AnalyticsService.Received().OnboardingSkip.Track(expectedPageName);
             }
         }
 
-        public sealed class TheNextCommand : OnboardingViewModelTest
+        public sealed class TheNextAction : OnboardingViewModelTest
         {
             [Theory, LogIfTooSlow]
             [InlineData(OnboardingViewModel.TrackPage, OnboardingViewModel.MostUsedPage)]
             [InlineData(OnboardingViewModel.MostUsedPage, OnboardingViewModel.ReportsPage)]
             public async Task AdvancesToTheNextPage(int from, int to)
             {
-                ViewModel.CurrentPage = from;
+                await ViewModel.Initialize();
+                await ViewModel.ChangePage(from);
+                var observer = TestScheduler.CreateObserver<int>();
+                ViewModel.CurrentPage.Subscribe(observer);
 
-                await ViewModel.NextCommand.ExecuteAsync();
+                ViewModel.GoToNextPage.Execute();
+                TestScheduler.Start();
 
-                ViewModel.CurrentPage.Should().Be(to);
+                observer.LastValue().Should().Be(to);
             }
 
             [Fact, LogIfTooSlow]
             public async Task CompletesOnboardingWhenOnTheLastPage()
             {
-                ViewModel.CurrentPage = OnboardingViewModel.ReportsPage;
+                await ViewModel.Initialize();
+                await ViewModel.ChangePage(OnboardingViewModel.ReportsPage);
+                var observer = TestScheduler.CreateObserver<int>();
+                ViewModel.CurrentPage.Subscribe(observer);
 
-                await ViewModel.NextCommand.ExecuteAsync();
+                ViewModel.GoToNextPage.Execute();
+                TestScheduler.Start();
 
                 await NavigationService.Received().Navigate<LoginViewModel>();
             }
@@ -141,35 +181,52 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task SetsTheCompletedOnboardingFlagWhenUserViewsAllOnboardingPagesAndTapsOnNext()
             {
                 await ViewModel.Initialize();
-                while (!ViewModel.IsLastPage)
-                    await ViewModel.NextCommand.ExecuteAsync();
+                await ViewModel.ChangePage(OnboardingViewModel.TrackPage);
+                var observer = TestScheduler.CreateObserver<int>();
+                ViewModel.CurrentPage.Subscribe(observer);
 
-                await ViewModel.NextCommand.ExecuteAsync();
+                for (int i = 0; i < ViewModel.NumberOfPages; ++i)
+                {
+                    await ViewModel.ChangePage(i + 1);
+                }
+                TestScheduler.Start();
 
                 OnboardingStorage.Received().SetCompletedOnboarding();
             }
         }
 
-        public sealed class ThePreviousCommand : OnboardingViewModelTest
+        public sealed class ThePreviousAction : OnboardingViewModelTest
         {
             [Theory, LogIfTooSlow]
             [InlineData(OnboardingViewModel.MostUsedPage, OnboardingViewModel.TrackPage)]
             [InlineData(OnboardingViewModel.ReportsPage, OnboardingViewModel.MostUsedPage)]
-            public void ReturnsToThePreviousPage(int from, int to)
+            public async Task ReturnsToThePreviousPage(int from, int to)
             {
-                ViewModel.CurrentPage = from;
+                await ViewModel.Initialize();
+                var observer = TestScheduler.CreateObserver<int>();
+                ViewModel.CurrentPage.Subscribe(observer);
+                await ViewModel.ChangePage(from);
 
-                ViewModel.PreviousCommand.Execute();
+                ViewModel.GoToPreviousPage.Execute();
+                TestScheduler.Start();
 
-                ViewModel.CurrentPage.Should().Be(to);
+                observer.LastValue().Should().Be(to);
             }
 
-            [Fact, LogIfTooSlow]
-            public void CannotBeExecutedWhenOnTheFirstPage()
+            [Theory, LogIfTooSlow]
+            [InlineData(OnboardingViewModel.TrackPage, false)]
+            [InlineData(OnboardingViewModel.MostUsedPage, true)]
+            [InlineData(OnboardingViewModel.ReportsPage, true)]
+            public async Task ShouldBeDisableWhenInFirstPage(int page, bool shouldBeEnabled)
             {
-                ViewModel.CurrentPage = OnboardingViewModel.TrackPage;
+                await ViewModel.Initialize();
+                var observer = TestScheduler.CreateObserver<bool>();
+                ViewModel.GoToPreviousPage.Enabled.Subscribe(observer);
+                await ViewModel.ChangePage(page);
 
-                ViewModel.PreviousCommand.CanExecute().Should().BeFalse();
+                TestScheduler.Start();
+
+                observer.LastValue().Should().Be(shouldBeEnabled);
             }
         }
 
@@ -179,8 +236,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task InitializesCurrentPageToTrackPageIfUserHasNotCompletedOnboarding()
             {
                 await ViewModel.Initialize();
+                var observer = TestScheduler.CreateObserver<int>();
+                ViewModel.CurrentPage.Subscribe(observer);
 
-                ViewModel.CurrentPage.Should().Be(OnboardingViewModel.TrackPage);
+                TestScheduler.Start();
+
+                observer.LastValue().Should().Be(OnboardingViewModel.TrackPage);
             }
 
             [Fact, LogIfTooSlow]

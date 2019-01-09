@@ -60,6 +60,15 @@ namespace Toggl.Giskard.Presenters
             base.ChangePresentation(hint);
         }
 
+        public override void Show(MvxViewModelRequest request)
+        {
+            if (request.ViewModelType == typeof(ReportsCalendarViewModel))
+            {
+                return;
+            }
+            base.Show(request);
+        }
+
         protected override bool CloseFragmentDialog(IMvxViewModel viewModel, MvxDialogFragmentPresentationAttribute attribute)
         {
             var tag = FragmentJavaName(attribute.ViewType);

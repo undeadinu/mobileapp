@@ -36,21 +36,17 @@ namespace Toggl.Foundation.Tests.DataSources
             protected ITimeService TimeService { get; } = Substitute.For<ITimeService>();
             protected ISyncManager SyncManager { get; } = Substitute.For<ISyncManager>();
             protected INotificationService NotificationService { get; } = Substitute.For<INotificationService>();
-            protected IErrorHandlingService ErrorHandlingService { get; } = Substitute.For<IErrorHandlingService>();
             protected ISubject<SyncProgress> ProgressSubject = new Subject<SyncProgress>();
-            protected ISubject<Exception> ErrorsSubject = new Subject<Exception>();
             protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
             protected IAnalyticsService AnalyticsService { get; } = Substitute.For<IAnalyticsService>();
 
             public TogglDataSourceTest()
             {
                 SyncManager.ProgressObservable.Returns(ProgressSubject.AsObservable());
-                SyncManager.Errors.Returns(ErrorsSubject.AsObservable());
                 DataSource = new TogglDataSource(
                     Api,
                     Database,
                     TimeService,
-                    ErrorHandlingService,
                     _ => SyncManager,
                     NotificationService,
                     ApplicationShortcutCreator,
@@ -250,75 +246,6 @@ namespace Toggl.Foundation.Tests.DataSources
                 {
                 }
             }
-        }
-
-        public sealed class SyncErrorHandling : TogglDataSourceTest
-        {
-            private IRequest request => Substitute.For<IRequest>();
-            private IResponse response => Substitute.For<IResponse>();
-
-            [Fact, LogIfTooSlow]
-            public void SetsTheOutdatedClientVersionFlag()
-            {
-                var exception = new ClientDeprecatedException(request, response);
-                ErrorHandlingService.TryHandleDeprecationError(Arg.Any<ClientDeprecatedException>()).Returns(true);
-
-                ErrorsSubject.OnNext(exception);
-
-                ErrorHandlingService.Received().TryHandleDeprecationError(Arg.Is(exception));
-                ErrorHandlingService.DidNotReceive().TryHandleUnauthorizedError(Arg.Is(exception));
-            }
-
-            [Fact, LogIfTooSlow]
-            public void SetsTheOutdatedApiVersionFlag()
-            {
-                var exception = new ApiDeprecatedException(request, response);
-                ErrorHandlingService.TryHandleDeprecationError(Arg.Any<ApiDeprecatedException>()).Returns(true);
-
-                ErrorsSubject.OnNext(exception);
-
-                ErrorHandlingService.Received().TryHandleDeprecationError(Arg.Is(exception));
-                ErrorHandlingService.DidNotReceive().TryHandleUnauthorizedError(Arg.Is(exception));
-            }
-
-            [Fact, LogIfTooSlow]
-            public void SetsTheUnauthorizedAccessFlag()
-            {
-                var exception = new UnauthorizedException(request, response);
-                ErrorHandlingService.TryHandleUnauthorizedError(Arg.Any<UnauthorizedException>()).Returns(true);
-
-                ErrorsSubject.OnNext(exception);
-
-                ErrorHandlingService.Received().TryHandleUnauthorizedError(Arg.Is(exception));
-            }
-
-            [Theory, LogIfTooSlow]
-            [MemberData(nameof(SyncManagerTests.TheProgressObservable.ExceptionsRethrownByProgressObservableOnError), MemberType = typeof(SyncManagerTests.TheProgressObservable))]
-            public void DoesNotThrowForAnyExceptionWhichCanBeThrownByTheProgressObservable(Exception exception)
-            {
-                ErrorHandlingService.TryHandleUnauthorizedError(Arg.Any<UnauthorizedException>()).Returns(true);
-                ErrorHandlingService.TryHandleDeprecationError(Arg.Any<ClientDeprecatedException>()).Returns(true);
-                ErrorHandlingService.TryHandleDeprecationError(Arg.Any<ApiDeprecatedException>()).Returns(true);
-
-                Action processingError = () => ErrorsSubject.OnNext(exception);
-
-                processingError.Should().NotThrow();
-            }
-
-            [Theory, LogIfTooSlow]
-            [MemberData(nameof(ApiExceptionsWhichAreNotThrowByTheProgressObservable))]
-            public void ThrowsForDifferentException(Exception exception)
-            {
-                Action handling = () => ErrorsSubject.OnNext(exception);
-
-                handling.Should().Throw<ArgumentException>();
-            }
-
-            public static IEnumerable<object[]> ApiExceptionsWhichAreNotThrowByTheProgressObservable()
-                => ApiExceptions.ClientExceptions
-                    .Concat(ApiExceptions.ServerExceptions)
-                    .Where(args => SyncManagerTests.TheProgressObservable.ExceptionsRethrownByProgressObservableOnError()
-                        .All(thrownByProgress => args[0].GetType() != thrownByProgress[0].GetType()));
         }
     }
 }

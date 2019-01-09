@@ -30,8 +30,6 @@ namespace Toggl.Foundation.Tests.Sync.Helpers
         public IMvxNavigationService NavigationServiceSubstitute { get; } =
             Substitute.For<IMvxNavigationService>();
 
-        public IErrorHandlingService ErrorHandlingService { get; }
-
         public IAnalyticsService AnalyticsServiceSubstitute { get; } = Substitute.For<IAnalyticsService>();
 
         public ILastTimeUsageStorage LastTimeUsageStorageSubstitute { get; } = Substitute.For<ILastTimeUsageStorage>();
@@ -47,8 +45,6 @@ namespace Toggl.Foundation.Tests.Sync.Helpers
         {
             Scheduler = System.Reactive.Concurrency.Scheduler.Default;
             TimeService = new TimeService(Scheduler);
-            ErrorHandlingService = new ErrorHandlingService(
-                NavigationServiceSubstitute, AccessRestrictionStorageSubsitute);
 
             ISyncManager createSyncManager(ITogglDataSource dataSource)
                 => TogglSyncManager.CreateSyncManager(
@@ -64,7 +60,6 @@ namespace Toggl.Foundation.Tests.Sync.Helpers
                 api,
                 database,
                 TimeService,
-                ErrorHandlingService,
                 createSyncManager,
                 NotificationServiceSubstitute,
                 ApplicationShortcutCreatorSubstitute,

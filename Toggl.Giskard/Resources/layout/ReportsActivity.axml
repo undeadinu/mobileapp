@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="UTF-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:animateLayoutChanges="true"
@@ -14,19 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize">
-        <FrameLayout
-            android:id="@+id/ReportsCalendarContainer"
-            android:background="@color/toolbarBlack"
+        <toggl.giskard.views.ReportsCalendarView
+            android:id="@+id/ReportsActivityCalendarView"
+            android:orientation="vertical"
             android:layout_marginTop="-500dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <toggl.giskard.views.ReportsRecyclerView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/ReportsActivityRecyclerView"
-            local:MvxBind="ViewModel .; ItemsSource Segments"
             android:scrollbars="none"
             android:paddingBottom="64dp"
             android:clipToPadding="false"
-            local:MvxTemplateSelector="@string/ReportsTemplateSelector"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </com.toggl.giskard.ReportsLinearLayout>
@@ -39,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            local:MvxBind="Text CurrentDateRangeString; Click ToggleCalendarCommand"
+            android:id="@+id/ToolbarCurrentDateRangeText"
             tools:text="Last week"
             android:padding="16dp"
             android:textSize="19sp"
@@ -53,10 +52,10 @@
     </android.support.v7.widget.Toolbar>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/SelectWorkspaceFAB"
-        local:elevation="4dp"
-        android:src="@drawable/workspace_white"
-        android:scaleType="center"
         local:fabSize="mini"
+        local:elevation="4dp"
+        android:scaleType="center"
+        android:src="@drawable/workspace_white"
         local:backgroundTint="@color/playButtonGreen"
         android:layout_width="56dp"
         android:layout_height="56dp"

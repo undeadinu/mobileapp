@@ -1,26 +1,26 @@
-﻿using MvvmCross.Binding.BindingContext;
-using MvvmCross.Platforms.Ios.Binding;
-using MvvmCross.Platforms.Ios.Views;
+﻿using System;
+using System.Reactive.Linq;
+using CoreGraphics;
 using MvvmCross.Platforms.Ios.Presenters.Attributes;
-using MvvmCross.Plugin.Color;
-using MvvmCross.Plugin.Visibility;
+using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Extensions;
+using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Foundation;
-using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Multivac.Extensions;
 using UIKit;
 
 namespace Toggl.Daneel.ViewControllers
 {
     [MvxRootPresentation(WrapInNavigationController = true)]
-    public sealed partial class OnboardingViewController : MvxViewController<OnboardingViewModel>
+    public sealed partial class OnboardingViewController : ReactiveViewController<OnboardingViewModel>, IUIScrollViewDelegate
     {
         private readonly TrackPage trackPagePlaceholder = TrackPage.Create();
         private readonly MostUsedPage mostUsedPagePlaceholder = MostUsedPage.Create();
         private readonly ReportsPage reportsPagePlaceholder = ReportsPage.Create();
 
-        public OnboardingViewController() 
-            : base(nameof(OnboardingViewController), null)
+        public OnboardingViewController()
+            : base(nameof(OnboardingViewController))
         {
         }
 
@@ -41,77 +41,72 @@ namespace Toggl.Daneel.ViewControllers
             SecondPageLabel.Text = Resources.OnboardingMostUsedPageCopy;
             ThirdPageLabel.Text = Resources.OnboardingReportsPageCopy;
 
-            var visibilityConverter = new MvxVisibilityValueConverter();
-            var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
-            var colorConverter = new MvxNativeColorValueConverter();
-            var bindingSet = this.CreateBindingSet<OnboardingViewController, OnboardingViewModel>();
+            Skip.Rx()
+                .BindAction(ViewModel.SkipOnboarding)
+                .DisposedBy(DisposeBag);
 
-            var pagedBackgroundImageColorConverter = new PaginationValueConverter<UIImage>(new[]
-            {
-                UIImage.FromBundle("bgNoiseBlue"),
-                UIImage.FromBundle("bgNoisePurple"),
-                UIImage.FromBundle("bgNoiseYellow")
-            });
+            Next.Rx()
+                .BindAction(ViewModel.GoToNextPage)
+                .DisposedBy(DisposeBag);
 
-            //Commands
-            bindingSet.Bind(Skip).To(vm => vm.SkipCommand);
-            bindingSet.Bind(Next).To(vm => vm.NextCommand);
-            bindingSet.Bind(Previous).To(vm => vm.PreviousCommand);
+            Previous.Rx()
+                .BindAction(ViewModel.GoToPreviousPage)
+                .DisposedBy(DisposeBag);
 
-            //Color
-            bindingSet.Bind(View)
-                      .For(v => v.BindAnimatedBackground())
-                      .To(vm => vm.BackgroundColor)
-                      .WithConversion(colorConverter);
+            ScrollView.Rx()
+                .DecelerationEnded()
+                .Select(_ => (int)(ScrollView.ContentOffset.X / ScrollView.Frame.Width))
+                .Subscribe(newPage => ViewModel?.ChangePage(newPage))
+                .DisposedBy(DisposeBag);
+
+            ViewModel.BackgroundColor
+                .Select(color => color.ToNativeColor())
+                .Subscribe(View.Rx().AnimatedBackgroundColor())
+                .DisposedBy(DisposeBag);
+
+            ViewModel.BorderColor
+                .Select(color => color.ToNativeColor())
+                .Subscribe(PhoneFrame.Rx().AnimatedBackgroundColor())
+                .DisposedBy(DisposeBag);
             
-            bindingSet.Bind(PhoneFrame)
-                      .For(v => v.BindAnimatedBackground())
-                      .To(vm => vm.BorderColor)
-                      .WithConversion(colorConverter);
+            ViewModel.CurrentPage
+                .Select(backgroundImageForPage)
+                .Subscribe(image => BackgroundImage.Image = image)
+                .DisposedBy(DisposeBag);
 
-            //Noise image
-            bindingSet.Bind(BackgroundImage)
-                      .For(v => v.BindAnimatedImage())
-                      .To(vm => vm.CurrentPage)
-                      .WithConversion(pagedBackgroundImageColorConverter);
+            ViewModel.IsLastPage
+                .Invert()
+                .Subscribe(Skip.Rx().IsVisible())
+                .DisposedBy(DisposeBag);
 
-            //Visibility
-            bindingSet.Bind(Skip)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsLastPage)
-                      .WithConversion(invertedVisibilityConverter);
+            ViewModel.IsFirstPage
+                .Invert()
+                .Subscribe(Previous.Rx().IsVisible())
+                .DisposedBy(DisposeBag);
 
-            bindingSet.Bind(Previous)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsFirstPage)
-                      .WithConversion(invertedVisibilityConverter);
+            ViewModel.IsTrackPage
+                .Subscribe(trackPagePlaceholder.Rx().IsVisible())
+                .DisposedBy(DisposeBag);
 
-            bindingSet.Bind(trackPagePlaceholder)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsTrackPage)
-                      .WithConversion(visibilityConverter);
+            ViewModel.IsReportPage
+                .Subscribe(reportsPagePlaceholder.Rx().IsVisible())
+                .DisposedBy(DisposeBag);
 
-            bindingSet.Bind(mostUsedPagePlaceholder)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsMostUsedPage)
-                      .WithConversion(visibilityConverter);
+            ViewModel.IsSummaryPage
+                .Subscribe(mostUsedPagePlaceholder.Rx().IsVisible())
+                .DisposedBy(DisposeBag);
 
-            bindingSet.Bind(reportsPagePlaceholder)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsSummaryPage)
-                      .WithConversion(visibilityConverter);
+            ViewModel.CurrentPage
+                .Subscribe(p => PageControl.CurrentPage = p)
+                .DisposedBy(DisposeBag);
 
-
-            //Current Page
-            bindingSet.Bind(ScrollView)
-                      .For(v => v.BindAnimatedCurrentPage())
-                      .To(vm => vm.CurrentPage);
-
-            bindingSet.Bind(PageControl)
-                      .For(v => v.CurrentPage)
-                      .To(vm => vm.CurrentPage);
-
-            bindingSet.Apply();
+            ViewModel.CurrentPage
+                .Subscribe(p =>
+                {
+                    var scrollPoint = new CGPoint(ScrollView.Frame.Size.Width * p, 0);
+                    ScrollView.SetContentOffset(scrollPoint, true);
+                })
+                .DisposedBy(DisposeBag);
         }
 
         public override void ViewWillAppear(bool animated)
@@ -142,5 +137,21 @@ namespace Toggl.Daneel.ViewControllers
             if (reportsPagePlaceholder != null)
                 reportsPagePlaceholder.Frame = PhoneContents.Bounds;
         }
+
+        private UIImage backgroundImageForPage(int page)
+        {
+            switch (page)
+            {
+                case OnboardingViewModel.TrackPage:
+                    return UIImage.FromBundle("bgNoiseBlue");
+                case OnboardingViewModel.MostUsedPage:
+                    return UIImage.FromBundle("bgNoisePurple");
+                case OnboardingViewModel.ReportsPage:
+                    return UIImage.FromBundle("bgNoiseYellow");
+                default:
+                    return UIImage.FromBundle("bgNoiseYellow");
+            }
+        }
+
     }
 }

@@ -27,9 +27,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels.ReportsCalendarQuickSelect
             var quickSelectShortCut = CreateQuickSelectShortcut();
             var dateRange = quickSelectShortCut.GetDateRange();
 
-            quickSelectShortCut.OnDateRangeChanged(dateRange);
+            var result = quickSelectShortCut.IsSelected(dateRange);
 
-            quickSelectShortCut.Selected.Should().BeTrue();
+            result.Should().BeTrue();
         }
 
         [Fact, LogIfTooSlow]

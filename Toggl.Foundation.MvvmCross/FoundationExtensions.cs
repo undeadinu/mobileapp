@@ -56,7 +56,6 @@ namespace Toggl.Foundation.MvvmCross
                         api,
                         foundation.Database,
                         foundation.TimeService,
-                        foundation.ErrorHandlingService,
                         createSyncManager(api),
                         foundation.NotificationService,
                         foundation.ShortcutCreator,
@@ -65,6 +64,8 @@ namespace Toggl.Foundation.MvvmCross
 
                 Mvx.ConstructAndRegisterSingleton<IInteractorFactory, InteractorFactory>();
                 Mvx.ConstructAndRegisterSingleton<IAutocompleteProvider, AutocompleteProvider>();
+
+                foundation.SyncErrorHandlingService.HandleErrorsOf(dataSource.SyncManager);
 
                 return dataSource;
             }
@@ -108,6 +109,7 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(foundation.AccessRestrictionStorage);
             Mvx.RegisterSingleton(foundation.LastTimeUsageStorage);
             Mvx.RegisterSingleton(foundation.ErrorHandlingService);
+            Mvx.RegisterSingleton(foundation.SyncErrorHandlingService);
             Mvx.RegisterSingleton(foundation.PermissionsService);
             Mvx.RegisterSingleton(foundation.CalendarService);
             Mvx.RegisterSingleton(foundation.SchedulerProvider);

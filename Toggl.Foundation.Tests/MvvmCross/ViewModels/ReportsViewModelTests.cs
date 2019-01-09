@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -21,6 +22,8 @@ using Toggl.Multivac.Extensions;
 using Xunit;
 using Microsoft.Reactive.Testing;
 using Toggl.Foundation.MvvmCross.ViewModels.Reports;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar;
+using Toggl.Foundation.Tests.Extensions;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 {
@@ -121,38 +124,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheInitializeMethod : ReportsViewModelTest
         {
             [Fact, LogIfTooSlow]
-            public async Task ReturnsSegmentsJustOnceWhenChangingDateRange()
-            {
-                var segments = new ChartSegment[2] {
-                    new ChartSegment("Project 1", "Client 1", 50f, 10, 0, "ff0000"),
-                    new ChartSegment("Project 2", "Client 2", 50f, 10, 0, "00ff00")
-                };
-                var projectsNotSyncedCount = 0;
-
-                var currentDate = new DateTimeOffset(2018, 5, 23, 0, 0, 0, TimeSpan.Zero);
-                var start = new DateTimeOffset(2018, 5, 1, 0, 0, 0, TimeSpan.Zero);
-                var end = new DateTimeOffset(2018, 5, 7, 0, 0, 0, TimeSpan.Zero);
-                TimeService.CurrentDateTime.Returns(currentDate);
-
-                var delayed = Observable
-                    .Return(new ProjectSummaryReport(segments, projectsNotSyncedCount))
-                    .Delay(TimeSpan.FromMilliseconds(100));
-
-                var instant = Observable
-                    .Return(new ProjectSummaryReport(segments, projectsNotSyncedCount));
-
-                ReportsProvider.GetProjectSummary(Arg.Any<long>(), Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
-                               .Returns(delayed, instant);
-
-                await Initialize();
-                ViewModel.ChangeDateRangeCommand.Execute(
-                    ReportsDateRangeParameter.WithDates(start, end));
-
-                await delayed;
-                ViewModel.Segments.Count.Should().Be(segments.Length);
-            }
-
-            [Fact, LogIfTooSlow]
             public async Task TracksAnEventWhenReportLoadsSuccessfully()
             {
                 var startDateRange = new DateTimeOffset(2018, 05, 05, 0, 0, 0, TimeSpan.Zero);
@@ -204,20 +175,25 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheBillablePercentageMethod : ReportsViewModelTest
         {
-            [Property(MaxTest = 1)]
-            public void IsSetToNullIfTheTotalTimeOfAReportIsZero(DateTimeOffset now)
+            [Fact, LogIfTooSlow]
+            public void IsSetToNullIfTheTotalTimeOfAReportIsZero()
             {
-                var date = now.Date;
+                var billableObserver = TestScheduler.CreateObserver<float?>();
                 var projectsNotSyncedCount = 0;
-                TimeService.CurrentDateTime.Returns(now);
-                var expectedStartDate = date.AddDays(1 - (int)date.DayOfWeek);
-                ReportsProvider.GetProjectSummary(
-                    WorkspaceId, expectedStartDate, expectedStartDate.AddDays(6))
-                        .Returns(Observable.Return(new ProjectSummaryReport(new ChartSegment[0], projectsNotSyncedCount)));
+                TimeService.CurrentDateTime.Returns(DateTime.Now);
+                TimeService.MidnightObservable.Returns(Observable.Never<DateTimeOffset>());
+                ReportsProvider
+                    .GetProjectSummary(WorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
+                    .Returns(Observable.Return(new ProjectSummaryReport(new ChartSegment[0], projectsNotSyncedCount)));
 
-                ViewModel.Initialize().Wait();
+                ViewModel.BillablePercentageObservable.Subscribe(billableObserver);
 
-                ViewModel.BillablePercentage.Should().BeNull();
+                Initialize().Wait();
+
+                TestScheduler.Start();
+
+                var billablePercentage = billableObserver.Values().Last();
+                billablePercentage.Should().BeNull();
             }
         }
 
@@ -226,36 +202,50 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task IsSetToTrueWhenTheViewIsInitializedBeforeAnyLoadingOfReportsStarts()
             {
+                var loadingObserver = TestScheduler.CreateObserver<bool>();
+                TimeService.CurrentDateTime.Returns(DateTime.Now);
+                ViewModel.IsLoadingObservable.Subscribe(loadingObserver);
+
                 await ViewModel.Initialize();
 
-                ViewModel.IsLoading.Should().BeTrue();
+                TestScheduler.Start();
+                var isLoading = loadingObserver.Values().First();
+                isLoading.Should().BeTrue();
             }
 
             [Fact, LogIfTooSlow]
             public async Task IsSetToTrueWhenAReportIsLoading()
             {
+                var loadingObserver = TestScheduler.CreateObserver<bool>();
                 var now = DateTimeOffset.Now;
                 TimeService.CurrentDateTime.Returns(now);
                 ReportsProvider.GetProjectSummary(Arg.Any<long>(), Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Never<ProjectSummaryReport>());
+                ViewModel.IsLoadingObservable.Subscribe(loadingObserver);
 
                 await Initialize();
 
-                ViewModel.IsLoading.Should().BeTrue();
+                TestScheduler.Start();
+                var isLoading = loadingObserver.Values().Last();
+                isLoading.Should().BeTrue();
             }
 
             [Fact, LogIfTooSlow]
             public async Task IsSetToFalseWhenLoadingIsCompleted()
             {
+                var loadingObserver = TestScheduler.CreateObserver<bool>();
                 var now = DateTimeOffset.Now;
                 var projectsNotSyncedCount = 0;
                 TimeService.CurrentDateTime.Returns(now);
                 ReportsProvider.GetProjectSummary(Arg.Any<long>(), Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Return(new ProjectSummaryReport(new ChartSegment[0], projectsNotSyncedCount)));
+                ViewModel.IsLoadingObservable.Subscribe(loadingObserver);
 
                 await Initialize();
 
-                ViewModel.IsLoading.Should().BeFalse();
+                TestScheduler.Start();
+                var isLoading = loadingObserver.Values().Last();
+                isLoading.Should().BeFalse();
             }
         }
 
@@ -272,6 +262,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task IsSetToTrueWhenTheViewIsInitializedBeforeAnyLoadingOfReportsStarts()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 await ViewModel.Initialize();
 
                 TestScheduler.Start();
@@ -313,118 +304,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task IsInitializedToEmptyOrNull()
             {
+                var observer = TestScheduler.CreateObserver<string>();
+                var now = DateTimeOffset.Now;
+                TimeService.CurrentDateTime.Returns(now);
+                ViewModel.CurrentDateRangeStringObservable.Subscribe(observer);
                 await ViewModel.Initialize();
 
-                ViewModel.CurrentDateRangeString.Should().BeNullOrEmpty();
-            }
-
-            [Theory, LogIfTooSlow]
-            [InlineData(
-                2017, 12, 6,
-                2017, 12, 4,
-                2017, 12, 10
-            )]
-            [InlineData(
-                2018, 2, 28,
-                2018, 2, 26,
-                2018, 3, 4
-            )]
-            [InlineData(
-                2016, 4, 20,
-                2016, 4, 18,
-                2016, 4, 24
-            )]
-            [InlineData(
-                2016, 12, 28,
-                2016, 12, 26,
-                2017, 1, 1
-            )]
-            public void ReturnsThisWeekWhenStartAndEndOfCurrentWeekAreSeleted(
-                int currentYear, int currentMonth, int currentDay,
-                int startYear, int startMonth, int startDay,
-                int endYear, int endMonth, int endDay)
-            {
-                var observer = TestScheduler.CreateObserver<string>();
-                ViewModel.CurrentDateRangeStringObservable.Subscribe(observer);
-
-                var currentDate = new DateTimeOffset(currentYear, currentMonth, currentDay, 0, 0, 0, TimeSpan.Zero);
-                var start = new DateTimeOffset(startYear, startMonth, startDay, 0, 0, 0, TimeSpan.Zero);
-                var end = new DateTimeOffset(endYear, endMonth, endDay, 0, 0, 0, TimeSpan.Zero);
-                TimeService.CurrentDateTime.Returns(currentDate);
-                ViewModel.ChangeDateRangeCommand.Execute(
-                    ReportsDateRangeParameter.WithDates(start, end).WithSource(ReportsSource.Calendar));
-
                 TestScheduler.Start();
-                observer.Messages.AssertEqual(
-                    ReactiveTest.OnNext(1, ""),
-                    ReactiveTest.OnNext(2, $"{Resources.ThisWeek} ▾")
-                );
-            }
-
-            [Theory]
-            [MemberData(nameof(DateRangeFormattingTestData))]
-            public async Task ReturnsSelectedDateRangeAsStringIfTheSelectedPeriodIsNotTheCurrentWeek(
-                DateTimeOffset start,
-                DateTimeOffset end,
-                DateFormat dateFormat,
-                string expectedResult)
-            {
-                var observer = TestScheduler.CreateObserver<string>();
-                ViewModel.CurrentDateRangeStringObservable.Subscribe(observer);
-
-                TimeService.CurrentDateTime.Returns(DateTimeOffset.UtcNow);
-                var preferences = Substitute.For<IThreadSafePreferences>();
-                preferences.DateFormat.Returns(dateFormat);
-                var preferencesSubject = new Subject<IThreadSafePreferences>();
-                DataSource.Preferences.Current.Returns(preferencesSubject.AsObservable());
-                await ViewModel.Initialize();
-                preferencesSubject.OnNext(preferences);
-
-                ViewModel.ChangeDateRangeCommand.Execute(
-                    ReportsDateRangeParameter.WithDates(start, end).WithSource(ReportsSource.Calendar));
-
-                TestScheduler.Start();
-                observer.Messages.AssertEqual(
-                    ReactiveTest.OnNext(1, ""),
-                    ReactiveTest.OnNext(2, expectedResult)
-                );
-            }
-
-            public static IEnumerable<object[]> DateRangeFormattingTestData()
-            {
-                var dateFormats = new[]
-                {
-                    DateFormat.FromLocalizedDateFormat("YYYY-MM-DD"),
-                    DateFormat.FromLocalizedDateFormat("DD.MM.YYYY"),
-                    DateFormat.FromLocalizedDateFormat("DD-MM-YYYY"),
-                    DateFormat.FromLocalizedDateFormat("MM/DD/YYYY"),
-                    DateFormat.FromLocalizedDateFormat("DD/MM/YYYY"),
-                    DateFormat.FromLocalizedDateFormat("MM-DD-YYYY")
-                };
-
-                var ranges = new[]
-                {
-                    (new DateTimeOffset(2017, 12, 15, 10, 12, 13, TimeSpan.Zero), new DateTimeOffset(2017, 12, 15, 12, 34, 1, TimeSpan.Zero)),
-                    (new DateTimeOffset(2017, 1, 1, 10, 12, 13, TimeSpan.Zero), new DateTimeOffset(2017, 12, 30, 12, 34, 1, TimeSpan.Zero)),
-                    (new DateTimeOffset(2017, 11, 13, 10, 12, 13, TimeSpan.Zero), new DateTimeOffset(2018, 11, 13, 12, 34, 1, TimeSpan.Zero))
-                };
-
-                string expectedTitleString(DateTimeOffset start, DateTimeOffset end, DateFormat dateFormat)
-                    => $"{start.ToString(dateFormat.Short)} - {end.ToString(dateFormat.Short)} ▾";
-
-                foreach (var (start, end) in ranges)
-                {
-                    foreach (var dateFormat in dateFormats)
-                    {
-                        yield return new object[]
-                        {
-                            start,
-                            end,
-                            dateFormat,
-                            expectedTitleString(start, end, dateFormat)
-                        };
-                    }
-                }
+                var currentDateRangeString = observer.Values().First();
+                currentDateRangeString.Should().BeNullOrEmpty();
             }
         }
 
@@ -447,15 +335,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 TimeService.CurrentDateTime.Returns(new DateTimeOffset(2018, 05, 15, 12, 00, 00, TimeSpan.Zero));
                 ReportsProvider.GetProjectSummary(WorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Return(new ProjectSummaryReport(segments, projectsNotSyncedCount)));
+                var segmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                var groupedSegmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                ViewModel.SegmentsObservable.Subscribe(segmentsObservable);
+                ViewModel.GroupedSegmentsObservable.Subscribe(groupedSegmentsObservable);
 
                 await Initialize();
 
-                ViewModel.Segments.Should().HaveCount(5);
-                ViewModel.GroupedSegments.Should().HaveCount(4);
-                ViewModel.GroupedSegments.Should().Contain(segment =>
+                TestScheduler.Start();
+
+                var actualSegments = segmentsObservable.Values().Last();
+                var actualGroupedSegments = groupedSegmentsObservable.Values().Last();
+                actualSegments.Should().HaveCount(5);
+                actualGroupedSegments.Should().HaveCount(4);
+                actualGroupedSegments.Should().Contain(segment =>
                     segment.ProjectName == Resources.Other &&
                     segment.Percentage == segments[0].Percentage + segments[1].Percentage);
-                ViewModel.GroupedSegments
+                actualGroupedSegments
                     .Where(project => project.ProjectName != Resources.Other)
                     .Select(segment => segment.Percentage)
                     .ForEach(percentage => percentage.Should().BeGreaterOrEqualTo(5));
@@ -478,14 +374,21 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ReportsProvider.GetProjectSummary(WorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Return(new ProjectSummaryReport(segments, projectsNotSyncedCount)));
 
+                var segmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                var groupedSegmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                ViewModel.SegmentsObservable.Subscribe(segmentsObservable);
+                ViewModel.GroupedSegmentsObservable.Subscribe(groupedSegmentsObservable);
+
                 await Initialize();
 
-                ViewModel.Segments.Should().HaveCount(6);
-                ViewModel.GroupedSegments.Should().HaveCount(5);
-                ViewModel.GroupedSegments.Should().Contain(segment =>
+                var actualSegments = segmentsObservable.Values().Last();
+                var actualGroupedSegments = groupedSegmentsObservable.Values().Last();
+                actualSegments.Should().HaveCount(6);
+                actualGroupedSegments.Should().HaveCount(5);
+                actualGroupedSegments.Should().Contain(segment =>
                     segment.ProjectName == Resources.Other &&
                     segment.Percentage == segments[0].Percentage + segments[1].Percentage);
-                ViewModel.GroupedSegments
+                actualGroupedSegments
                     .Where(project => project.ProjectName != Resources.Other)
                     .Select(segment => segment.Percentage)
                     .ForEach(percentage => percentage.Should().BeGreaterOrEqualTo(5));
@@ -508,14 +411,22 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ReportsProvider.GetProjectSummary(WorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Return(new ProjectSummaryReport(segments, projectsNotSyncedCount)));
 
+                var segmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                var groupedSegmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                ViewModel.SegmentsObservable.Subscribe(segmentsObservable);
+                ViewModel.GroupedSegmentsObservable.Subscribe(groupedSegmentsObservable);
+
                 await Initialize();
 
-                ViewModel.Segments.Should().HaveCount(6);
-                ViewModel.GroupedSegments.Should().HaveCount(5);
-                ViewModel.GroupedSegments.Should().Contain(segment =>
+                var actualSegments = segmentsObservable.Values().Last();
+                var actualGroupedSegments = groupedSegmentsObservable.Values().Last();
+
+                actualSegments.Should().HaveCount(6);
+                actualGroupedSegments.Should().HaveCount(5);
+                actualGroupedSegments.Should().Contain(segment =>
                     segment.ProjectName == Resources.Other &&
                     segment.Percentage == 1f);
-                ViewModel.GroupedSegments
+                actualGroupedSegments
                     .Where(project => project.ProjectName != Resources.Other)
                     .Select(segment => segment.Percentage)
                     .ForEach(percentage => percentage.Should().BeGreaterOrEqualTo(5));
@@ -538,14 +449,22 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ReportsProvider.GetProjectSummary(WorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Return(new ProjectSummaryReport(segments, projectsNotSyncedCount)));
 
+                var segmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                var groupedSegmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                ViewModel.SegmentsObservable.Subscribe(segmentsObservable);
+                ViewModel.GroupedSegmentsObservable.Subscribe(groupedSegmentsObservable);
+
                 await Initialize();
 
-                ViewModel.Segments.Should().HaveCount(6);
-                ViewModel.GroupedSegments.Should().HaveCount(4);
-                ViewModel.GroupedSegments.Should().Contain(segment =>
+                var actualSegments = segmentsObservable.Values().Last();
+                var actualGroupedSegments = groupedSegmentsObservable.Values().Last();
+
+                actualSegments.Should().HaveCount(6);
+                actualGroupedSegments.Should().HaveCount(4);
+                actualGroupedSegments.Should().Contain(segment =>
                     segment.ProjectName == Resources.Other &&
                     segment.Percentage == segments[0].Percentage + segments[1].Percentage + segments[2].Percentage);
-                ViewModel.GroupedSegments
+                actualGroupedSegments
                     .Where(project => project.ProjectName != Resources.Other)
                     .Select(segment => segment.Percentage)
                     .ForEach(percentage => percentage.Should().BeGreaterOrEqualTo(4));
@@ -567,27 +486,39 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ReportsProvider.GetProjectSummary(WorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Return(new ProjectSummaryReport(segments, projectsNotSyncedCount)));
 
+                var segmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                var groupedSegmentsObservable = TestScheduler.CreateObserver<IReadOnlyList<ChartSegment>>();
+                ViewModel.SegmentsObservable.Subscribe(segmentsObservable);
+                ViewModel.GroupedSegmentsObservable.Subscribe(groupedSegmentsObservable);
+
                 await Initialize();
 
-                ViewModel.Segments.Should().HaveCount(5);
-                ViewModel.GroupedSegments.Should().HaveCount(5);
-                ViewModel.GroupedSegments.Should().Contain(segment =>
+                var actualSegments = segmentsObservable.Values().Last();
+                var actualGroupedSegments = groupedSegmentsObservable.Values().Last();
+
+                actualSegments.Should().HaveCount(5);
+                actualGroupedSegments.Should().HaveCount(5);
+                actualGroupedSegments.Should().Contain(segment =>
                     segment.ProjectName == "Project 1" &&
                     segment.Percentage == 1f &&
                     segment.Color == "#666666");
-                ViewModel.GroupedSegments
+                actualGroupedSegments
                     .Where(project => project.ProjectName != "Project 1")
                     .Select(segment => segment.Percentage)
                     .ForEach(percentage => percentage.Should().BeGreaterOrEqualTo(5));
             }
         }
 
+
         public sealed class TheSelectWorkspaceCommand : ReportsViewModelTest
         {
             [Fact, LogIfTooSlow]
             public async Task ShouldTriggerAReportReload()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 await ViewModel.Initialize();
+                TestScheduler.Start();
+
                 var mockWorkspace = new MockWorkspace { Id = WorkspaceId + 1 };
                 DialogService.Select(Arg.Any<string>(), Arg.Any<IEnumerable<(string, IThreadSafeWorkspace)>>(), Arg.Any<int>())
                     .Returns(Observable.Return(mockWorkspace));
@@ -602,6 +533,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task ShouldChangeCurrentWorkspaceName()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 var observer = TestScheduler.CreateObserver<string>();
                 ViewModel.WorkspaceNameObservable.Subscribe(observer);
 
@@ -624,6 +556,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task ShouldNotTriggerAReportReloadWhenSelectionIsCancelled()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 await ViewModel.Initialize();
                 DialogService.Select(Arg.Any<string>(), Arg.Any<IEnumerable<(string, IThreadSafeWorkspace)>>(), Arg.Any<int>())
                     .Returns(Observable.Return<IThreadSafeWorkspace>(null));
@@ -638,6 +571,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task ShouldNotTriggerAReportReloadWhenTheSameWorkspaceIsSelected()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 await ViewModel.Initialize();
 
                 var mockWorkspace = new MockWorkspace { Id = WorkspaceId };
@@ -669,48 +603,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task DoesNotEmitAnyValuesDuringInitialization()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 await ViewModel.Initialize();
 
                 startDateObserver.Messages.Should().BeEmpty();
                 endDateObserver.Messages.Should().BeEmpty();
-            }
-
-            [Theory, LogIfTooSlow]
-            [InlineData(
-                2017, 12, 6,
-                2017, 12, 4,
-                2017, 12, 10
-            )]
-            [InlineData(
-                2018, 2, 28,
-                2018, 2, 26,
-                2018, 3, 4
-            )]
-            [InlineData(
-                2016, 4, 20,
-                2016, 4, 18,
-                2016, 4, 24
-            )]
-            [InlineData(
-                2016, 12, 28,
-                2016, 12, 26,
-                2017, 1, 1
-            )]
-            public void ReturnsTheCorrectStartAndEndDatesForSelectedRanges(
-                int currentYear, int currentMonth, int currentDay,
-                int startYear, int startMonth, int startDay,
-                int endYear, int endMonth, int endDay)
-            {
-                var currentDate = new DateTimeOffset(currentYear, currentMonth, currentDay, 0, 0, 0, TimeSpan.Zero);
-                var start = new DateTimeOffset(startYear, startMonth, startDay, 0, 0, 0, TimeSpan.Zero);
-                var end = new DateTimeOffset(endYear, endMonth, endDay, 0, 0, 0, TimeSpan.Zero);
-                TimeService.CurrentDateTime.Returns(currentDate);
-                ViewModel.ChangeDateRangeCommand.Execute(
-                    ReportsDateRangeParameter.WithDates(start, end).WithSource(ReportsSource.Calendar));
-
-                TestScheduler.Start();
-                startDateObserver.Messages.AssertEqual(ReactiveTest.OnNext(1, start));
-                endDateObserver.Messages.AssertEqual(ReactiveTest.OnNext(1, end));
             }
         }
 
@@ -727,6 +624,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact]
             public async Task IsDisabledByDefault()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 await ViewModel.Initialize();
 
                 TestScheduler.Start();
@@ -736,6 +634,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact]
             public async Task StaysDisabledWhenSwitchingToAFreeWorkspace()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 prepareWorkspace(isProEnabled: false);
 
                 await ViewModel.Initialize();
@@ -749,9 +648,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact]
             public async Task BecomesEnabledWhenSwitchingToAProWorkspace()
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 prepareWorkspace(isProEnabled: true);
 
-                await ViewModel.Initialize();
+                await Initialize();
+                TestScheduler.Start();
 
                 ViewModel.SelectWorkspace.Execute();
                 TestScheduler.Start();
@@ -785,6 +686,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData(13)]
             public async Task ShouldTriggerReloadForEveryAppearance(int numberOfAppearances)
             {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
                 ReportsProvider.GetProjectSummary(Arg.Any<long>(), Arg.Any<DateTimeOffset>(),
                         Arg.Any<DateTimeOffset>())
                     .ReturnsForAnyArgs(Observable.Empty<ProjectSummaryReport>(SchedulerProvider.TestScheduler));

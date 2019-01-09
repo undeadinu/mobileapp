@@ -199,6 +199,16 @@ namespace Toggl.Giskard.Views
             var newMargin = isHidding ? negativeContainerHeight : 0;
             var animation = new TopMarginAnimation(CalendarContainer, newMargin, isHidding);
             animation.Duration = isFling ? calendarAnimationFlingDuration : calendarAnimationDuration;
+
+            void notifyShowAnimationEndToCalendarContainer(object sender, Animation.AnimationEndEventArgs e)
+            {
+                if (!isHidding)
+                {
+                    ((ReportsCalendarView) CalendarContainer).ExecutePendingPageUpdate();
+                }
+            }
+
+            animation.AnimationEnd += notifyShowAnimationEndToCalendarContainer;
             CalendarContainer.StartAnimation(animation);
             CalendarContainer.RequestLayout();
             Invalidate();

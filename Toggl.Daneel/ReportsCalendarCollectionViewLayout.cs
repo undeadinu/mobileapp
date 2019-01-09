@@ -17,7 +17,6 @@ namespace Toggl.Daneel
             => new CGSize(
                 width: CollectionView.NumberOfSections() * CollectionView.Frame.Width,
                 height: CollectionView.Frame.Height);
-        
 
         public override void PrepareLayout()
         {
@@ -62,6 +61,12 @@ namespace Toggl.Daneel
             }
 
             return attributes = result.ToArray();
+        }
+
+        public override void InvalidateLayout()
+        {
+            base.InvalidateLayout();
+            attributes = null;
         }
     }
 }

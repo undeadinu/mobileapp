@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using Toggl.Foundation.Conversions;
 using System.Reactive.Subjects;
 using System.Reactive;
+using Toggl.Foundation.Extensions;
 
 namespace Toggl.Daneel.Views.Reports
 {
@@ -56,57 +57,51 @@ namespace Toggl.Daneel.Views.Reports
 
             prepareViews();
 
-            var colorConverter = new BoolToConstantValueConverter<UIColor>(
-                Color.Reports.Disabled.ToNativeColor(),
-                Color.Reports.TotalTimeActivated.ToNativeColor()
-            );
-
-            var durationCombiner = new DurationValueCombiner();
-
             this.DelayBind(() =>
             {
-                var bindingSet = this.CreateBindingSet<ReportsHeaderView, ReportsViewModel>();
-
                 //Text
-                bindingSet.Bind(BillablePercentageLabel)
-                          .For(v => v.AttributedText)
-                          .To(vm => vm.BillablePercentage)
-                          .WithConversion(new ReportPercentageLabelValueConverter());
+                var reportPercentageConverter = new ReportPercentageLabelValueConverter();
+                ViewModel.BillablePercentageObservable
+                    .Select(reportPercentageConverter.Convert)
+                    .Subscribe(BillablePercentageLabel.Rx().AttributedText())
+                    .DisposedBy(disposeBag);
 
-                bindingSet.Bind(TotalDurationLabel)
-                          .For(v => v.Text)
-                          .ByCombining(durationCombiner,
-                              vm => vm.TotalTime,
-                              vm => vm.DurationFormat);
+                ViewModel.TotalTimeObservable
+                    .CombineLatest(ViewModel.DurationFormatObservable,
+                        (totalTime, durationFormat) => totalTime.ToFormattedString(durationFormat))
+                    .Subscribe(TotalDurationLabel.Rx().Text())
+                    .DisposedBy(disposeBag);
 
                 //Loading chart
-                bindingSet.Bind(LoadingPieChartView)
-                          .For(v => v.BindVisibilityWithFade())
-                          .To(vm => vm.IsLoading);
+                ViewModel.IsLoadingObservable
+                    .Subscribe(LoadingPieChartView.Rx().IsVisibleWithFade())
+                    .DisposedBy(disposeBag);
 
-                bindingSet.Bind(LoadingOverviewView)
-                          .For(v => v.BindVisibilityWithFade())
-                          .To(vm => vm.IsLoading);
+                ViewModel.IsLoadingObservable
+                    .Subscribe(LoadingOverviewView.Rx().IsVisibleWithFade())
+                    .DisposedBy(disposeBag);
 
                 //Pretty stuff
-                bindingSet.Bind(PieChartView)
-                          .For(v => v.Segments)
-                          .To(vm => vm.GroupedSegments);
+                ViewModel.GroupedSegmentsObservable
+                    .Subscribe(groupedSegments => PieChartView.Segments = groupedSegments)
+                    .DisposedBy(disposeBag);
 
-                bindingSet.Bind(BillablePercentageView)
-                          .For(v => v.Percentage)
-                          .To(vm => vm.BillablePercentage);
+                ViewModel.BillablePercentageObservable
+                    .Subscribe(percentage => BillablePercentageView.Percentage = percentage)
+                    .DisposedBy(disposeBag);
 
-                bindingSet.Bind(TotalDurationGraph)
-                          .For(v => v.TintColor)
-                          .To(vm => vm.TotalTimeIsZero)
-                          .WithConversion(colorConverter);
+                var totalDurationColorObservable = ViewModel.TotalTimeIsZeroObservable
+                    .Select(isZero => isZero
+                        ? Color.Reports.Disabled.ToNativeColor()
+                        : Color.Reports.TotalTimeActivated.ToNativeColor());
 
-                bindingSet.Bind(TotalDurationLabel)
-                          .For(v => v.TextColor)
-                          .To(vm => vm.TotalTimeIsZero)
-                          .WithConversion(colorConverter);
+                totalDurationColorObservable
+                    .Subscribe(TotalDurationGraph.Rx().TintColor())
+                    .DisposedBy(disposeBag);
 
+                totalDurationColorObservable
+                    .Subscribe(TotalDurationLabel.Rx().TextColor())
+                    .DisposedBy(disposeBag);
                 // Bar chart
 
                 if (ViewModel == null)
@@ -138,7 +133,7 @@ namespace Toggl.Daneel.Views.Reports
                     .DisposedBy(disposeBag);
 
                 ViewModel.BarChartViewModel.MaximumHoursPerBar
-                    .Select(hours => $"{hours/2} h")
+                    .Select(hours => $"{hours / 2} h")
                     .Subscribe(HalfHoursLabel.Rx().Text())
                     .DisposedBy(disposeBag);
 
@@ -186,11 +181,9 @@ namespace Toggl.Daneel.Views.Reports
                     .DisposedBy(disposeBag);
 
                 //Visibility
-                bindingSet.Bind(EmptyStateView)
-                          .For(v => v.BindVisible())
-                          .To(vm => vm.ShowEmptyState);
-
-                bindingSet.Apply();
+                ViewModel.ShowEmptyStateObservable
+                    .Subscribe(EmptyStateView.Rx().IsVisible())
+                    .DisposedBy(disposeBag);
             });
         }
 

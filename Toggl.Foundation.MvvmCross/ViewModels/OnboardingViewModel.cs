@@ -1,14 +1,21 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
-using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using MvvmCross.UI;
-using PropertyChanged;
 using Toggl.Foundation.Analytics;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
+using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Settings;
+using Math = System.Math;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
@@ -36,80 +43,58 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IAnalyticsService analyticsService;
         private readonly IOnboardingStorage onboardingStorage;
         private readonly IMvxNavigationService navigationService;
-
+        private readonly BehaviorSubject<int> currentPage = new BehaviorSubject<int>(0);
         private readonly bool[] pagesVisited = new bool[pageInfo.Length];
+        private bool visitedAllPages => pagesVisited.All(CommonFunctions.Identity);
 
-        private bool visitedAllPages => pagesVisited.All(visited => visited);
+        public IObservable<int> CurrentPage { get; }
+        public IObservable<bool> IsTrackPage { get; }
+        public IObservable<bool> IsReportPage { get; }
+        public IObservable<bool> IsSummaryPage { get; }
+        public IObservable<bool> IsFirstPage { get; }
+        public IObservable<bool> IsLastPage { get; }
+        public IObservable<MvxColor> BorderColor { get; }
+        public IObservable<MvxColor> BackgroundColor { get; }
 
-        private int currentPage;
-
-        public int CurrentPage
-        {
-            get => currentPage;
-            set
-            {
-                if (currentPage == value || value < 0)
-                    return;
-
-                if (value >= NumberOfPages)
-                {
-                    completeOnboarding();
-                    return;
-                }
-
-                currentPage = value;
-                pagesVisited[value] = true;
-                RaisePropertyChanged();
-                NextCommand.RaiseCanExecuteChanged();
-                PreviousCommand.RaiseCanExecuteChanged();
-            }
-        }
-
-        [DependsOn(nameof(CurrentPage))]
-        public bool IsTrackPage => CurrentPage == TrackPage;
-
-        [DependsOn(nameof(CurrentPage))]
-        public bool IsMostUsedPage => CurrentPage == MostUsedPage;
-
-        [DependsOn(nameof(CurrentPage))]
-        public bool IsSummaryPage => CurrentPage == ReportsPage;
-
-        [DependsOn(nameof(CurrentPage))]
-        public bool IsFirstPage => CurrentPage == 0;
-
-        [DependsOn(nameof(CurrentPage))]
-        public bool IsLastPage => CurrentPage == NumberOfPages - 1;
-
-        [DependsOn(nameof(CurrentPage))]
-        public MvxColor BorderColor => pageInfo[CurrentPage].BorderColor;
-
-        [DependsOn(nameof(CurrentPage))]
-        public MvxColor BackgroundColor => pageInfo[CurrentPage].BackgroundColor;
-
-        public IMvxAsyncCommand SkipCommand { get; }
-
-        public IMvxAsyncCommand NextCommand { get; }
-
-        public IMvxCommand PreviousCommand { get; }
+        public UIAction SkipOnboarding { get; }
+        public UIAction GoToNextPage { get; }
+        public UIAction GoToPreviousPage { get; }
 
         public int NumberOfPages => pageInfo.Length;
 
         public OnboardingViewModel(
             IMvxNavigationService navigationService,
             IOnboardingStorage onboardingStorage,
-            IAnalyticsService analyticsService)
+            IAnalyticsService analyticsService,
+            IRxActionFactory rxActionFactory,
+            ISchedulerProvider schedulerProvider)
         {
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
+            Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
 
             this.analyticsService = analyticsService;
             this.navigationService = navigationService;
             this.onboardingStorage = onboardingStorage;
 
-            SkipCommand = new MvxAsyncCommand(skip);
-            NextCommand = new MvxAsyncCommand(next);
-            PreviousCommand = new MvxCommand(previous, () => !IsFirstPage);
+            pagesVisited[0] = true;
+
+            CurrentPage = currentPage.AsDriver(schedulerProvider);
+            IsTrackPage = currentPage.Select(p => p == TrackPage).DistinctUntilChanged().AsDriver(schedulerProvider);
+            IsReportPage = currentPage.Select(p => p == ReportsPage).DistinctUntilChanged().AsDriver(schedulerProvider);
+            IsSummaryPage = currentPage.Select(p => p == MostUsedPage).DistinctUntilChanged().AsDriver(schedulerProvider);
+
+            var isFirstPage = currentPage.Select(p => p == TrackPage).DistinctUntilChanged();
+            IsFirstPage = isFirstPage.AsDriver(schedulerProvider);
+            IsLastPage = currentPage.Select(p => p == pageInfo.Length - 1).DistinctUntilChanged().AsDriver(schedulerProvider);
+            BorderColor = currentPage.Select(p => pageInfo[p].BorderColor).AsDriver(schedulerProvider);
+            BackgroundColor = currentPage.Select(p => pageInfo[p].BackgroundColor).AsDriver(schedulerProvider);
+
+            SkipOnboarding = rxActionFactory.FromObservable(skip);
+            GoToNextPage = rxActionFactory.FromAsync(next);
+            GoToPreviousPage = rxActionFactory.FromAsync(previous, isFirstPage.Invert());
         }
 
         public override async Task Initialize()
@@ -120,30 +105,27 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             {
                 await navigationService.Navigate<LoginViewModel>();
             }
-            else
-            {
-                currentPage = TrackPage;
-                pagesVisited[currentPage] = true;
-            }
         }
 
-        private async Task skip()
+        public async Task ChangePage(int page)
         {
-            analyticsService.OnboardingSkip.Track(pageNames[CurrentPage]);
-            await navigationService.Navigate<LoginViewModel>();
-        }
+            var boundCheckedPage = Math.Max(page, 0);
+            boundCheckedPage = Math.Min(boundCheckedPage, pageInfo.Length - 1);
+            pagesVisited[boundCheckedPage] = true;
 
-        private async Task next()
-        {
-            if (IsLastPage)
+            if (page == pageInfo.Length)
             {
                 await completeOnboarding();
+                return;
             }
-            else
-            {
-                CurrentPage++;
-            }
+
+            currentPage.OnNext(boundCheckedPage);
         }
+
+        private IObservable<Unit> skip() => navigationService.Navigate<LoginViewModel>()
+            .ToObservable()
+            .Do(_ => analyticsService.OnboardingSkip.Track(pageNames[currentPage.Value]));
+
 
         private Task completeOnboarding()
         {
@@ -155,9 +137,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             return navigationService.Navigate<LoginViewModel>();
         }
 
-        private void previous()
-        {
-            CurrentPage--;
-        }
+        private Task next() => ChangePage(currentPage.Value + 1);
+
+        private Task previous() => ChangePage(currentPage.Value - 1);
     }
 }

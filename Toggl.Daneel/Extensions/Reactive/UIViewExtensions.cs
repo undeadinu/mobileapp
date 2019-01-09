@@ -77,6 +77,16 @@ namespace Toggl.Daneel.Extensions.Reactive
                 );
             };
 
+        public static Action<UIColor> AnimatedBackgroundColor(this IReactive<UIView> reactive) =>
+            color =>
+            {
+                AnimationExtensions.Animate(
+                    Animation.Timings.EnterTiming,
+                    Animation.Curves.SharpCurve,
+                    () => reactive.Base.BackgroundColor = color
+                );
+            };
+
         public static IDisposable BindAction(this IReactive<UIView> reactive, UIAction action)
         {
             return Observable.Using(

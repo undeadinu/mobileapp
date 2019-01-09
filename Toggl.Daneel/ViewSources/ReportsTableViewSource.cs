@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using CoreGraphics;
 using Foundation;
 using MvvmCross.Platforms.Ios.Binding.Views;
@@ -6,6 +8,7 @@ using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Views.Reports;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels.Reports;
+using Toggl.Multivac.Extensions;
 using UIKit;
 
 namespace Toggl.Daneel.ViewSources
@@ -16,6 +19,7 @@ namespace Toggl.Daneel.ViewSources
         private const string cellIdentifier = nameof(ReportsLegendViewCell);
         private const string headerCellIdentifier = nameof(ReportsHeaderView);
 
+        private readonly CompositeDisposable disposeBag = new CompositeDisposable();
         private readonly ReportsViewModel viewModel;
 
         public event EventHandler<CGPoint> OnScroll;
@@ -29,11 +33,21 @@ namespace Toggl.Daneel.ViewSources
             this.viewModel = viewModel;
             headerHeight = summaryHeight + UIScreen.MainScreen.Bounds.Width;
             tableView.TableHeaderView = new UIView(new CGRect(0, 0, tableView.Bounds.Size.Width, headerHeight));
-            tableView.ContentInset = new UIEdgeInsets(-headerHeight, 0, viewModel.Workspaces.Count > 1 ? bottomHeight : 0, 0);
+            tableView.ContentInset = new UIEdgeInsets(-headerHeight, 0,  0, 0);
             tableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
             tableView.RegisterNibForCellReuse(ReportsLegendViewCell.Nib, cellIdentifier);
             tableView.RegisterNibForHeaderFooterViewReuse(ReportsHeaderView.Nib, headerCellIdentifier);
             tableView.BackgroundColor = Color.Reports.Background.ToNativeColor();
+
+            this.viewModel.WorkspacesObservable
+                .Select(workspaces => workspaces.Count)
+                .Subscribe(updateWorkspaceCount)
+                .DisposedBy(disposeBag);
+        }
+
+        private void updateWorkspaceCount(int workspaceCount)
+        {
+            TableView.ContentInset = new UIEdgeInsets(-headerHeight, 0, workspaceCount > 1 ? bottomHeight : 0, 0);
         }
 
         public override UIView GetViewForHeader(UITableView tableView, nint section)
@@ -72,6 +86,15 @@ namespace Toggl.Daneel.ViewSources
         {
             var offset = scrollView.ContentOffset;
             OnScroll?.Invoke(this, new CGPoint(offset.X, offset.Y - headerHeight));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            disposeBag.Dispose();
         }
     }
 }

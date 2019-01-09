@@ -4,9 +4,9 @@ using MvvmCross.Converters;
 
 namespace Toggl.Foundation.MvvmCross.Converters
 {
-    public abstract class BaseReportPercentageLabelValueConverter<TString> : MvxValueConverter<float?, TString>
+    public abstract class BaseReportPercentageLabelValueConverter<TString>
     {
-        protected sealed override TString Convert(float? value, Type targetType, object parameter, CultureInfo culture)
+        public TString Convert(float? value)
         {
             var isDisabled = value == null;
             var actualValue = isDisabled ? 0 : value.Value;

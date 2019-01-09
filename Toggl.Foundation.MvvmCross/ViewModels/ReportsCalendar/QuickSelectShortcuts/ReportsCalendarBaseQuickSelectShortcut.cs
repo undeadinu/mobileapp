@@ -1,4 +1,5 @@
 ﻿using MvvmCross.ViewModels;
+using Toggl.Foundation.MvvmCross.Interfaces;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Multivac;
 using Toggl.Foundation.Services;
@@ -6,13 +7,11 @@ using Toggl.Foundation.Services;
 namespace Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar.QuickSelectShortcuts
 {
     [Preserve(AllMembers = true)]
-    public abstract class ReportsCalendarBaseQuickSelectShortcut : MvxNotifyPropertyChanged
+    public abstract class ReportsCalendarBaseQuickSelectShortcut : IDiffable<ReportsCalendarBaseQuickSelectShortcut>
     {
         protected ITimeService TimeService { get; private set; }
 
         public string Title { get; }
-
-        public bool Selected { get; private set; }
 
         public ReportPeriod Period { get; private set; }
 
@@ -28,14 +27,22 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar.QuickSelectShort
             TimeService = timeService;
         }
 
-        public void OnDateRangeChanged(ReportsDateRangeParameter dateRange)
+        public bool IsSelected(ReportsDateRangeParameter dateRange)
         {
             var thisActionDateRange = GetDateRange();
 
-            Selected = dateRange.StartDate.Date == thisActionDateRange.StartDate.Date
+            return dateRange != null
+                   && dateRange.StartDate.Date == thisActionDateRange.StartDate.Date
                     && dateRange.EndDate.Date == thisActionDateRange.EndDate.Date;
         }
 
         public abstract ReportsDateRangeParameter GetDateRange();
+        public bool Equals(ReportsCalendarBaseQuickSelectShortcut other)
+        {
+            if (other == null) return false;
+            return Title.Equals(other.Title);
+        }
+
+        public long Identifier => (long)Period;
     }
 }

@@ -1,30 +1,50 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.ComponentModel;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Android.Content;
 using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Support.V7.Widget;
 using Android.Views;
-using MvvmCross.Platforms.Android.Binding.BindingContext;
-using MvvmCross.Droid.Support.V7.RecyclerView;
+using MvvmCross.WeakSubscription;
 using Toggl.Foundation.MvvmCross.ViewModels.Reports;
-using Toggl.Giskard.TemplateSelectors;
+using Toggl.Foundation.Reports;
 using Toggl.Giskard.Views;
-using Android.Widget;
+using Toggl.Giskard.Extensions;
 using Toggl.Giskard.ViewHelpers;
+using Toggl.Giskard.ViewHolders;
 
 namespace Toggl.Giskard.Adapters
 {
-    public sealed class ReportsRecyclerAdapter : MvxRecyclerAdapter
+    public sealed class ReportsRecyclerAdapter : RecyclerView.Adapter
     {
+        private readonly int lastItemCellHeight;
+        private readonly int normalItemCellHeight;
+
+        private const int WorkspaceName = 0;
+        private const int Header = 1;
+        private const int Item = 2;
+
         private const int workspaceNameCellIndex = 0;
         private const int summaryCardCellIndex = 1;
         private const int headerItemsCount = 2;
 
         private BarChartData? currentBarChartData;
+        private string currentWorkspaceName = String.Empty;
 
-        public ReportsViewModel ViewModel { get; set; }
+        private readonly ISubject<Unit> summaryCardClicks = new Subject<Unit>();
 
-        public ReportsRecyclerAdapter()
+        private ReportsSummaryData currentReportsSummaryData = ReportsSummaryData.Empty();
+        public IObservable<Unit> SummaryCardClicks => summaryCardClicks.AsObservable();
+
+        public ReportsRecyclerAdapter(Context context)
         {
+            lastItemCellHeight = 72.DpToPixels(context);
+            normalItemCellHeight = 48.DpToPixels(context);
         }
 
         public ReportsRecyclerAdapter(IntPtr javaReference, JniHandleOwnership transfer)
@@ -34,64 +54,92 @@ namespace Toggl.Giskard.Adapters
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
-            if (viewType != ReportsTemplateSelector.Item)
-                return base.OnCreateViewHolder(parent, viewType);
-
-            var itemBindingContext = new MvxAndroidBindingContext(parent.Context, BindingContext.LayoutInflaterHolder);
-            var inflatedView = InflateViewForHolder(parent, viewType, itemBindingContext);
-            var viewHolder = new ReportsRecyclerViewHolder(inflatedView, itemBindingContext)
+            var layoutInflater = LayoutInflater.From(parent.Context);
+            switch (viewType)
             {
-                Click = ItemClick,
-                LongClick = ItemLongClick
-            };
+                case WorkspaceName:
+                    var workpaceNameCell = layoutInflater.Inflate(Resource.Layout.ReportsActivityWorkspaceName, parent, false);
+                    return new ReportsWorkspaceNameViewHolder(workpaceNameCell);
 
-            return viewHolder;
+                case Header:
+                    var headerCellView = layoutInflater.Inflate(Resource.Layout.ReportsActivityHeader, parent, false);
+                    var reportsHeaderCellViewHolder = new ReportsHeaderCellViewHolder(headerCellView);
+                    reportsHeaderCellViewHolder.SummaryCardClicksSubject = summaryCardClicks;
+                    return reportsHeaderCellViewHolder;
+
+                case Item:
+                    var itemCellView = layoutInflater.Inflate(Resource.Layout.ReportsActivityItem, parent, false);
+                    return new ReportsItemCellViewHolder(itemCellView, lastItemCellHeight, normalItemCellHeight);
+
+                default:
+                    throw new InvalidOperationException($"Invalid view type {viewType}");
+            }
         }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            base.OnBindViewHolder(holder, position);
-
-            if (holder is ReportsRecyclerViewHolder reportsViewHolder)
+            switch (holder)
             {
-                reportsViewHolder.IsLastItem = position == ItemCount - 1;
-                reportsViewHolder.RecalculateSize();
-            }
+                case ReportsItemCellViewHolder reportsViewHolder:
+                    reportsViewHolder.IsLastItem = position == ItemCount - 1;
+                    reportsViewHolder.RecalculateSize();
+                    break;
 
-            if (position == summaryCardCellIndex && currentBarChartData.HasValue)
-            {
-                var barChartView = holder.ItemView.FindViewById<BarChartView>(Resource.Id.BarChartView);
-                var barChartTopLegendGroup = holder.ItemView.FindViewById<Group>(Resource.Id.WorkspaceBillableGroup);
-                var barChartData = currentBarChartData.GetValueOrDefault();
-                barChartView.BarChartData = barChartData;
-                barChartTopLegendGroup.Visibility = barChartData.WorkspaceIsBillable ? ViewStates.Visible : ViewStates.Gone;
-            }
+                case ReportsWorkspaceNameViewHolder reportsWorkspaceHolder:
+                    reportsWorkspaceHolder.Item = currentWorkspaceName;
+                    break;
 
-            if (position == workspaceNameCellIndex)
-            {
-                var workspaceNameTextView = holder.ItemView as TextView;
-                workspaceNameTextView.Text = ViewModel.WorkspaceName;
+                case ReportsHeaderCellViewHolder reportsSummaryHolder:
+                    reportsSummaryHolder.Item = currentReportsSummaryData;
+                    if (currentBarChartData.HasValue)
+                    {
+                        var barChartView = holder.ItemView.FindViewById<BarChartView>(Resource.Id.BarChartView);
+                        var barChartTopLegendGroup = holder.ItemView.FindViewById<Group>(Resource.Id.WorkspaceBillableGroup);
+                        var barChartData = currentBarChartData.GetValueOrDefault();
+                        barChartView.BarChartData = barChartData;
+                        barChartTopLegendGroup.Visibility = barChartData.WorkspaceIsBillable ? ViewStates.Visible : ViewStates.Gone;
+                    }
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Tried to bind unexpected viewholder {holder?.GetType().Name ?? "null"}");
             }
         }
 
         public override int ItemCount
-            => headerItemsCount + base.ItemCount;
+            => headerItemsCount + currentReportsSummaryData.Segments.Count;
 
-        public override object GetItem(int viewPosition)
+        public override int GetItemViewType(int position)
         {
-            if (viewPosition == workspaceNameCellIndex)
-                return ViewModel.WorkspaceName;
+            switch (position)
+            {
+                case workspaceNameCellIndex:
+                    return WorkspaceName;
 
-            if (viewPosition == summaryCardCellIndex)
-                return ViewModel;
+                case summaryCardCellIndex:
+                    return Header;
 
-            return base.GetItem(viewPosition - headerItemsCount);
+                default:
+                    return Item;
+            }
         }
 
         public void UpdateBarChart(BarChartData barChartData)
         {
             currentBarChartData = barChartData;
             NotifyItemChanged(summaryCardCellIndex);
+        }
+
+        public void UpdateWorkspaceName(string workspaceName)
+        {
+            currentWorkspaceName = workspaceName;
+            NotifyItemChanged(workspaceNameCellIndex);
+        }
+
+        public void UpdateReportsSummary(ReportsSummaryData reportsSummaryData)
+        {
+            currentReportsSummaryData = reportsSummaryData;
+            NotifyDataSetChanged();
         }
     }
 }

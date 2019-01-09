@@ -10,27 +10,22 @@ using Toggl.Giskard.Adapters;
 namespace Toggl.Giskard.Views
 {
     [Register("toggl.giskard.views.ReportsCalendarRecyclerView")]
-    public sealed class ReportsCalendarRecyclerView : MvxRecyclerView
+    public sealed class ReportsCalendarRecyclerView : RecyclerView
     {
-        public ReportsCalendarRecyclerView(IntPtr javaReference, JniHandleOwnership transfer)
-            : base(javaReference, transfer)
+        public ReportsCalendarRecyclerView(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         {
         }
 
-        public ReportsCalendarRecyclerView(Context context)
-            : this(context, null)
+        public ReportsCalendarRecyclerView(Context context) : base(context)
         {
         }
 
-        public ReportsCalendarRecyclerView(Context context, IAttributeSet attrs)
-            : this(context, attrs, 0)
+        public ReportsCalendarRecyclerView(Context context, IAttributeSet attrs) : base(context, attrs)
         {
         }
 
-        public ReportsCalendarRecyclerView(Context context, IAttributeSet attrs, int defStyle)
-            : base(context, attrs, defStyle, new ReportsCalendarRecyclerAdapter())
+        public ReportsCalendarRecyclerView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
         {
-            SetLayoutManager(new ReportsCalendarLayoutManager(context));
         }
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
@@ -41,15 +36,15 @@ namespace Toggl.Giskard.Views
             var newWidthMeasureSpec = MeasureSpec.MakeMeasureSpec(newWidth, MeasureSpecMode.Exactly);
             base.OnMeasure(newWidthMeasureSpec, heightMeasureSpec);
         }
+    }
 
-        private class ReportsCalendarLayoutManager : GridLayoutManager
+    sealed class ReportsCalendarLayoutManager : GridLayoutManager
+    {
+        public ReportsCalendarLayoutManager(Context context)
+            : base(context, 7, LinearLayoutManager.Vertical, false)
         {
-            public ReportsCalendarLayoutManager(Context context)
-                : base(context, 7, LinearLayoutManager.Vertical, false)
-            {
-            }
-
-            public override bool CanScrollVertically() => false;
         }
+
+        public override bool CanScrollVertically() => false;
     }
 }
