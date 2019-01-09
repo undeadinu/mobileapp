@@ -698,4 +698,7 @@ account is not set up</value>
     <data name="SelectCalendarsDescription">
         <value>Events are visible to you only and won’t appear in Reports.</value>
     </data>
+    <data name="FilterWorkspaces">
+        <value>Filter workspaces</value>
+    </data>
 </root>

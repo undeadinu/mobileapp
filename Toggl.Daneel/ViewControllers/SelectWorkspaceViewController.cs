@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MvvmCross.Binding.BindingContext;
 using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Daneel.ViewSources;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -21,6 +22,8 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            SearchTextField.Placeholder = Resources.FilterWorkspaces;
 
             var source = new WorkspaceTableViewSource(SuggestionsTableView);
             SuggestionsTableView.Source = source;

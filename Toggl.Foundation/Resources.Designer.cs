@@ -1389,5 +1389,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("SelectCalendarsDescription", resourceCulture);
             }
         }
+        
+        public static string FilterWorkspaces {
+            get {
+                return ResourceManager.GetString("FilterWorkspaces", resourceCulture);
+            }
+        }
     }
 }
