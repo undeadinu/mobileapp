@@ -7,6 +7,7 @@ using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Presentation.Attributes;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
@@ -27,6 +28,12 @@ namespace Toggl.Daneel.ViewControllers.Settings
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.ContactUs;
+            FeedbackPlaceholderTextView.Text = Resources.FeedbackFieldPlaceholder;
+            ErrorTitleLabel.Text = Resources.Oops.ToUpper();
+            ErrorMessageLabel.Text = Resources.SomethingWentWrongTryAgain;
+            SendButton.SetTitle(Resources.Send, UIControlState.Normal);
 
             prepareViews();
             prepareIndicatorView();

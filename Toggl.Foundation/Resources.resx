@@ -701,4 +701,16 @@ account is not set up</value>
     <data name="FilterWorkspaces">
         <value>Filter workspaces</value>
     </data>
+    <data name="ContactUs">
+        <value>Contact us</value>
+    </data>
+    <data name="FeedbackFieldPlaceholder">
+        <value>Let us know what you think. Send us your feedback and questions.</value>
+    </data>
+    <data name="SomethingWentWrongTryAgain">
+        <value>Something went wrong. Please try again</value>
+    </data>
+    <data name="Send">
+        <value>Send</value>
+    </data>
 </root>

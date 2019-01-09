@@ -16,6 +16,12 @@ namespace Toggl.Daneel.ViewControllers.Settings
 		UIKit.UIButton CloseButton { get; set; }
 
 		[Outlet]
+		UIKit.UILabel ErrorMessageLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel ErrorTitleLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIView ErrorView { get; set; }
 
 		[Outlet]
@@ -29,6 +35,9 @@ namespace Toggl.Daneel.ViewControllers.Settings
 
 		[Outlet]
 		UIKit.UIButton SendButton { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -60,6 +69,21 @@ namespace Toggl.Daneel.ViewControllers.Settings
 			if (SendButton != null) {
 				SendButton.Dispose ();
 				SendButton = null;
+			}
+
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
+			}
+
+			if (ErrorTitleLabel != null) {
+				ErrorTitleLabel.Dispose ();
+				ErrorTitleLabel = null;
+			}
+
+			if (ErrorMessageLabel != null) {
+				ErrorMessageLabel.Dispose ();
+				ErrorMessageLabel = null;
 			}
 		}
 	}

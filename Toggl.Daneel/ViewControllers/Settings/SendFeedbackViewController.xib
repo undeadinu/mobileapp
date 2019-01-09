@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,11 +13,14 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SendFeedbackViewController">
             <connections>
                 <outlet property="CloseButton" destination="zVD-Kw-Fmp" id="fWb-qI-tYX"/>
+                <outlet property="ErrorMessageLabel" destination="mle-AX-ZTG" id="UQI-YS-prX"/>
+                <outlet property="ErrorTitleLabel" destination="zPo-nF-ozs" id="scL-9Y-pGx"/>
                 <outlet property="ErrorView" destination="D75-Zy-M1b" id="B13-up-6JT"/>
                 <outlet property="FeedbackPlaceholderTextView" destination="NUk-3H-XEo" id="wz2-bF-Djd"/>
                 <outlet property="FeedbackTextView" destination="rX9-61-EAj" id="HJ1-Fe-pFf"/>
                 <outlet property="IndicatorView" destination="8eW-Fo-FqQ" id="lea-XQ-t9h"/>
                 <outlet property="SendButton" destination="Iaj-3U-kvy" id="7j1-NG-3OF"/>
+                <outlet property="TitleLabel" destination="ueR-h2-ydk" id="PVa-2s-hvR"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
         </placeholder>
@@ -27,14 +30,14 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" text="Let us know what you think. Send us your feedback and questions." textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NUk-3H-XEo">
-                    <rect key="frame" x="16" y="48" width="343" height="604"/>
+                    <rect key="frame" x="16" y="48.5" width="343" height="603.5"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <color key="textColor" red="0.80784313725490198" green="0.80784313725490198" blue="0.80784313725490198" alpha="1" colorSpace="calibratedRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="rX9-61-EAj">
-                    <rect key="frame" x="16" y="48" width="343" height="604"/>
+                    <rect key="frame" x="16" y="48.5" width="343" height="603.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
@@ -47,13 +50,13 @@
                     <state key="normal" image="icClose"/>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Contact us" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ueR-h2-ydk">
-                    <rect key="frame" x="151.5" y="11" width="72" height="17"/>
+                    <rect key="frame" x="151.5" y="11.5" width="72" height="17"/>
                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iaj-3U-kvy">
-                    <rect key="frame" x="319" y="0.0" width="40" height="39"/>
+                    <rect key="frame" x="319" y="0.0" width="40" height="40"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="ZdJ-AM-B8A"/>
                     </constraints>
@@ -66,7 +69,7 @@
                     </state>
                 </button>
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icLoader" translatesAutoresizingMaskIntoConstraints="NO" id="8eW-Fo-FqQ" customClass="ActivityIndicatorView">
-                    <rect key="frame" x="319" y="0.0" width="40" height="39"/>
+                    <rect key="frame" x="319" y="0.0" width="40" height="40"/>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="D75-Zy-M1b">
                     <rect key="frame" x="16" y="559" width="343" height="69"/>

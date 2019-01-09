@@ -1395,5 +1395,29 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("FilterWorkspaces", resourceCulture);
             }
         }
+        
+        public static string ContactUs {
+            get {
+                return ResourceManager.GetString("ContactUs", resourceCulture);
+            }
+        }
+        
+        public static string FeedbackFieldPlaceholder {
+            get {
+                return ResourceManager.GetString("FeedbackFieldPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string SomethingWentWrongTryAgain {
+            get {
+                return ResourceManager.GetString("SomethingWentWrongTryAgain", resourceCulture);
+            }
+        }
+        
+        public static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
     }
 }
