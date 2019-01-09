@@ -54,7 +54,10 @@ namespace Toggl.Foundation.Tests
                 UserAgent,
                 CalendarService,
                 SyncManager,
-                StopwatchProvider
+                StopwatchProvider,
+                Database,
+                PrivateSharedStorageService,
+                UserAccessManager
             );
         }
     }
