@@ -34,6 +34,10 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewDidLoad();
 
             Title = Resources.LoginTitle;
+            ResetSuccessLabel.Text = Resources.APITokenResetSuccess;
+            InstructionLabel.Text = Resources.TokenResetInstruction;
+            PasswordTextField.Placeholder = Resources.Password;
+            SignOutButton.SetTitle(Resources.OrSignOut, UIControlState.Normal);
 
             prepareViews();
 

@@ -1503,5 +1503,23 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("IAgree", resourceCulture);
             }
         }
+        
+        public static string TokenResetInstruction {
+            get {
+                return ResourceManager.GetString("TokenResetInstruction", resourceCulture);
+            }
+        }
+        
+        public static string OrSignOut {
+            get {
+                return ResourceManager.GetString("OrSignOut", resourceCulture);
+            }
+        }
+        
+        public static string APITokenResetSuccess {
+            get {
+                return ResourceManager.GetString("APITokenResetSuccess", resourceCulture);
+            }
+        }
     }
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,7 +16,9 @@
                 <outlet property="EmailLabel" destination="lyk-cD-col" id="q7O-V4-EZA"/>
                 <outlet property="ErrorLabel" destination="Z7h-iN-bA7" id="SJR-ec-Gyy"/>
                 <outlet property="ErrorView" destination="Nl2-LL-WZ9" id="rPY-bF-Tg9"/>
+                <outlet property="InstructionLabel" destination="3Dj-pA-An9" id="TAr-Eq-Uq8"/>
                 <outlet property="PasswordTextField" destination="965-7g-Gu6" id="Pld-fS-6Qb"/>
+                <outlet property="ResetSuccessLabel" destination="ZKi-c4-YaU" id="amZ-ig-c1x"/>
                 <outlet property="ShowPasswordButton" destination="IEZ-w2-ebJ" id="H1t-2C-dfH"/>
                 <outlet property="SignOutButton" destination="8lc-P8-x4K" id="IvJ-XR-tpo"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
@@ -53,22 +55,15 @@
                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your password to log back in to your" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Dj-pA-An9">
-                    <rect key="frame" x="16" y="206.5" width="238.5" height="14.5"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your password to log back in to your account" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Dj-pA-An9">
+                    <rect key="frame" x="16" y="206.5" width="287.5" height="14.5"/>
                     <accessibility key="accessibilityConfiguration" label="LoginError"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" red="0.99121707677841187" green="0.99630099534988403" blue="0.99603599309921265" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="account:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qsi-rG-Fqs">
-                    <rect key="frame" x="16" y="221" width="49.5" height="14.5"/>
-                    <accessibility key="accessibilityConfiguration" label="LoginError"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                    <color key="textColor" red="0.99121707680000004" green="0.99630099530000005" blue="0.99603599310000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="mail@toggl.com" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lyk-cD-col">
-                    <rect key="frame" x="67.5" y="221" width="91" height="14.5"/>
+                    <rect key="frame" x="16" y="221" width="91" height="14.5"/>
                     <accessibility key="accessibilityConfiguration" label="LoginError"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" red="0.99121707680000004" green="0.99630099530000005" blue="0.99603599310000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -115,24 +110,22 @@
                 <constraint firstItem="965-7g-Gu6" firstAttribute="top" secondItem="2" secondAttribute="top" constant="159" id="D3H-zT-YZV"/>
                 <constraint firstItem="IEZ-w2-ebJ" firstAttribute="centerY" secondItem="965-7g-Gu6" secondAttribute="centerY" id="EGn-Lh-RBk"/>
                 <constraint firstItem="3Dj-pA-An9" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="FQL-QJ-siE"/>
-                <constraint firstItem="qsi-rG-Fqs" firstAttribute="top" secondItem="3Dj-pA-An9" secondAttribute="bottom" id="HOc-ZU-5vK"/>
+                <constraint firstItem="lyk-cD-col" firstAttribute="leading" secondItem="3Dj-pA-An9" secondAttribute="leading" id="Fj4-iS-70R"/>
                 <constraint firstItem="l7S-as-iux" firstAttribute="leading" secondItem="Nl2-LL-WZ9" secondAttribute="trailing" id="J8b-vb-IVO"/>
                 <constraint firstItem="3Dj-pA-An9" firstAttribute="top" secondItem="ZKi-c4-YaU" secondAttribute="bottom" id="O8k-02-rkI"/>
                 <constraint firstAttribute="trailing" secondItem="IEZ-w2-ebJ" secondAttribute="trailing" id="YeE-vP-BMl"/>
-                <constraint firstItem="lyk-cD-col" firstAttribute="leading" secondItem="qsi-rG-Fqs" secondAttribute="trailing" constant="2" id="b9X-we-xo7"/>
-                <constraint firstItem="lyk-cD-col" firstAttribute="centerY" secondItem="qsi-rG-Fqs" secondAttribute="centerY" id="cGS-9w-qUc"/>
-                <constraint firstItem="qsi-rG-Fqs" firstAttribute="leading" secondItem="3Dj-pA-An9" secondAttribute="leading" id="dYe-aH-UeP"/>
                 <constraint firstItem="ZKi-c4-YaU" firstAttribute="leading" secondItem="965-7g-Gu6" secondAttribute="leading" id="hf5-jx-lcX"/>
                 <constraint firstItem="l7S-as-iux" firstAttribute="centerY" secondItem="IEZ-w2-ebJ" secondAttribute="centerY" id="k2I-EZ-o9O"/>
                 <constraint firstAttribute="bottom" secondItem="8lc-P8-x4K" secondAttribute="bottom" constant="13" id="kx6-14-c06"/>
                 <constraint firstItem="IEZ-w2-ebJ" firstAttribute="leading" secondItem="965-7g-Gu6" secondAttribute="trailing" id="oYa-Uw-eN6"/>
                 <constraint firstItem="8lc-P8-x4K" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="qSd-yq-jPH"/>
+                <constraint firstItem="lyk-cD-col" firstAttribute="top" secondItem="3Dj-pA-An9" secondAttribute="bottom" id="u4c-wf-7ME"/>
                 <constraint firstItem="ZKi-c4-YaU" firstAttribute="top" secondItem="965-7g-Gu6" secondAttribute="bottom" constant="9" id="w7j-d8-9WB"/>
                 <constraint firstItem="Nl2-LL-WZ9" firstAttribute="leading" secondItem="965-7g-Gu6" secondAttribute="leading" id="wbC-SH-Rmg"/>
                 <constraint firstItem="l7S-as-iux" firstAttribute="centerX" secondItem="IEZ-w2-ebJ" secondAttribute="centerX" id="woL-n6-PzQ"/>
                 <constraint firstItem="Nl2-LL-WZ9" firstAttribute="top" secondItem="965-7g-Gu6" secondAttribute="bottom" constant="9" id="xee-YY-XRb"/>
             </constraints>
-            <point key="canvasLocation" x="-16.5" y="44.5"/>
+            <point key="canvasLocation" x="-16.800000000000001" y="43.628185907046479"/>
         </view>
     </objects>
     <resources>

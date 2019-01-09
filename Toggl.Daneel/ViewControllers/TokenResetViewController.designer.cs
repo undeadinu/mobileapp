@@ -28,7 +28,13 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView ErrorView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel InstructionLabel { get; set; }
+
+		[Outlet]
 		UIKit.UITextField PasswordTextField { get; set; }
+
+		[Outlet]
+		UIKit.UILabel ResetSuccessLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIImageView ShowPasswordButton { get; set; }
@@ -38,11 +44,6 @@ namespace Toggl.Daneel.ViewControllers
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (EmailLabel != null) {
-				EmailLabel.Dispose ();
-				EmailLabel = null;
-			}
-
 			if (ActivityIndicatorView != null) {
 				ActivityIndicatorView.Dispose ();
 				ActivityIndicatorView = null;
@@ -51,6 +52,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (BottomConstraint != null) {
 				BottomConstraint.Dispose ();
 				BottomConstraint = null;
+			}
+
+			if (EmailLabel != null) {
+				EmailLabel.Dispose ();
+				EmailLabel = null;
 			}
 
 			if (ErrorLabel != null) {
@@ -76,6 +82,16 @@ namespace Toggl.Daneel.ViewControllers
 			if (SignOutButton != null) {
 				SignOutButton.Dispose ();
 				SignOutButton = null;
+			}
+
+			if (InstructionLabel != null) {
+				InstructionLabel.Dispose ();
+				InstructionLabel = null;
+			}
+
+			if (ResetSuccessLabel != null) {
+				ResetSuccessLabel.Dispose ();
+				ResetSuccessLabel = null;
 			}
 		}
 	}
