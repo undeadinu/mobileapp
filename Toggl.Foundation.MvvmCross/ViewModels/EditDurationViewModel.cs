@@ -11,6 +11,7 @@ using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Parameters;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using static Toggl.Foundation.Helper.Constants;
@@ -24,6 +25,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IMvxNavigationService navigationService;
         private readonly ITogglDataSource dataSource;
         private readonly IAnalyticsService analyticsService;
+        private readonly IRxActionFactory rxActionFactory;
 
         private IDisposable runningTimeEntryDisposable;
         private IDisposable preferencesDisposable;
@@ -133,17 +135,19 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxCommand StopEditingTimeCommand { get; }
 
-        public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService)
+        public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.timeService = timeService;
             this.navigationService = navigationService;
             this.dataSource = dataSource;
             this.analyticsService = analyticsService;
+            this.rxActionFactory = rxActionFactory;
 
             SaveCommand = new MvxAsyncCommand(save);
             CloseCommand = new MvxAsyncCommand(close);
