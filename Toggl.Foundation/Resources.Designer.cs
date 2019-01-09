@@ -1299,5 +1299,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("ClockedHours", resourceCulture);
             }
         }
+        
+        public static string FirstDayOfTheWeek {
+            get {
+                return ResourceManager.GetString("FirstDayOfTheWeek", resourceCulture);
+            }
+        }
     }
 }

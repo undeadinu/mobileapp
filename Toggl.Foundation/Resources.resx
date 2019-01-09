@@ -650,4 +650,7 @@ account is not set up</value>
     <data name="ClockedHours">
         <value>Clocked hours</value>
     </data>
+    <data name="FirstDayOfTheWeek">
+        <value>First day of the week</value>
+    </data>
 </root>
