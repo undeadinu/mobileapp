@@ -1485,5 +1485,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("AlreadyHaveAnAccountQuestionMark", resourceCulture);
             }
         }
+        
+        public static string AddProjectBubbleText {
+            get {
+                return ResourceManager.GetString("AddProjectBubbleText", resourceCulture);
+            }
+        }
     }
 }

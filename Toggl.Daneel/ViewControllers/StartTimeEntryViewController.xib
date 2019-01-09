@@ -12,6 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StartTimeEntryViewController">
             <connections>
+                <outlet property="AddProjectBubbleLabel" destination="12U-DF-xmR" id="VU0-Ua-MBz"/>
                 <outlet property="AddProjectOnboardingBubble" destination="NWE-RS-Prs" id="mkt-uo-yUT"/>
                 <outlet property="BillableButton" destination="Xnc-Zt-xWV" id="name-outlet-Xnc-Zt-xWV"/>
                 <outlet property="BillableButtonWidthConstraint" destination="I25-Y2-oUz" id="name-outlet-I25-Y2-oUz"/>

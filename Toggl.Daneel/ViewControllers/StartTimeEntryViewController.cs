@@ -76,6 +76,8 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
+            AddProjectBubbleLabel.Text = Resources.AddProjectBubbleText;
+
             prepareViews();
             prepareOnboarding();
 

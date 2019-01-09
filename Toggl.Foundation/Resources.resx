@@ -746,4 +746,7 @@ account is not set up</value>
     <data name="AlreadyHaveAnAccountQuestionMark">
         <value>Already have an account?</value>
     </data>
+    <data name="AddProjectBubbleText">
+        <value>Add a project and tags on the fly</value>
+    </data>
 </root>
