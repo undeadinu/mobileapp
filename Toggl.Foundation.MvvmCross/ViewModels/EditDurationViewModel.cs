@@ -232,9 +232,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 editMode.OnNext(EditMode.StartTime);
             }
 
-            RaisePropertyChanged(nameof(IsEditingStartTime));
-            RaisePropertyChanged(nameof(IsEditingStopTime));
-            RaisePropertyChanged(nameof(IsEditingTime));
             RaisePropertyChanged(nameof(EditedTime));
         }
 
@@ -260,9 +257,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 editMode.OnNext(EditMode.EndTime);
             }
 
-            RaisePropertyChanged(nameof(IsEditingStartTime));
-            RaisePropertyChanged(nameof(IsEditingStopTime));
-            RaisePropertyChanged(nameof(IsEditingTime));
             RaisePropertyChanged(nameof(EditedTime));
         }
 
@@ -274,10 +268,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
 
             editMode.OnNext(EditMode.None);
-
-            RaisePropertyChanged(nameof(IsEditingStartTime));
-            RaisePropertyChanged(nameof(IsEditingStopTime));
-            RaisePropertyChanged(nameof(IsEditingTime));
         }
 
         private void onDurationChanged(TimeSpan changedDuration)
