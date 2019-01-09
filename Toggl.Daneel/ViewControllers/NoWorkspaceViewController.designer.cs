@@ -19,10 +19,21 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton CreateWorkspaceButton { get; set; }
 
 		[Outlet]
+		UIKit.UILabel HeadingLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TextLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIButton TryAgainButton { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (ActivityIndicatorView != null) {
+				ActivityIndicatorView.Dispose ();
+				ActivityIndicatorView = null;
+			}
+
 			if (CreateWorkspaceButton != null) {
 				CreateWorkspaceButton.Dispose ();
 				CreateWorkspaceButton = null;
@@ -33,9 +44,14 @@ namespace Toggl.Daneel.ViewControllers
 				TryAgainButton = null;
 			}
 
-			if (ActivityIndicatorView != null) {
-				ActivityIndicatorView.Dispose ();
-				ActivityIndicatorView = null;
+			if (HeadingLabel != null) {
+				HeadingLabel.Dispose ();
+				HeadingLabel = null;
+			}
+
+			if (TextLabel != null) {
+				TextLabel.Dispose ();
+				TextLabel = null;
 			}
 		}
 	}

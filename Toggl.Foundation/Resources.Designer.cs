@@ -1227,5 +1227,23 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("NotificationSettingExplaination", resourceCulture);
             }
         }
+        
+        public static string CreateNewWorkspace {
+            get {
+                return ResourceManager.GetString("CreateNewWorkspace", resourceCulture);
+            }
+        }
+        
+        public static string UhOh {
+            get {
+                return ResourceManager.GetString("UhOh", resourceCulture);
+            }
+        }
+        
+        public static string NoWorkspaceErrorMessage {
+            get {
+                return ResourceManager.GetString("NoWorkspaceErrorMessage", resourceCulture);
+            }
+        }
     }
 }

@@ -612,4 +612,13 @@ account is not set up</value>
     <data name="NotificationSettingExplaination">
         <value>Be notified about upcoming events before they begin.</value>
     </data>
+    <data name="CreateNewWorkspace">
+        <value>Create new workspace</value>
+    </data>
+    <data name="UhOh">
+        <value>Uh oh.</value>
+    </data>
+    <data name="NoWorkspaceErrorMessage">
+        <value>Seems someone has removed you from their workspace. No worries. Create a new workspace to continue.</value>
+    </data>
 </root>

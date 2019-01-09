@@ -5,6 +5,7 @@ using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Presentation.Attributes;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
@@ -25,6 +26,10 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            CreateWorkspaceButton.SetTitle(Resources.CreateNewWorkspace, UIControlState.Normal);
+            HeadingLabel.Text = Resources.UhOh;
+            TextLabel.Text = Resources.NoWorkspaceErrorMessage;
 
             var screenWidth = UIScreen.MainScreen.Bounds.Width;
             PreferredContentSize = new CGSize
