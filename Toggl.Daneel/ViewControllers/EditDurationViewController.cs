@@ -195,13 +195,13 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(ViewModel.ChangeStopTime.Inputs)
                 .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.StartTime)
-                      .To(vm => vm.StartTime);
+            ViewModel.StartTime
+                .Subscribe(v => WheelView.StartTime = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.EndTime)
-                      .To(vm => vm.StopTime);
+            ViewModel.StopTime
+                .Subscribe(v => WheelView.EndTime = v)
+                .DisposedBy(disposeBag);
 
             bindingSet.Bind(WheelView)
                       .For(v => v.IsRunning)
