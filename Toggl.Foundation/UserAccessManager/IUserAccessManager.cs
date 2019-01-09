@@ -19,8 +19,6 @@ namespace Toggl.Foundation.Login
         IObservable<ITogglDataSource> SignUpWithGoogle(bool termsAccepted, int countryId);
         IObservable<ITogglDataSource> SignUp(Email email, Password password, bool termsAccepted, int countryId);
 
-        IObservable<Unit> Logout();
-
         IObservable<ITogglDataSource> RefreshToken(Password password);
 
         IObservable<string> ResetPassword(Email email);

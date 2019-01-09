@@ -311,13 +311,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             isLoggingOut = true;
             loggingOutSubject.OnNext(Unit.Default);
-            analyticsService.Logout.Track(LogoutSource.Settings);
-            userPreferences.Reset();
 
-            privateSharedStorageService.ClearAll();
-            intentDonationService.ClearAll();
-
-            return userAccessManager.Logout().Do(_ => navigationService.Navigate<LoginViewModel>());
+            return interactorFactory.Logout(LogoutSource.Settings)
+                .Execute()
+                .Do(_ => navigationService.Navigate<LoginViewModel>());
         }
 
         private IObservable<bool> isSynced()

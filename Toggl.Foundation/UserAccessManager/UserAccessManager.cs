@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Interactors.UserAccess;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Services;
 using Toggl.Foundation.Shortcuts;
@@ -23,8 +24,7 @@ namespace Toggl.Foundation.Login
         private readonly IPrivateSharedStorageService privateSharedStorageService;
         private readonly Func<ITogglApi, ITogglDataSource> createDataSource;
 
-        private ITogglDataSource cachedDataSource;
-        private ISubject<ITogglDataSource> userLoggedInSubject = new Subject<ITogglDataSource>();
+        private readonly ISubject<ITogglDataSource> userLoggedInSubject = new Subject<ITogglDataSource>();
 
         public IObservable<ITogglDataSource> UserLoggedIn => userLoggedInSubject.AsObservable();
         public ISubject<Unit> UserLoggedOut { get; } = new Subject<Unit>();
@@ -102,10 +102,6 @@ namespace Toggl.Foundation.Login
                 .SelectMany(_ => googleService.GetAuthToken())
                 .SelectMany(authToken => signUpWithGoogle(authToken, termsAccepted, countryId));
 
-        public IObservable<Unit> Logout()
-            => cachedDataSource.Logout()
-                .Do(_ => userLoggedOutSubject.OnNext(Unit.Default));
-
         public IObservable<string> ResetPassword(Email email)
         {
             if (!email.IsValid)
@@ -149,8 +145,7 @@ namespace Toggl.Foundation.Login
 
             var newCredentials = Credentials.WithApiToken(user.ApiToken);
             var api = apiFactory.CreateApiWith(newCredentials);
-            cachedDataSource = createDataSource(api);
-            return cachedDataSource;
+            return createDataSource(api);
         }
 
         private IObservable<ITogglDataSource> loginWithGoogle(string googleToken)

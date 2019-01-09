@@ -6,6 +6,8 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Interactors;
+using Toggl.Foundation.Interactors.UserAccess;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Services;
@@ -28,6 +30,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IAnalyticsService analyticsService;
         private readonly ISchedulerProvider schedulerProvider;
         private readonly IRxActionFactory rxActionFactory;
+        private readonly IInteractorFactory interactorFactory;
 
         private readonly BehaviorSubject<Email> emailSubject = new BehaviorSubject<Email>(Multivac.Email.Empty);
         private readonly BehaviorSubject<bool> isPasswordMaskedSubject = new BehaviorSubject<bool>(true);
@@ -55,7 +58,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IUserPreferences userPreferences,
             IAnalyticsService analyticsService,
             ISchedulerProvider schedulerProvider,
-            IRxActionFactory rxActionFactory
+            IRxActionFactory rxActionFactory,
+            IInteractorFactory interactorFactory
         )
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
@@ -66,6 +70,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
             Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
 
             this.dataSource = dataSource;
             this.userAccessManager = userAccessManager;
@@ -75,6 +80,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.analyticsService = analyticsService;
             this.schedulerProvider = schedulerProvider;
             this.rxActionFactory = rxActionFactory;
+            this.interactorFactory = interactorFactory;
 
             Email = emailSubject
                 .DistinctUntilChanged()
@@ -128,10 +134,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     return;
             }
 
-            analyticsService.Logout.Track(LogoutSource.TokenReset);
-            userPreferences.Reset();
-
-            await userAccessManager.Logout();
+            await interactorFactory.Logout(LogoutSource.TokenReset).Execute();
             await navigationService.Navigate<LoginViewModel>();
         }
 

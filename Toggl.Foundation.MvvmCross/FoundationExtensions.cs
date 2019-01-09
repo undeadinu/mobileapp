@@ -57,8 +57,6 @@ namespace Toggl.Foundation.MvvmCross
                         foundation.Database,
                         foundation.TimeService,
                         createSyncManager(api),
-                        foundation.NotificationService,
-                        foundation.ShortcutCreator,
                         foundation.AnalyticsService)
                     .RegisterServices();
 
