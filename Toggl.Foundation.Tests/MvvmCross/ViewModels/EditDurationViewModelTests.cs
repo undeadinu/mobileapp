@@ -20,22 +20,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class EditDurationViewModelTest : BaseViewModelTests<EditDurationViewModel>
         {
             protected override EditDurationViewModel CreateViewModel()
-                => new EditDurationViewModel(NavigationService, TimeService, DataSource, AnalyticsService);
+                => new EditDurationViewModel(NavigationService, TimeService, DataSource, AnalyticsService, RxActionFactory);
         }
 
         public sealed class TheConstructor : EditDurationViewModelTest
         {
             [Theory, LogIfTooSlow]
             [ConstructorData]
-            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useNavigationService, bool useTimeService, bool useDataSource, bool useAnalyticsService)
+            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useNavigationService, bool useTimeService, bool useDataSource, bool useAnalyticsService, bool useRxActionFactory)
             {
                 var navigationService = useNavigationService ? NavigationService : null;
                 var timeService = useTimeService ? TimeService : null;
                 var dataSource = useDataSource ? DataSource : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new EditDurationViewModel(navigationService, timeService, dataSource, analyticsService);
+                    () => new EditDurationViewModel(navigationService, timeService, dataSource, analyticsService, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters.Should().Throw<ArgumentNullException>();
             }
