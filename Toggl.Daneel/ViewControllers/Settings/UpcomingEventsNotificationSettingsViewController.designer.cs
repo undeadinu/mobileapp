@@ -17,17 +17,25 @@ namespace Toggl.Daneel.ViewControllers.Settings
 
 		[Outlet]
 		UIKit.UITableView TableView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (CloseButton != null) {
+				CloseButton.Dispose ();
+				CloseButton = null;
+			}
+
 			if (TableView != null) {
 				TableView.Dispose ();
 				TableView = null;
 			}
 
-			if (CloseButton != null) {
-				CloseButton.Dispose ();
-				CloseButton = null;
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
 			}
 		}
 	}
