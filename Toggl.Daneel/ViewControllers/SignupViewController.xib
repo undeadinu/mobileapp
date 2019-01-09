@@ -20,9 +20,12 @@
                 <outlet property="ErrorLabel" destination="rbq-cx-c1j" id="eE6-Kv-7Me"/>
                 <outlet property="GoogleSignupButton" destination="NK2-6U-6cX" id="5BZ-l7-8Ts"/>
                 <outlet property="LoginCard" destination="fEn-Oe-Bq6" id="u9q-ji-d32"/>
+                <outlet property="OrLabel" destination="unP-Wm-DUW" id="ETj-mV-OZh"/>
                 <outlet property="PasswordTextField" destination="Tbg-EL-dza" id="r8S-Lu-lcI"/>
                 <outlet property="SelectCountryButton" destination="Mjk-wm-alH" id="XNI-eB-Vbr"/>
                 <outlet property="ShowPasswordButton" destination="zkA-aZ-W3h" id="aul-GS-Rkw"/>
+                <outlet property="SignUpCardLoginLabel" destination="gPf-qN-NDZ" id="19r-MB-D9H"/>
+                <outlet property="SignUpCardTitleLabel" destination="6Vd-gk-svB" id="m2h-do-FOs"/>
                 <outlet property="SignupButton" destination="4U6-rc-Cap" id="2Mf-YT-TDo"/>
                 <outlet property="SignupShakeTriggerButton" destination="lsf-rK-ajN" id="BWH-O9-Hlb"/>
                 <outlet property="TopConstraint" destination="ZMo-YL-6bU" id="bWj-dG-8nG"/>

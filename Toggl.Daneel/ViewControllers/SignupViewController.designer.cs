@@ -37,6 +37,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView LoginCard { get; set; }
 
 		[Outlet]
+		UIKit.UILabel OrLabel { get; set; }
+
+		[Outlet]
 		Toggl.Daneel.Views.LoginTextField PasswordTextField { get; set; }
 
 		[Outlet]
@@ -47,6 +50,12 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UIButton SignupButton { get; set; }
+
+		[Outlet]
+		UIKit.UILabel SignUpCardLoginLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel SignUpCardTitleLabel { get; set; }
 
 		[Outlet]
 		UIKit.UIButton SignupShakeTriggerButton { get; set; }
@@ -69,6 +78,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (CountryNotSelectedImageView != null) {
 				CountryNotSelectedImageView.Dispose ();
 				CountryNotSelectedImageView = null;
+			}
+
+			if (EmailFieldTopConstraint != null) {
+				EmailFieldTopConstraint.Dispose ();
+				EmailFieldTopConstraint = null;
 			}
 
 			if (EmailTextField != null) {
@@ -121,9 +135,19 @@ namespace Toggl.Daneel.ViewControllers
 				TopConstraint = null;
 			}
 
-			if (EmailFieldTopConstraint != null) {
-				EmailFieldTopConstraint.Dispose ();
-				EmailFieldTopConstraint = null;
+			if (OrLabel != null) {
+				OrLabel.Dispose ();
+				OrLabel = null;
+			}
+
+			if (SignUpCardTitleLabel != null) {
+				SignUpCardTitleLabel.Dispose ();
+				SignUpCardTitleLabel = null;
+			}
+
+			if (SignUpCardLoginLabel != null) {
+				SignUpCardLoginLabel.Dispose ();
+				SignUpCardLoginLabel = null;
 			}
 		}
 	}

@@ -39,6 +39,13 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
+            EmailTextField.Placeholder = Resources.EmailAddress;
+            PasswordTextField.Placeholder = Resources.Password;
+            SignUpCardTitleLabel.Text = Resources.AlreadyHaveAnAccountQuestionMark;
+            SignUpCardLoginLabel.Text = Resources.LoginTitle;
+            OrLabel.Text = Resources.Or.ToUpper();
+            GoogleSignupButton.SetTitle(Resources.GoogleSignUp, UIControlState.Normal);
+
             NavigationController.NavigationBarHidden = true;
 
             UIKeyboard.Notifications.ObserveWillShow(KeyboardWillShow);

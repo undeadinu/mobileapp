@@ -1479,5 +1479,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("SignOutOfToggl", resourceCulture);
             }
         }
+        
+        public static string AlreadyHaveAnAccountQuestionMark {
+            get {
+                return ResourceManager.GetString("AlreadyHaveAnAccountQuestionMark", resourceCulture);
+            }
+        }
     }
 }

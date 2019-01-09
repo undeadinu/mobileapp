@@ -743,4 +743,7 @@ account is not set up</value>
     <data name="SignOutOfToggl">
         <value>Sign out of Toggl</value>
     </data>
+    <data name="AlreadyHaveAnAccountQuestionMark">
+        <value>Already have an account?</value>
+    </data>
 </root>
