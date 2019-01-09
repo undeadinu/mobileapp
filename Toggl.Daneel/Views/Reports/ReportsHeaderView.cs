@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using Toggl.Foundation.Conversions;
 using System.Reactive.Subjects;
 using System.Reactive;
+using Toggl.Foundation;
 
 namespace Toggl.Daneel.Views.Reports
 {
@@ -50,6 +51,12 @@ namespace Toggl.Daneel.Views.Reports
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();
+
+            TotalTitleLabel.Text = Resources.Total.ToUpper();
+            BillableTitleLabel.Text = Resources.Billable.ToUpper();
+            ClockedHoursTitleLabel.Text = Resources.ClockedHours.ToUpper();
+            BillableLegendLabel.Text = Resources.Billable.ToUpper();
+            NonBillableLegendLabel.Text = Resources.NonBillable.ToUpper();
 
             var templateImage = TotalDurationGraph.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
             TotalDurationGraph.Image = templateImage;

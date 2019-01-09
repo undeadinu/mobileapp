@@ -546,6 +546,9 @@ account is not set up</value>
     <data name="Billable">
         <value>Billable</value>
     </data>
+    <data name="NonBillable">
+        <value>Non billable</value>
+    </data>
     <data name="Startdate">
         <value>Start date</value>
     </data>
@@ -640,5 +643,11 @@ account is not set up</value>
     </data>
     <data name="NoThanks">
         <value>No, thanks</value>
+    </data>
+    <data name="Total">
+        <value>Total</value>
+    </data>
+    <data name="ClockedHours">
+        <value>Clocked hours</value>
     </data>
 </root>

@@ -1096,6 +1096,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string NonBillable {
+            get {
+                return ResourceManager.GetString("NonBillable", resourceCulture);
+            }
+        }
+        
         public static string Startdate {
             get {
                 return ResourceManager.GetString("Startdate", resourceCulture);
@@ -1279,6 +1285,18 @@ namespace Toggl.Foundation {
         public static string NoThanks {
             get {
                 return ResourceManager.GetString("NoThanks", resourceCulture);
+            }
+        }
+        
+        public static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
+        
+        public static string ClockedHours {
+            get {
+                return ResourceManager.GetString("ClockedHours", resourceCulture);
             }
         }
     }
