@@ -58,6 +58,9 @@ namespace Toggl.Multivac.Extensions
         public static IObservable<T> Share<T>(this IObservable<T> observable)
             => observable.Publish().RefCount();
 
+        public static IObservable<T> ShareReplay<T>(this IObservable<T> observable, int bufferSize = 1)
+            => observable.Replay(bufferSize).RefCount();
+
         public static IObservable<T> AsDriver<T>(this IObservable<T> observable, T onErrorJustReturn, ISchedulerProvider schedulerProvider)
         {
             if (schedulerProvider.MainScheduler == null)

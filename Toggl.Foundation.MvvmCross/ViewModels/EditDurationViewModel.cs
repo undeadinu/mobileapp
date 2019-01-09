@@ -8,9 +8,11 @@ using MvvmCross.ViewModels;
 using PropertyChanged;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Parameters;
+using Toggl.Foundation.MvvmCross.Transformations;
 using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
@@ -35,13 +37,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private DurationFormat durationFormat;
 
         private EditDurationEvent analyticsEvent;
-
-        [DependsOn(nameof(IsRunning))]
-        public DurationFormat DurationFormat => IsRunning ? DurationFormat.Improved : durationFormat;
-
-        public DateFormat DateFormat { get; private set; }
-
-        public TimeFormat TimeFormat { get; private set; }
 
         public bool IsRunning { get; private set; }
 
@@ -119,6 +114,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public UIAction EditStartTime { get; }
         public UIAction EditStopTime { get; }
         public UIAction StopEditingTime { get; }
+        public InputAction<DateTimeOffset> ChangeStartTime { get; }
+        public InputAction<DateTimeOffset> ChangeStopTime { get; }
         public InputAction<TimeSpan> ChangeDuration { get; }
 
         public IObservable<DateTimeOffset> StartTimeOb { get; }
@@ -128,6 +125,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<bool> IsEditingStartTime { get; }
         public IObservable<bool> IsEditingStopTime { get; }
 
+        public IObservable<string> StartDateString { get; }
+        public IObservable<string> StartTimeString { get; }
+        public IObservable<string> StopDateString { get; }
+        public IObservable<string> StopTimeString { get; }
+        public IObservable<string> DurationString { get; }
+        public IObservable<TimeFormat> TimeFormat { get; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
@@ -149,18 +152,37 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             EditStartTime = rxActionFactory.FromAction(editStartTime);
             EditStopTime = rxActionFactory.FromAction(editStopTime);
             StopEditingTime = rxActionFactory.FromAction(stopEditingTime);
+            ChangeStartTime = rxActionFactory.FromAction<DateTimeOffset>(startTime.OnNext);
+            ChangeStopTime = rxActionFactory.FromAction<DateTimeOffset>(stopTime.OnNext);
             ChangeDuration = rxActionFactory.FromAction<TimeSpan>(changeDuration);
 
             var start = startTime.Where(v => v != default(DateTimeOffset));
             var stop = stopTime.Where(v => v != default(DateTimeOffset));
+            var duration = Observable.CombineLatest(start, stop, (startValue, stopValue) => stopValue - startValue);
 
             StartTimeOb = start.AsDriver(schedulerProvider);
             StopTimeOb = stop.AsDriver(schedulerProvider);
-            DurationOb = Observable.CombineLatest(start, stop, (startValue, stopValue) => stopValue - startValue);
+            DurationOb = duration.AsDriver(schedulerProvider);
 
             IsEditingTime = editMode.Select(v => v != EditMode.None).AsDriver(schedulerProvider);
             IsEditingStartTime = editMode.Select(v => v == EditMode.StartTime).AsDriver(schedulerProvider);
             IsEditingStopTime = editMode.Select(v => v == EditMode.EndTime).AsDriver(schedulerProvider);
+
+            var preferences = dataSource.Preferences.Current.ShareReplay();
+            var dateFormat = preferences.Select(p => p.DateFormat);
+            var timeFormat = preferences.Select(p => p.TimeOfDayFormat);
+            var durationFormat = preferences.Select(p => p.DurationFormat);
+
+            StartDateString = Observable.CombineLatest(start, dateFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            StartTimeString = Observable.CombineLatest(start, timeFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            StopDateString = Observable.CombineLatest(stop, dateFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            StopTimeString = Observable.CombineLatest(stop, timeFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            DurationString = Observable.CombineLatest(duration, durationFormat, toFormattedString);
+            TimeFormat = timeFormat.AsDriver(schedulerProvider);
         }
 
         public override void Prepare(EditDurationParameters parameter)
@@ -187,16 +209,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             MinimumDateTime = StartTime.DateTime;
             MaximumDateTime = StopTime.DateTime;
             IsDurationInitiallyFocused = parameter.IsDurationInitiallyFocused;
-        }
-
-        public override async Task Initialize()
-        {
-            await base.Initialize();
-
-            preferencesDisposable = dataSource.Preferences.Current
-                .Subscribe(onPreferencesChanged);
-
-            editMode.OnNext(EditMode.None);
         }
 
         public void TimeEditedWithSource(EditTimeSource source)
@@ -281,13 +293,28 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             stopTime.OnNext(startTime.Value + changedDuration);
         }
 
-        private void onPreferencesChanged(IThreadSafePreferences preferences)
+        private Func<DateTimeOffset, string> toStringWithFormat(TimeZoneInfo timeZone, string format)
         {
-            durationFormat = preferences.DurationFormat;
-            DateFormat = preferences.DateFormat;
-            TimeFormat = preferences.TimeOfDayFormat;
+            return value =>
+            {
+                var corrected = value == default(DateTimeOffset) ? value : TimeZoneInfo.ConvertTime(value, timeZone);
+                return corrected.ToString(format);
+            };
+        }
 
-            RaisePropertyChanged(nameof(DurationFormat));
+        private string toFormattedString(DateTimeOffset dateTimeOffset, TimeFormat timeFormat)
+        {
+            return DateTimeToFormattedString.Convert(dateTimeOffset, timeFormat.Format);
+        }
+
+        private string toFormattedString(DateTimeOffset dateTimeOffset, DateFormat dateFormat)
+        {
+            return DateTimeToFormattedString.Convert(dateTimeOffset, dateFormat.Short);
+        }
+
+        private string toFormattedString(TimeSpan timeSpan, DurationFormat format)
+        {
+            return timeSpan.ToFormattedString(format);
         }
 
         public override void ViewDestroy(bool viewFinishing)
