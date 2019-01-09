@@ -154,7 +154,7 @@ namespace Toggl.Daneel.ViewControllers
                     .Subscribe(DurationInput.Rx().Enabled())
                     .DisposedBy(disposeBag);
 
-            ViewModel.DurationOb
+            ViewModel.Duration
                 .Subscribe(v => DurationInput.Duration = v)
                 .DisposedBy(disposeBag);
 

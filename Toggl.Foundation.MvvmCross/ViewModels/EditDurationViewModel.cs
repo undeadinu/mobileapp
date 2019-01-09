@@ -116,7 +116,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IObservable<DateTimeOffset> StartTimeOb { get; }
         public IObservable<DateTimeOffset> StopTimeOb { get; }
-        public IObservable<TimeSpan> DurationOb { get; }
+        public IObservable<TimeSpan> Duration { get; }
         public IObservable<bool> IsEditingTime { get; }
         public IObservable<bool> IsEditingStartTime { get; }
         public IObservable<bool> IsEditingStopTime { get; }
@@ -156,7 +156,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             StartTimeOb = start.AsDriver(schedulerProvider);
             StopTimeOb = stop.AsDriver(schedulerProvider);
-            DurationOb = duration.AsDriver(schedulerProvider);
+            Duration = duration.AsDriver(schedulerProvider);
 
             IsEditingTime = editMode.Select(v => v != EditMode.None).AsDriver(schedulerProvider);
             IsEditingStartTime = editMode.Select(v => v == EditMode.StartTime).AsDriver(schedulerProvider);
