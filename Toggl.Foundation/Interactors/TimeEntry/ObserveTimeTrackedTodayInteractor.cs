@@ -4,8 +4,10 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Extensions;
+using Toggl.Foundation.Models.Interfaces;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
+using Toggl.PrimeRadiant.Models;
 
 namespace Toggl.Foundation.Interactors
 {
@@ -26,38 +28,48 @@ namespace Toggl.Foundation.Interactors
         }
 
         public IObservable<TimeSpan> Execute()
-            => updateIsNecessary()
-                .StartWith(Unit.Default)
-                .SelectMany(_ =>
-                    calculateTimeAlreadyTrackedToday().CombineLatest(
-                        observeElapsedTimeOfCurrentlyRunningTimeEntry(),
-                        (alreadyTrackedToday, currentlyRunningTimeEntryDuration) =>
-                            alreadyTrackedToday + currentlyRunningTimeEntryDuration))
+            => whenUpdateIsNecessary()
+                .SelectMany(_ => calculateTimeTrackedToday())
                 .DistinctUntilChanged();
 
-        private IObservable<Unit> updateIsNecessary()
+        private IObservable<Unit> whenUpdateIsNecessary()
             => timeEntries.ItemsChanged()
                 .Merge(timeService.MidnightObservable.SelectUnit())
-                .Merge(timeService.SignificantTimeChangeObservable);
+                .Merge(timeService.SignificantTimeChangeObservable)
+                .StartWith(Unit.Default);
+
+        private IObservable<TimeSpan> calculateTimeTrackedToday()
+            => calculateTimeAlreadyTrackedToday().CombineLatest(
+                observeElapsedTimeOfRunningTimeEntryIfAny(),
+                (alreadyTrackedToday, currentlyRunningTimeEntryDuration) =>
+                    alreadyTrackedToday + currentlyRunningTimeEntryDuration);
 
         private IObservable<TimeSpan> calculateTimeAlreadyTrackedToday()
-            => timeEntries.GetAll(timeEntry =>
-                    timeEntry.Start.LocalDateTime.Date == timeService.CurrentDateTime.LocalDateTime.Date
-                    && timeEntry.Duration != null)
+            => timeEntries.GetAll(startedTodayAndStopped)
                 .SingleAsync()
                 .SelectMany(CommonFunctions.Identity)
                 .Sum(timeEntry => timeEntry.Duration ?? 0.0)
                 .Select(TimeSpan.FromSeconds);
 
-        private IObservable<TimeSpan> observeElapsedTimeOfCurrentlyRunningTimeEntry()
-            => timeEntries.GetAll(timeEntry =>
-                    timeEntry.Start.LocalDateTime.Date == timeService.CurrentDateTime.LocalDateTime.Date
-                    && timeEntry.Duration == null)
+        private IObservable<TimeSpan> observeElapsedTimeOfRunningTimeEntryIfAny()
+            => timeEntries.GetAll(startedTodayAndRunning)
                 .Select(runningTimeEntries => runningTimeEntries.SingleOrDefault())
-                .SelectMany(timeEntry => timeEntry == null
-                    ? Observable.Return(TimeSpan.Zero)
-                    : timeService.CurrentDateTimeObservable
-                        .Select(now => now - timeEntry.Start)
-                        .StartWith(timeService.CurrentDateTime - timeEntry.Start));
+                .SelectMany(timeEntry =>
+                    timeEntry == null
+                        ? Observable.Return(TimeSpan.Zero)
+                        : observeElapsedTimeOfRunningTimeEntry(timeEntry));
+
+        private bool startedTodayAndStopped(IDatabaseTimeEntry timeEntry)
+            => timeEntry.Start.LocalDateTime.Date == timeService.CurrentDateTime.LocalDateTime.Date
+               && timeEntry.Duration != null;
+
+        private bool startedTodayAndRunning(IDatabaseTimeEntry timeEntry)
+            => timeEntry.Start.LocalDateTime.Date == timeService.CurrentDateTime.LocalDateTime.Date
+                && timeEntry.Duration == null;
+
+        private IObservable<TimeSpan> observeElapsedTimeOfRunningTimeEntry(IThreadSafeTimeEntry timeEntry)
+            => timeService.CurrentDateTimeObservable
+                .Select(now => now - timeEntry.Start)
+                .StartWith(timeService.CurrentDateTime - timeEntry.Start);
     }
 }
