@@ -7,6 +7,7 @@ using UIKit;
 using Toggl.Daneel.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
 using System.Threading.Tasks;
+using Toggl.Foundation;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -21,6 +22,10 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.Tags;
+            EmptyStateLabel.Text = Resources.EmptyTagText;
+            CloseButton.SetTitle(Resources.Save, UIControlState.Normal);
 
             var source = new SelectTagsTableViewSource(TagsTableView);
             TagsTableView.Source = source;

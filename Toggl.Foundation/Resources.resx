@@ -684,4 +684,12 @@ account is not set up</value>
         <value>Your projects will show up here.
             Use them to categorize your time.</value>
     </data>
+    <data name="Tags">
+        <value>Tags</value>
+    </data>
+    <data name="EmptyTagText">
+        <value>Your tags will show up here.
+            Use them to add keywords
+            to your time entries.</value>
+    </data>
 </root>

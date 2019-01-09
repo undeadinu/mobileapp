@@ -1365,5 +1365,17 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("EmptyProjectText", resourceCulture);
             }
         }
+        
+        public static string Tags {
+            get {
+                return ResourceManager.GetString("Tags", resourceCulture);
+            }
+        }
+        
+        public static string EmptyTagText {
+            get {
+                return ResourceManager.GetString("EmptyTagText", resourceCulture);
+            }
+        }
     }
 }
