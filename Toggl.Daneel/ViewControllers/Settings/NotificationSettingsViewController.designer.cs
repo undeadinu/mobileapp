@@ -22,10 +22,19 @@ namespace Toggl.Daneel.ViewControllers.Settings
 		UIKit.UILabel CalendarNotificationsValue { get; set; }
 
 		[Outlet]
+		UIKit.UILabel ExplainationLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel NotificationDisabledLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIButton OpenSettingsButton { get; set; }
 
 		[Outlet]
 		UIKit.UIStackView OpenSettingsContainer { get; set; }
+
+		[Outlet]
+		UIKit.UILabel RowLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -52,6 +61,21 @@ namespace Toggl.Daneel.ViewControllers.Settings
 			if (OpenSettingsContainer != null) {
 				OpenSettingsContainer.Dispose ();
 				OpenSettingsContainer = null;
+			}
+
+			if (NotificationDisabledLabel != null) {
+				NotificationDisabledLabel.Dispose ();
+				NotificationDisabledLabel = null;
+			}
+
+			if (ExplainationLabel != null) {
+				ExplainationLabel.Dispose ();
+				ExplainationLabel = null;
+			}
+
+			if (RowLabel != null) {
+				RowLabel.Dispose ();
+				RowLabel = null;
 			}
 		}
 	}

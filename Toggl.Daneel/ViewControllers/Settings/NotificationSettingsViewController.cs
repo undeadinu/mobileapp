@@ -2,10 +2,10 @@
 using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
-using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.ViewModels.Settings;
 using Toggl.Multivac.Extensions;
-using FoundationResources = Toggl.Foundation.Resources;
+using UIKit;
 
 namespace Toggl.Daneel.ViewControllers.Settings
 {
@@ -20,7 +20,11 @@ namespace Toggl.Daneel.ViewControllers.Settings
         {
             base.ViewDidLoad();
 
-            NavigationItem.Title = FoundationResources.NotificationSettingsTitle;
+            NavigationItem.Title = Resources.NotificationSettingsTitle;
+            NotificationDisabledLabel.Text = Resources.NotificationDisabledNotice;
+            OpenSettingsButton.SetTitle(Resources.OpenSettingsApp, UIControlState.Normal);
+            RowLabel.Text = Resources.UpcomingEvent;
+            ExplainationLabel.Text = Resources.NotificationSettingExplaination;
 
             ViewModel.PermissionGranted
                 .Invert()

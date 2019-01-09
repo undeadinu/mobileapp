@@ -600,4 +600,16 @@ account is not set up</value>
     <data name="ThankYouForTheFeedback">
         <value>Thank you for the feedback. If you had any questions, we’ll get back to you soon.</value>
     </data>
+    <data name="NotificationDisabledNotice">
+        <value>Notifications are currently disabled. If you’d like to recieve notifications, please enable them in the Settings app.</value>
+    </data>
+    <data name="OpenSettingsApp">
+        <value>Open Settings App</value>
+    </data>
+    <data name="UpcomingEvent">
+        <value>Upcoming event</value>
+    </data>
+    <data name="NotificationSettingExplaination">
+        <value>Be notified about upcoming events before they begin.</value>
+    </data>
 </root>

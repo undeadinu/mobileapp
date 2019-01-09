@@ -1203,5 +1203,29 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("ThankYouForTheFeedback", resourceCulture);
             }
         }
+        
+        public static string NotificationDisabledNotice {
+            get {
+                return ResourceManager.GetString("NotificationDisabledNotice", resourceCulture);
+            }
+        }
+        
+        public static string OpenSettingsApp {
+            get {
+                return ResourceManager.GetString("OpenSettingsApp", resourceCulture);
+            }
+        }
+        
+        public static string UpcomingEvent {
+            get {
+                return ResourceManager.GetString("UpcomingEvent", resourceCulture);
+            }
+        }
+        
+        public static string NotificationSettingExplaination {
+            get {
+                return ResourceManager.GetString("NotificationSettingExplaination", resourceCulture);
+            }
+        }
     }
 }
