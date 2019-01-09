@@ -778,6 +778,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string CountryOfResidence {
+            get {
+                return ResourceManager.GetString("CountryOfResidence", resourceCulture);
+            }
+        }
+        
         public static string SelectCountry {
             get {
                 return ResourceManager.GetString("SelectCountry", resourceCulture);
@@ -1321,6 +1327,12 @@ namespace Toggl.Foundation {
         public static string ProjectColor {
             get {
                 return ResourceManager.GetString("ProjectColor", resourceCulture);
+            }
+        }
+        
+        public static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
             }
         }
     }

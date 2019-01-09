@@ -23,6 +23,9 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UITextField SearchTextField { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -36,14 +39,19 @@ namespace Toggl.Daneel.ViewControllers
 				CloseButton = null;
 			}
 
+			if (CountriesTableView != null) {
+				CountriesTableView.Dispose ();
+				CountriesTableView = null;
+			}
+
 			if (SearchTextField != null) {
 				SearchTextField.Dispose ();
 				SearchTextField = null;
 			}
 
-			if (CountriesTableView != null) {
-				CountriesTableView.Dispose ();
-				CountriesTableView = null;
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
 			}
 		}
 	}

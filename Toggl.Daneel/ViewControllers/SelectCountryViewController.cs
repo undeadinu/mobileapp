@@ -9,6 +9,7 @@ using Toggl.Daneel.Extensions;
 using System.Threading.Tasks;
 using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Views.CountrySelection;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Multivac.Extensions;
 
@@ -26,6 +27,9 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.CountryOfResidence;
+            SearchTextField.Placeholder = Resources.Search;
 
             CountriesTableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
             CountriesTableView.RegisterNibForCellReuse(CountryViewCell.Nib, CountryViewCell.Identifier);
