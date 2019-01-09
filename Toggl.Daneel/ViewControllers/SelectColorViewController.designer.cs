@@ -29,6 +29,9 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UISlider SliderView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -60,6 +63,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (SliderView != null) {
 				SliderView.Dispose ();
 				SliderView = null;
+			}
+
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
 			}
 		}
 	}

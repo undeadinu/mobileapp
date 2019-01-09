@@ -1317,5 +1317,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("Clients", resourceCulture);
             }
         }
+        
+        public static string ProjectColor {
+            get {
+                return ResourceManager.GetString("ProjectColor", resourceCulture);
+            }
+        }
     }
 }

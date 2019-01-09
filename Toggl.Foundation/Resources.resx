@@ -659,4 +659,7 @@ account is not set up</value>
     <data name="Clients">
         <value>Clients</value>
     </data>
+    <data name="ProjectColor">
+        <value>Project color</value>
+    </data>
 </root>
