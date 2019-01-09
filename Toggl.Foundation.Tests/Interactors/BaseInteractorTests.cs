@@ -10,6 +10,7 @@ using Toggl.Ultrawave.Network;
 using Toggl.Foundation.Services;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Diagnostics;
+using Toggl.Foundation.Login;
 
 namespace Toggl.Foundation.Tests
 {
@@ -30,6 +31,10 @@ namespace Toggl.Foundation.Tests
         protected ICalendarService CalendarService { get; } = Substitute.For<ICalendarService>();
         protected ISyncManager SyncManager { get; } = Substitute.For<ISyncManager>();
         protected IStopwatchProvider StopwatchProvider { get; } = Substitute.For<IStopwatchProvider>();
+        protected ITogglDatabase Database { get; } = Substitute.For<ITogglDatabase>();
+        protected IPrivateSharedStorageService PrivateSharedStorageService { get; } =
+            Substitute.For<IPrivateSharedStorageService>();
+        protected IUserAccessManager UserAccessManager { get; } = Substitute.For<IUserAccessManager>();
 
         protected IInteractorFactory InteractorFactory { get; }
 
