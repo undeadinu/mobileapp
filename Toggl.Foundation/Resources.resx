@@ -235,7 +235,7 @@ time entries will appear here.</value>
         <value>Incorrect password. Please, try again</value>
     </data>
     <data name="GoogleLogin">
-        <value>Log in with Google</value>
+        <value>Sign in with Google</value>
     </data>
     <data name="GoogleSignUp">
         <value>Sign up with Google</value>
@@ -566,5 +566,14 @@ account is not set up</value>
     </data>
     <data name="EmailAddress">
         <value>Email Address</value>
+    </data>
+    <data name="Password">
+        <value>Password</value>
+    </data>
+    <data name="Or">
+        <value>Or</value>
+    </data>
+    <data name="DoNotHaveAnAccountWithQuestionMark">
+        <value>Don't have an account?</value>
     </data>
 </root>

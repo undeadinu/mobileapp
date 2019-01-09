@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -43,7 +42,7 @@
                                 <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="next" textContentType="email"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8e6-Gh-xye">
-                                <rect key="frame" x="16" y="297.5" width="343" height="40"/>
+                                <rect key="frame" x="16" y="297" width="343" height="40"/>
                                 <color key="backgroundColor" red="0.023529411760000001" green="0.66666666669999997" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <accessibility key="accessibilityConfiguration" label="LoginButton"/>
                                 <constraints>
@@ -66,7 +65,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FOx-xg-Ol7">
-                                <rect key="frame" x="16" y="349.5" width="343" height="40"/>
+                                <rect key="frame" x="16" y="349" width="343" height="40"/>
                                 <accessibility key="accessibilityConfiguration" label="LoginForgotPassword"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="ReX-En-4eO"/>
@@ -77,10 +76,10 @@
                                 </state>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oda-oc-dOV" userLabel="OR">
-                                <rect key="frame" x="16" y="401.5" width="343" height="14.5"/>
+                                <rect key="frame" x="16" y="401" width="343" height="14.5"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xxa-E1-qSs">
-                                        <rect key="frame" x="0.0" y="7.5" width="155" height="1"/>
+                                        <rect key="frame" x="0.0" y="7" width="155" height="1"/>
                                         <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="ebw-r3-9yD"/>
@@ -93,7 +92,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cIf-FL-aNd">
-                                        <rect key="frame" x="188.5" y="7.5" width="154.5" height="1"/>
+                                        <rect key="frame" x="188.5" y="7" width="154.5" height="1"/>
                                         <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="zZb-Oy-PKx"/>
@@ -114,7 +113,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3cI-Sa-w2L">
-                                <rect key="frame" x="16" y="432" width="343" height="40"/>
+                                <rect key="frame" x="16" y="431.5" width="343" height="40"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="TSi-zH-l5n"/>
@@ -230,6 +229,7 @@
                     </view>
                     <connections>
                         <outlet property="ActivityIndicator" destination="vXI-BS-Qvf" id="TKO-iq-6zh"/>
+                        <outlet property="DontHaveAnAccountLabel" destination="zBu-As-Eey" id="wUA-q1-BBb"/>
                         <outlet property="EmailFieldTopConstraint" destination="sA8-cL-MsZ" id="Oxn-j1-fZw"/>
                         <outlet property="EmailTextField" destination="Lsa-g7-i4M" id="dFM-Qy-QQQ"/>
                         <outlet property="ErrorLabel" destination="mES-7Q-qsS" id="8S7-Rk-UOh"/>
@@ -237,9 +237,11 @@
                         <outlet property="GoogleLoginButton" destination="3cI-Sa-w2L" id="LAI-yE-h3k"/>
                         <outlet property="LoginButton" destination="8e6-Gh-xye" id="k4i-fW-b3f"/>
                         <outlet property="LogoImageView" destination="zmO-Bb-Zfg" id="XIQ-AW-bKf"/>
+                        <outlet property="OrLabel" destination="7YV-Qv-n2h" id="qo3-ZG-UXY"/>
                         <outlet property="PasswordManagerButton" destination="gpt-26-6Ya" id="6of-sa-JQM"/>
                         <outlet property="PasswordTextField" destination="lcd-vh-led" id="S5g-mJ-4Jg"/>
                         <outlet property="ShowPasswordButton" destination="doe-4h-781" id="LIN-0T-SS0"/>
+                        <outlet property="SignUpForFreeLabel" destination="9Ca-NL-Zo4" id="xik-W7-acC"/>
                         <outlet property="SignupCard" destination="R6U-zp-jAZ" id="E1X-DY-ynX"/>
                         <outlet property="TopConstraint" destination="MKN-wv-3NI" id="X7f-gu-VjB"/>
                     </connections>

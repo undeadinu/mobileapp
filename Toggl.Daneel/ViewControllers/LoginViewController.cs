@@ -41,6 +41,14 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
+            EmailTextField.Placeholder = Resources.EmailAddress;
+            PasswordTextField.Placeholder = Resources.Password;
+            OrLabel.Text = Resources.Or.ToUpper();
+            LoginButton.SetTitle(Resources.LoginTitle, UIControlState.Normal);
+            GoogleLoginButton.SetTitle(Resources.GoogleLogin, UIControlState.Normal);
+            DontHaveAnAccountLabel.Text = Resources.DoNotHaveAnAccountWithQuestionMark;
+            SignUpForFreeLabel.Text = Resources.SignUpTitle;
+
             NavigationController.NavigationBarHidden = true;
             PasswordManagerButton.Hidden = !ViewModel.IsPasswordManagerAvailable;
 

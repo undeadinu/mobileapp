@@ -1137,5 +1137,23 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("EmailAddress", resourceCulture);
             }
         }
+        
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        public static string Or {
+            get {
+                return ResourceManager.GetString("Or", resourceCulture);
+            }
+        }
+        
+        public static string DoNotHaveAnAccountWithQuestionMark {
+            get {
+                return ResourceManager.GetString("DoNotHaveAnAccountWithQuestionMark", resourceCulture);
+            }
+        }
     }
 }

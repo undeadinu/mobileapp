@@ -16,6 +16,9 @@ namespace Toggl.Daneel.ViewControllers
 		Toggl.Daneel.Views.ActivityIndicatorView ActivityIndicator { get; set; }
 
 		[Outlet]
+		UIKit.UILabel DontHaveAnAccountLabel { get; set; }
+
+		[Outlet]
 		UIKit.NSLayoutConstraint EmailFieldTopConstraint { get; set; }
 
 		[Outlet]
@@ -39,6 +42,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIImageView LogoImageView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel OrLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIButton PasswordManagerButton { get; set; }
 
 		[Outlet]
@@ -52,6 +58,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView SignupCard { get; set; }
 
 		[Outlet]
+		UIKit.UILabel SignUpForFreeLabel { get; set; }
+
+		[Outlet]
 		UIKit.NSLayoutConstraint TopConstraint { get; set; }
 		
 		void ReleaseDesignerOutlets ()
@@ -59,6 +68,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (ActivityIndicator != null) {
 				ActivityIndicator.Dispose ();
 				ActivityIndicator = null;
+			}
+
+			if (EmailFieldTopConstraint != null) {
+				EmailFieldTopConstraint.Dispose ();
+				EmailFieldTopConstraint = null;
 			}
 
 			if (EmailTextField != null) {
@@ -116,9 +130,19 @@ namespace Toggl.Daneel.ViewControllers
 				TopConstraint = null;
 			}
 
-			if (EmailFieldTopConstraint != null) {
-				EmailFieldTopConstraint.Dispose ();
-				EmailFieldTopConstraint = null;
+			if (OrLabel != null) {
+				OrLabel.Dispose ();
+				OrLabel = null;
+			}
+
+			if (DontHaveAnAccountLabel != null) {
+				DontHaveAnAccountLabel.Dispose ();
+				DontHaveAnAccountLabel = null;
+			}
+
+			if (SignUpForFreeLabel != null) {
+				SignUpForFreeLabel.Dispose ();
+				SignUpForFreeLabel = null;
 			}
 		}
 	}
