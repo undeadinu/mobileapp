@@ -25,16 +25,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     {
         private readonly ITimeService timeService;
         private readonly IMvxNavigationService navigationService;
-        private readonly ITogglDataSource dataSource;
         private readonly IAnalyticsService analyticsService;
-        private readonly IRxActionFactory rxActionFactory;
 
         private IDisposable runningTimeEntryDisposable;
         private IDisposable preferencesDisposable;
 
         private DurationParameter defaultResult;
-
-        private DurationFormat durationFormat;
 
         private EditDurationEvent analyticsEvent;
 
@@ -143,9 +139,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             this.timeService = timeService;
             this.navigationService = navigationService;
-            this.dataSource = dataSource;
             this.analyticsService = analyticsService;
-            this.rxActionFactory = rxActionFactory;
 
             Save = rxActionFactory.FromAsync(save);
             Close = rxActionFactory.FromAsync(close);
