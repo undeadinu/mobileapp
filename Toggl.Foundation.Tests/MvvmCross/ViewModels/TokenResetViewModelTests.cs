@@ -45,7 +45,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     UserPreferences,
                     AnalyticsService,
                     SchedulerProvider,
-                    RxActionFactory);
+                    RxActionFactory,
+                    InteractorFactory);
         }
 
         public sealed class TheConstructor : TokenResetViewModelTest
@@ -59,7 +60,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useUserPreferences,
                 bool useAnalyticsService,
                 bool useSchedulerProvider,
-                bool useRxActionFactory
+                bool useRxActionFactory,
+                bool useInteractorFactory
             )
             {
                 var userAccessManager = useUserAccessManager ? UserAccessManager : null;
@@ -70,6 +72,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
                 var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
+                var interactorFactory = useInteractorFactory ? InteractorFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new TokenResetViewModel(
@@ -80,7 +83,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         userPreferences,
                         analyticsService,
                         schedulerProvider,
-                        rxActionFactory);
+                        rxActionFactory,
+                        interactorFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -243,18 +247,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.SignOut.Execute();
 
                 TestScheduler.Start();
-                await UserAccessManager.Received().Logout();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async Task ResetsUserPreferences()
-            {
-                await setup();
-
-                ViewModel.SignOut.Execute();
-
-                TestScheduler.Start();
-                UserPreferences.Received().Reset();
+                await InteractorFactory.Received().Logout(LogoutSource.TokenReset).Execute();
             }
 
             [Fact, LogIfTooSlow]
@@ -288,18 +281,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.SignOut.Execute();
 
                 TestScheduler.Start();
-                await DataSource.DidNotReceive().Logout();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async Task TracksLogoutEvent()
-            {
-                await setup();
-
-                ViewModel.SignOut.Execute();
-
-                TestScheduler.Start();
-                AnalyticsService.Logout.Received().Track(LogoutSource.TokenReset);
+                InteractorFactory.DidNotReceive().Logout(Arg.Any<LogoutSource>());
             }
         }
     }

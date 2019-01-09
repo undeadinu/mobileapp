@@ -231,45 +231,6 @@ namespace Toggl.Foundation.Tests.Login
             }
         }
 
-        public sealed class TheLogoutMethod : UserAccessManagerTest
-        {
-            [Fact, LogIfTooSlow]
-            public async Task LogsOutAfterLogin()
-            {
-                await UserAccessManager.Login(Email, Password);
-                await UserAccessManager.Logout();
-                await DataSource.Received().Logout();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async Task LogsOutAfterSignup()
-            {
-                await UserAccessManager.SignUp(Email, Password, TermsAccepted, CountryId);
-                await UserAccessManager.Logout();
-                await DataSource.Received().Logout();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async Task LogsOutAfterTokenRefresh()
-            {
-                var user = Substitute.For<IDatabaseUser>();
-                user.Email.Returns(Email);
-                Database.User.Single().Returns(Observable.Return(user));
-                await UserAccessManager.RefreshToken(Password);
-                await UserAccessManager.Logout();
-                await DataSource.Received().Logout();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async Task LogsOutAfterGoogleLogin()
-            {
-                GoogleService.GetAuthToken().Returns(Observable.Return("sometoken"));
-                await UserAccessManager.LoginWithGoogle();
-                await UserAccessManager.Logout();
-                await DataSource.Received().Logout();
-            }
-        }
-
         public sealed class TheGetDataSourceIfLoggedInInMethod : UserAccessManagerTest
         {
             [Fact, LogIfTooSlow]
