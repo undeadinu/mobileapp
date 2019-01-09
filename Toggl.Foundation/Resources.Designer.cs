@@ -1347,5 +1347,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("SelectDefaultWorkspaceDescription", resourceCulture);
             }
         }
+        
+        public static string DurationFormat {
+            get {
+                return ResourceManager.GetString("DurationFormat", resourceCulture);
+            }
+        }
     }
 }

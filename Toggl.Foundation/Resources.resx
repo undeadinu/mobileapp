@@ -674,4 +674,7 @@ account is not set up</value>
     <data name="SelectDefaultWorkspaceDescription">
         <value>Your time will be automatically tracked under this workspace. You can change it later from the Settings.</value>
     </data>
+    <data name="DurationFormat">
+        <value>Duration format</value>
+    </data>
 </root>
