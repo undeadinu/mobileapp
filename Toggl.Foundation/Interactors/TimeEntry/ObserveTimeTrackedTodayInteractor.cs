@@ -36,9 +36,9 @@ namespace Toggl.Foundation.Interactors
                 .DistinctUntilChanged();
 
         private IObservable<Unit> updateIsNecessary()
-            => timeEntries.ItemsChanged().Debug("items_changed")
-                .Merge(timeService.MidnightObservable.SelectUnit().Debug("midnight"))
-                .Merge(timeService.SignificantTimeChangeObservable.Debug("significant_time_change"));
+            => timeEntries.ItemsChanged()
+                .Merge(timeService.MidnightObservable.SelectUnit())
+                .Merge(timeService.SignificantTimeChangeObservable);
 
         private IObservable<TimeSpan> calculateTimeAlreadyTrackedToday()
             => timeEntries.GetAll(timeEntry =>
