@@ -14,20 +14,16 @@ using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
-using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
 using UIKit;
-using static Toggl.Daneel.Extensions.FontExtensions;
-using System.Runtime.Remoting.Messaging;
 
 namespace Toggl.Daneel.ViewControllers
 {
     [ModalCardPresentation]
     public sealed partial class EditDurationViewController : KeyboardAwareViewController<EditDurationViewModel>, IDismissableViewController
     {
-        private const int offsetFromSafeAreaTop = 20;
         private const int additionalVerticalContentSize = 100;
         private const int stackViewSpacing = 26;
 
