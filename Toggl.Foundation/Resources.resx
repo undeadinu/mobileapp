@@ -635,4 +635,10 @@ account is not set up</value>
     <data name="UpdateTheApp">
         <value>Update the app</value>
     </data>
+    <data name="RatingCTATitle">
+        <value>Sure, take me there</value>
+    </data>
+    <data name="NoThanks">
+        <value>No, thanks</value>
+    </data>
 </root>

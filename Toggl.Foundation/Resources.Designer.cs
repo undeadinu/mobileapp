@@ -1269,5 +1269,17 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("UpdateTheApp", resourceCulture);
             }
         }
+        
+        public static string RatingCTATitle {
+            get {
+                return ResourceManager.GetString("RatingCTATitle", resourceCulture);
+            }
+        }
+        
+        public static string NoThanks {
+            get {
+                return ResourceManager.GetString("NoThanks", resourceCulture);
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ using MvvmCross.Platforms.Ios.Binding.Views;
 using ObjCRuntime;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
@@ -121,6 +122,9 @@ namespace Toggl.Daneel
         public override void LayoutSubviews()
         {
             base.LayoutSubviews();
+
+            CtaButton.SetTitle(Resources.RatingCTATitle, UIControlState.Normal);
+            DismissButton.SetTitle(Resources.NoThanks, UIControlState.Normal);
 
             SetupAsCard(QuestionView);
             SetupAsCard(CtaView);
