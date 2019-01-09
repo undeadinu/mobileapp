@@ -12,6 +12,7 @@ using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Foundation.Analytics;
+using Toggl.Foundation.Extensions;
 using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
@@ -166,15 +167,13 @@ namespace Toggl.Daneel.ViewControllers
                     .Subscribe(DurationInput.Rx().Enabled())
                     .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DurationInput)
-                      .For(v => v.Duration)
-                      .To(vm => vm.Duration);
+            ViewModel.DurationOb
+                .Subscribe(v => DurationInput.Duration = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DurationInput)
-                      .For(v => v.FormattedDuration)
-                      .ByCombining(durationCombiner,
-                          vm => vm.Duration,
-                          vm => vm.DurationFormat);
+            ViewModel.DurationOb
+                .Subscribe(d => DurationInput.FormattedDuration = d.ToFormattedString(ViewModel.DurationFormat))
+                .DisposedBy(disposeBag);
 
             ViewModel.IsEditingTime
                 .Invert()

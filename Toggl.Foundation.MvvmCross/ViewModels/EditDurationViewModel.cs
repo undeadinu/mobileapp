@@ -51,18 +51,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public bool IsDurationInitiallyFocused { get; private set; }
 
-        [DependsOn(nameof(StartTime), nameof(StopTime))]
-        public TimeSpan Duration
-        {
-            get => StopTime - StartTime;
-            set
-            {
-                if (Duration == value) return;
-
-                onDurationChanged(value);
-            }
-        }
-
         public DateTimeOffset EditedTime
         {
             get
@@ -122,6 +110,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
 
 
+        private BehaviorSubject<DateTimeOffset> startTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
+        private BehaviorSubject<DateTimeOffset> stopTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
         private BehaviorSubject<EditMode> editMode = new BehaviorSubject<EditMode>(EditMode.None);
 
         public UIAction Save { get; }
@@ -129,7 +119,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public UIAction EditStartTime { get; }
         public UIAction EditStopTime { get; }
         public UIAction StopEditingTime { get; }
+        public InputAction<TimeSpan> ChangeDuration { get; }
 
+        public IObservable<DateTimeOffset> StartTimeOb { get; }
+        public IObservable<DateTimeOffset> StopTimeOb { get; }
+        public IObservable<TimeSpan> DurationOb { get; }
         public IObservable<bool> IsEditingTime { get; }
         public IObservable<bool> IsEditingStartTime { get; }
         public IObservable<bool> IsEditingStopTime { get; }
@@ -155,6 +149,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             EditStartTime = rxActionFactory.FromAction(editStartTime);
             EditStopTime = rxActionFactory.FromAction(editStopTime);
             StopEditingTime = rxActionFactory.FromAction(stopEditingTime);
+            ChangeDuration = rxActionFactory.FromAction<TimeSpan>(changeDuration);
+
+            var start = startTime.Where(v => v != default(DateTimeOffset));
+            var stop = stopTime.Where(v => v != default(DateTimeOffset));
+
+            StartTimeOb = start.AsDriver(schedulerProvider);
+            StopTimeOb = stop.AsDriver(schedulerProvider);
+            DurationOb = Observable.CombineLatest(start, stop, (startValue, stopValue) => stopValue - startValue);
 
             IsEditingTime = editMode.Select(v => v != EditMode.None).AsDriver(schedulerProvider);
             IsEditingStartTime = editMode.Select(v => v == EditMode.StartTime).AsDriver(schedulerProvider);
@@ -213,7 +215,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             analyticsEvent = analyticsEvent.With(result: EditDurationEvent.Result.Save);
             analyticsService.Track(analyticsEvent);
-            var result = DurationParameter.WithStartAndDuration(StartTime, IsRunning ? (TimeSpan?)null : Duration);
+            var duration = stopTime.Value - startTime.Value;
+            var result = DurationParameter.WithStartAndDuration(StartTime, IsRunning ? (TimeSpan?)null : duration);
             return navigationService.Close(this, result);
         }
 
@@ -270,12 +273,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             editMode.OnNext(EditMode.None);
         }
 
-        private void onDurationChanged(TimeSpan changedDuration)
+        private void changeDuration(TimeSpan changedDuration)
         {
             if (IsRunning)
-                StartTime = timeService.CurrentDateTime - changedDuration;
+                startTime.OnNext(timeService.CurrentDateTime - changedDuration);
 
-            StopTime = StartTime + changedDuration;
+            stopTime.OnNext(startTime.Value + changedDuration);
         }
 
         private void onPreferencesChanged(IThreadSafePreferences preferences)
