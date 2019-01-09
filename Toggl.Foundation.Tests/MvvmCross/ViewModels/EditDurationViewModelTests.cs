@@ -8,6 +8,7 @@ using NSubstitute;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Tests.Extensions;
 using Toggl.Foundation.Tests.Generators;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
@@ -19,23 +20,24 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class EditDurationViewModelTest : BaseViewModelTests<EditDurationViewModel>
         {
             protected override EditDurationViewModel CreateViewModel()
-                => new EditDurationViewModel(NavigationService, TimeService, DataSource, AnalyticsService, RxActionFactory);
+                => new EditDurationViewModel(NavigationService, TimeService, DataSource, AnalyticsService, RxActionFactory, SchedulerProvider);
         }
 
         public sealed class TheConstructor : EditDurationViewModelTest
         {
             [Theory, LogIfTooSlow]
             [ConstructorData]
-            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useNavigationService, bool useTimeService, bool useDataSource, bool useAnalyticsService, bool useRxActionFactory)
+            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useNavigationService, bool useTimeService, bool useDataSource, bool useAnalyticsService, bool useRxActionFactory, bool useSchedulerProvider)
             {
                 var navigationService = useNavigationService ? NavigationService : null;
                 var timeService = useTimeService ? TimeService : null;
                 var dataSource = useDataSource ? DataSource : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
+                var schedulerProvider = useSchedulerProvider ? SchedulerProvider : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new EditDurationViewModel(navigationService, timeService, dataSource, analyticsService, rxActionFactory);
+                    () => new EditDurationViewModel(navigationService, timeService, dataSource, analyticsService, rxActionFactory, schedulerProvider);
 
                 tryingToConstructWithEmptyParameters.Should().Throw<ArgumentNullException>();
             }
@@ -272,31 +274,43 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void SetsTheIsEditingFlagsCorrectlyWhenNothingWasEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
 
                 ViewModel.EditStartTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingStartTime.Should().BeTrue();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
+                startObserver.LastValue().Should().BeTrue();
+                stopObserver.LastValue().Should().BeFalse();
             }
 
             [Fact]
             public void SetsTheIsEditingFlagsCorrectlyWhenStopTimeWasEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
                 ViewModel.EditStopTime.Execute();
 
                 ViewModel.EditStartTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingStartTime.Should().BeTrue();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
+                startObserver.LastValue().Should().BeTrue();
+                stopObserver.LastValue().Should().BeFalse();
             }
 
             [Fact]
             public void ClosesEditingWhenStartTimeWasBeingEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
 
                 Observable.Concat(
                     Observable.Defer(() => ViewModel.EditStartTime.Execute()),
@@ -305,8 +319,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Subscribe();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
+                startObserver.LastValue().Should().BeFalse();
+                stopObserver.LastValue().Should().BeFalse();
             }
 
             [Fact]
@@ -360,31 +374,43 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void SetsTheIsEditingFlagsCorrectlyWhenNothingWasEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
 
                 ViewModel.EditStopTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeTrue();
+                startObserver.LastValue().Should().BeFalse();
+                stopObserver.LastValue().Should().BeTrue();
             }
 
             [Fact]
             public void SetsTheIsEditingFlagsCorrectlyWhenStopTimeWasEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
                 ViewModel.EditStartTime.Execute();
 
                 ViewModel.EditStopTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeTrue();
+                startObserver.LastValue().Should().BeFalse();
+                stopObserver.LastValue().Should().BeTrue();
             }
 
             [Fact]
             public void ClosesEditingWhenStartTimeWasBeingEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
 
                 Observable.Concat(
                         Observable.Defer(() => ViewModel.EditStopTime.Execute()),
@@ -393,8 +419,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Subscribe();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
+                startObserver.LastValue().Should().BeFalse();
+                stopObserver.LastValue().Should().BeFalse();
             }
 
             [Fact]
@@ -464,28 +490,40 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void ClearsAllTimeEditingFlagsWhenStartTimeWasEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var editingObserver = TestScheduler.CreateObserver<bool>();
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingTime.Subscribe(editingObserver );
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
 
                 ViewModel.EditStartTime.Execute();
                 ViewModel.StopEditingTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingTime.Should().BeFalse();
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
+                editingObserver.LastValue().Should().BeFalse();
+                startObserver.LastValue().Should().BeFalse();
+                stopObserver.LastValue().Should().BeFalse();
             }
 
             [Fact]
             public void ClearsAllTimeEditingFlagsWhenStopTimeWasEdited()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var editingObserver = TestScheduler.CreateObserver<bool>();
+                var startObserver = TestScheduler.CreateObserver<bool>();
+                var stopObserver = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsEditingTime.Subscribe(editingObserver );
+                ViewModel.IsEditingStartTime.Subscribe(startObserver);
+                ViewModel.IsEditingStopTime.Subscribe(stopObserver);
 
                 ViewModel.EditStopTime.Execute();
                 ViewModel.StopEditingTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.IsEditingTime.Should().BeFalse();
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
+                editingObserver.LastValue().Should().BeFalse();
+                startObserver.LastValue().Should().BeFalse();
+                stopObserver.LastValue().Should().BeFalse();
             }
         }
 
