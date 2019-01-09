@@ -114,30 +114,34 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.IsRunning);
 
             //Stard and end colors
-            bindingSet.Bind(StartTimeLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStartTime)
-                      .WithConversion(editedTimeLabelColorConverter);
+            ViewModel.IsEditingStartTime
+                .Select(editingStartTime => editingStartTime
+                    ? Color.EditDuration.EditedTime.ToNativeColor()
+                    : Color.EditDuration.NotEditedTime.ToNativeColor()
+                )
+                .Subscribe(color =>
+                {
+                    StartTimeLabel.TextColor = color;
+                    StartDateLabel.TextColor = color;
+                })
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(StartDateLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStartTime)
-                      .WithConversion(editedTimeLabelColorConverter);
-
-            bindingSet.Bind(EndTimeLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStopTime)
-                      .WithConversion(editedTimeLabelColorConverter);
-
-            bindingSet.Bind(EndDateLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStopTime)
-                      .WithConversion(editedTimeLabelColorConverter);
+            ViewModel.IsEditingStopTime
+                .Select(editingStartTime => editingStartTime
+                    ? Color.EditDuration.EditedTime.ToNativeColor()
+                    : Color.EditDuration.NotEditedTime.ToNativeColor()
+                )
+                .Subscribe(color =>
+                {
+                    EndTimeLabel.TextColor = color;
+                    EndDateLabel.TextColor = color;
+                })
+                .DisposedBy(disposeBag);
 
             //Date picker
-            bindingSet.Bind(DatePickerContainer)
-                      .For(v => v.BindAnimatedVisibility())
-                      .To(vm => vm.IsEditingTime);
+            ViewModel.IsEditingTime
+                .Subscribe(DatePickerContainer.Rx().AnimatedIsVisible())
+                .DisposedBy(disposeBag);
 
             bindingSet.Bind(DatePicker)
                       .For(v => v.BindDateTimeOffset())
@@ -157,10 +161,10 @@ namespace Toggl.Daneel.ViewControllers
                       .WithConversion(timeFormatToLocaleConverter);
 
             //The wheel
-            bindingSet.Bind(DurationInput)
-                      .For(v => v.UserInteractionEnabled)
-                      .To(vm => vm.IsEditingTime)
-                      .WithConversion(inverseBoolConverter);
+            ViewModel.IsEditingTime
+                    .Invert()
+                    .Subscribe(DurationInput.Rx().Enabled())
+                    .DisposedBy(disposeBag);
 
             bindingSet.Bind(DurationInput)
                       .For(v => v.Duration)
@@ -172,10 +176,10 @@ namespace Toggl.Daneel.ViewControllers
                           vm => vm.Duration,
                           vm => vm.DurationFormat);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.UserInteractionEnabled)
-                      .To(vm => vm.IsEditingTime)
-                      .WithConversion(inverseBoolConverter);
+            ViewModel.IsEditingTime
+                .Invert()
+                .Subscribe(v => WheelView.UserInteractionEnabled = v)
+                .DisposedBy(disposeBag);
 
             bindingSet.Bind(WheelView)
                       .For(v => v.MaximumStartTime)
@@ -322,8 +326,8 @@ namespace Toggl.Daneel.ViewControllers
             if (DurationInput.IsEditing)
                 DurationInput.ResignFirstResponder();
 
-            if (ViewModel.IsEditingTime)
-                ViewModel.StopEditingTime.Execute();
+
+            ViewModel.StopEditingTime.Execute();
         }
 
         private void startTimeChanging(Unit _)

@@ -9,6 +9,7 @@ using PropertyChanged;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Models.Interfaces;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.Services;
 using Toggl.Multivac;
@@ -32,8 +33,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private DurationParameter defaultResult;
 
         private DurationFormat durationFormat;
-
-        private EditMode editMode;
 
         private EditDurationEvent analyticsEvent;
 
@@ -64,17 +63,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
         }
 
-        public bool IsEditingTime => IsEditingStopTime || IsEditingStartTime;
-
-        public bool IsEditingStartTime => editMode == EditMode.StartTime;
-
-        public bool IsEditingStopTime => editMode == EditMode.EndTime;
-
         public DateTimeOffset EditedTime
         {
             get
             {
-                switch (editMode)
+                switch (editMode.Value)
                 {
                     case EditMode.StartTime:
                         return StartTime;
@@ -91,11 +84,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             set
             {
-                if (!IsEditingTime) return;
+                if (editMode.Value == EditMode.None) return;
 
                 var valueInRange = value.Clamp(MinimumDateTime, MaximumDateTime);
 
-                switch (editMode)
+                switch (editMode.Value)
                 {
                     case EditMode.StartTime:
                         StartTime = valueInRange;
@@ -129,7 +122,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
 
 
-
+        private BehaviorSubject<EditMode> editMode = new BehaviorSubject<EditMode>(EditMode.None);
 
         public UIAction Save { get; }
         public UIAction Close { get; }
@@ -137,13 +130,19 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public UIAction EditStopTime { get; }
         public UIAction StopEditingTime { get; }
 
-        public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory)
+        public IObservable<bool> IsEditingTime { get; }
+        public IObservable<bool> IsEditingStartTime { get; }
+        public IObservable<bool> IsEditingStopTime { get; }
+
+
+        public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
+            Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
 
             this.timeService = timeService;
             this.navigationService = navigationService;
@@ -156,6 +155,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             EditStartTime = rxActionFactory.FromAction(editStartTime);
             EditStopTime = rxActionFactory.FromAction(editStopTime);
             StopEditingTime = rxActionFactory.FromAction(stopEditingTime);
+
+            IsEditingTime = editMode.Select(v => v != EditMode.None).AsDriver(schedulerProvider);
+            IsEditingStartTime = editMode.Select(v => v == EditMode.StartTime).AsDriver(schedulerProvider);
+            IsEditingStopTime = editMode.Select(v => v == EditMode.EndTime).AsDriver(schedulerProvider);
         }
 
         public override void Prepare(EditDurationParameters parameter)
@@ -191,7 +194,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             preferencesDisposable = dataSource.Preferences.Current
                 .Subscribe(onPreferencesChanged);
 
-            editMode = EditMode.None;
+            editMode.OnNext(EditMode.None);
         }
 
         public void TimeEditedWithSource(EditTimeSource source)
@@ -216,9 +219,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void editStartTime()
         {
-            if (IsEditingStartTime)
+            if (editMode.Value == EditMode.StartTime)
             {
-                editMode = EditMode.None;
+                editMode.OnNext(EditMode.None);
             }
             else
             {
@@ -226,7 +229,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 MinimumDateTime = MinimumStartTime.LocalDateTime;
                 MaximumDateTime = MaximumStartTime.LocalDateTime;
 
-                editMode = EditMode.StartTime;
+                editMode.OnNext(EditMode.StartTime);
             }
 
             RaisePropertyChanged(nameof(IsEditingStartTime));
@@ -245,16 +248,16 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 analyticsEvent = analyticsEvent.With(stoppedRunningEntry: true);
             }
 
-            if (IsEditingStopTime)
+            if (editMode.Value == EditMode.EndTime)
             {
-                editMode = EditMode.None;
+                editMode.OnNext(EditMode.None);
             }
             else
             {
                 MinimumDateTime = MinimumStopTime.LocalDateTime;
                 MaximumDateTime = MaximumStopTime.LocalDateTime;
 
-                editMode = EditMode.EndTime;
+                editMode.OnNext(EditMode.EndTime);
             }
 
             RaisePropertyChanged(nameof(IsEditingStartTime));
@@ -265,7 +268,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void stopEditingTime()
         {
-            editMode = EditMode.None;
+            if (editMode.Value == EditMode.None)
+            {
+                return;
+            }
+
+            editMode.OnNext(EditMode.None);
 
             RaisePropertyChanged(nameof(IsEditingStartTime));
             RaisePropertyChanged(nameof(IsEditingStopTime));
