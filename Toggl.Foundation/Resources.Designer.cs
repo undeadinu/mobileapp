@@ -1335,5 +1335,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("Search", resourceCulture);
             }
         }
+        
+        public static string DateFormat {
+            get {
+                return ResourceManager.GetString("DateFormat", resourceCulture);
+            }
+        }
     }
 }

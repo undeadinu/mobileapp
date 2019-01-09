@@ -17,6 +17,9 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UITableView DateFormatsTableView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -28,6 +31,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (DateFormatsTableView != null) {
 				DateFormatsTableView.Dispose ();
 				DateFormatsTableView = null;
+			}
+
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
 			}
 		}
 	}

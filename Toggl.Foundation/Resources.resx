@@ -668,4 +668,7 @@ account is not set up</value>
     <data name="Search">
         <value>Search</value>
     </data>
+    <data name="DateFormat">
+        <value>Date format</value>
+    </data>
 </root>
