@@ -1377,5 +1377,17 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("EmptyTagText", resourceCulture);
             }
         }
+        
+        public static string SelectCalendars {
+            get {
+                return ResourceManager.GetString("SelectCalendars", resourceCulture);
+            }
+        }
+        
+        public static string SelectCalendarsDescription {
+            get {
+                return ResourceManager.GetString("SelectCalendarsDescription", resourceCulture);
+            }
+        }
     }
 }

@@ -692,4 +692,10 @@ account is not set up</value>
             Use them to add keywords
             to your time entries.</value>
     </data>
+    <data name="SelectCalendars">
+        <value>Select calendars</value>
+    </data>
+    <data name="SelectCalendarsDescription">
+        <value>Events are visible to you only and won’t appear in Reports.</value>
+    </data>
 </root>
