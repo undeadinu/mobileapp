@@ -621,4 +621,10 @@ account is not set up</value>
     <data name="NoWorkspaceErrorMessage">
         <value>Seems someone has removed you from their workspace. No worries. Create a new workspace to continue.</value>
     </data>
+    <data name="Skip">
+        <value>Skip</value>
+    </data>
+    <data name="Next">
+        <value>Next</value>
+    </data>
 </root>

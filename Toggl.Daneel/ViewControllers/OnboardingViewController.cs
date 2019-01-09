@@ -28,6 +28,10 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
+            Skip.SetTitle(Resources.Skip.ToUpper(), UIControlState.Normal);
+            Next.SetTitle(Resources.Next.ToUpper(), UIControlState.Normal);
+            Previous.SetTitle(Resources.Back.ToUpper(), UIControlState.Normal);
+
             preparePlaceholders();
 
             if (UIDevice.CurrentDevice.CheckSystemVersion(11, 0))

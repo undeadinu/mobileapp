@@ -1245,5 +1245,17 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("NoWorkspaceErrorMessage", resourceCulture);
             }
         }
+        
+        public static string Skip {
+            get {
+                return ResourceManager.GetString("Skip", resourceCulture);
+            }
+        }
+        
+        public static string Next {
+            get {
+                return ResourceManager.GetString("Next", resourceCulture);
+            }
+        }
     }
 }
