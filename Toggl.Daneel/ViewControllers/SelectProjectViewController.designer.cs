@@ -29,9 +29,17 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UITextField TextField { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TitleLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (BottomConstraint != null) {
+				BottomConstraint.Dispose ();
+				BottomConstraint = null;
+			}
+
 			if (CloseButton != null) {
 				CloseButton.Dispose ();
 				CloseButton = null;
@@ -57,9 +65,9 @@ namespace Toggl.Daneel.ViewControllers
 				TextField = null;
 			}
 
-			if (BottomConstraint != null) {
-				BottomConstraint.Dispose ();
-				BottomConstraint = null;
+			if (TitleLabel != null) {
+				TitleLabel.Dispose ();
+				TitleLabel = null;
 			}
 		}
 	}

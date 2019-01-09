@@ -677,4 +677,11 @@ account is not set up</value>
     <data name="DurationFormat">
         <value>Duration format</value>
     </data>
+    <data name="Projects">
+        <value>Projects</value>
+    </data>
+    <data name="EmptyProjectText">
+        <value>Your projects will show up here.
+            Use them to categorize your time.</value>
+    </data>
 </root>

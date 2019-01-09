@@ -5,6 +5,7 @@ using MvvmCross.Platforms.Ios.Binding;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Daneel.ViewSources;
+using Toggl.Foundation;
 using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -23,6 +24,10 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.Projects;
+            TextField.Placeholder = Resources.AddFilterProjects;
+            EmptyStateLabel.Text = Resources.EmptyProjectText;
             
             var source = new SelectProjectTableViewSource(ProjectsTableView);
             ProjectsTableView.Source = source;
