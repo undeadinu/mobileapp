@@ -1155,5 +1155,53 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("DoNotHaveAnAccountWithQuestionMark", resourceCulture);
             }
         }
+        
+        public static string SwipeRightToContinue {
+            get {
+                return ResourceManager.GetString("SwipeRightToContinue", resourceCulture);
+            }
+        }
+        
+        public static string SwipeLeftToDelete {
+            get {
+                return ResourceManager.GetString("SwipeLeftToDelete", resourceCulture);
+            }
+        }
+        
+        public static string YouHaveCreatedYourFirstTimeEntry {
+            get {
+                return ResourceManager.GetString("YouHaveCreatedYourFirstTimeEntry", resourceCulture);
+            }
+        }
+        
+        public static string TapToEditIt {
+            get {
+                return ResourceManager.GetString("TapToEditIt", resourceCulture);
+            }
+        }
+        
+        public static string TapToStartTimer {
+            get {
+                return ResourceManager.GetString("TapToStartTimer", resourceCulture);
+            }
+        }
+        
+        public static string TapToStopTimer {
+            get {
+                return ResourceManager.GetString("TapToStopTimer", resourceCulture);
+            }
+        }
+        
+        public static string DoneWithExclamationMark {
+            get {
+                return ResourceManager.GetString("DoneWithExclamationMark", resourceCulture);
+            }
+        }
+        
+        public static string ThankYouForTheFeedback {
+            get {
+                return ResourceManager.GetString("ThankYouForTheFeedback", resourceCulture);
+            }
+        }
     }
 }

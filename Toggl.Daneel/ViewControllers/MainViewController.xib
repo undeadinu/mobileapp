@@ -1,38 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MainViewController">
             <connections>
+                <outlet property="CreatedFirstTimeEntryLabel" destination="qfP-Yh-vW3" id="SBk-CR-F34"/>
                 <outlet property="CurrentTimeEntryCard" destination="vou-B4-go4" id="name-outlet-vou-B4-go4"/>
                 <outlet property="CurrentTimeEntryDescriptionLabel" destination="eE0-Ob-Ngt" id="hdk-b7-5VN"/>
                 <outlet property="CurrentTimeEntryElapsedTimeLabel" destination="0J7-Pj-geT" id="name-outlet-0J7-Pj-geT"/>
                 <outlet property="CurrentTimeEntryProjectTaskClientLabel" destination="cnc-9d-fgu" id="Qlo-zJ-0bI"/>
+                <outlet property="FeedbackSentDescriptionLabel" destination="FOL-Gh-maB" id="lpK-1b-wEA"/>
+                <outlet property="FeedbackSentSuccessTitleLabel" destination="SNw-4A-zNm" id="KmQ-Rg-CuA"/>
                 <outlet property="RunningEntryDescriptionFadeView" destination="E3W-8n-IfX" id="xWA-xE-taG"/>
                 <outlet property="SendFeedbackSuccessView" destination="fge-d2-Ud2" id="J5U-mZ-rsF"/>
                 <outlet property="StartTimeEntryButton" destination="4Kk-Hz-RBS" id="name-outlet-4Kk-Hz-RBS"/>
                 <outlet property="StartTimeEntryOnboardingBubbleView" destination="jpn-gJ-vFB" id="JIf-UQ-5t0"/>
+                <outlet property="StartTimerBubbleLabel" destination="LCs-H0-PO4" id="bdv-dz-y3n"/>
                 <outlet property="StopTimeEntryButton" destination="Ddo-IW-xE3" id="name-outlet-Ddo-IW-xE3"/>
                 <outlet property="StopTimeEntryOnboardingBubbleView" destination="0wI-i0-MgR" id="7ci-ti-Pzx"/>
+                <outlet property="SwipeLeftBubbleLabel" destination="ew1-f0-nHV" id="OeD-uU-CFT"/>
                 <outlet property="SwipeLeftBubbleView" destination="w5c-30-czh" id="oMl-ro-PFr"/>
                 <outlet property="SwipeLeftTopConstraint" destination="1QN-yf-d6n" id="8xq-DF-a2A"/>
+                <outlet property="SwipeRightBubbleLabel" destination="vpg-kC-wnj" id="MZX-xP-069"/>
                 <outlet property="SwipeRightBubbleView" destination="VHN-jJ-Qpp" id="oeb-7j-iBq"/>
                 <outlet property="SwipeRightTopConstraint" destination="yZb-Q0-xGk" id="DPN-b2-dd6"/>
                 <outlet property="TapToEditBubbleView" destination="r2K-j0-0fe" id="5NI-TL-kin"/>
                 <outlet property="TapToEditBubbleViewTopConstraint" destination="ont-yx-MAU" id="QCK-PQ-IXf"/>
+                <outlet property="TapToEditItLabel" destination="UiD-si-fSa" id="hAZ-EM-lj9"/>
+                <outlet property="TapToStopTimerLabel" destination="tFY-U0-EZM" id="rH3-dH-Qa8"/>
                 <outlet property="TimeEntriesLogTableView" destination="hoP-Tg-vBM" id="cct-0m-nqm"/>
                 <outlet property="TimeEntriesLogTableViewBottomToTopCurrentEntryConstraint" destination="oMA-0v-07i" id="FXw-Sl-GcF"/>
                 <outlet property="TopConstraint" destination="cO8-xe-txr" id="qX1-k2-wHZ"/>
                 <outlet property="TopSeparator" destination="niU-tX-YTJ" id="xUr-AE-63C"/>
+                <outlet property="WelcomeBackDescriptionLabel" destination="o5G-e2-nYj" id="czT-og-Awz"/>
+                <outlet property="WelcomeBackLabel" destination="sWl-8H-c8B" id="m7h-Y4-EkM"/>
                 <outlet property="WelcomeBackView" destination="Xqe-XF-nVb" id="fHK-W8-vN4"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
@@ -46,7 +55,7 @@
                     <rect key="frame" x="0.0" y="23" width="375" height="595"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xqe-XF-nVb" userLabel="Welcome Back Container">
-                            <rect key="frame" x="70" y="239" width="234" height="83.5"/>
+                            <rect key="frame" x="70.5" y="239" width="234" height="83.5"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome back!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sWl-8H-c8B">
                                     <rect key="frame" x="55" y="0.0" width="124" height="21"/>
@@ -269,7 +278,7 @@ time entries will appear here.</string>
                     <rect key="frame" x="113" y="554" width="167" height="48"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to start timer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LCs-H0-PO4">
-                            <rect key="frame" x="28" y="15" width="111.5" height="17"/>
+                            <rect key="frame" x="28" y="15.5" width="111.5" height="17"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <nil key="highlightedColor"/>
@@ -307,7 +316,7 @@ time entries will appear here.</string>
                     <rect key="frame" x="0.0" y="546" width="375" height="121"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:15:25" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0J7-Pj-geT">
-                            <rect key="frame" x="161.5" y="14" width="53.5" height="18"/>
+                            <rect key="frame" x="161" y="14" width="53.5" height="18"/>
                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -319,7 +328,7 @@ time entries will appear here.</string>
                                     <rect key="frame" x="0.0" y="0.0" width="279" height="89"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PtF-34-2BI">
-                                            <rect key="frame" x="0.0" y="0.0" width="355.5" height="22.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="355.5" height="23"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New iOS app landing page design" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eE0-Ob-Ngt">
                                                     <rect key="frame" x="8" y="6" width="217.5" height="17"/>

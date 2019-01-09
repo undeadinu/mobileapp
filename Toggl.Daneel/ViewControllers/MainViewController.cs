@@ -14,6 +14,7 @@ using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Daneel.Suggestions;
 using Toggl.Daneel.Views;
 using Toggl.Daneel.ViewSources;
+using Toggl.Foundation;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
@@ -81,6 +82,17 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            SwipeRightBubbleLabel.Text = Resources.SwipeRightToContinue;
+            SwipeLeftBubbleLabel.Text = Resources.SwipeLeftToDelete;
+            WelcomeBackLabel.Text = Resources.LogEmptyStateTitle;
+            WelcomeBackDescriptionLabel.Text = Resources.LogEmptyStateText;
+            CreatedFirstTimeEntryLabel.Text = Resources.YouHaveCreatedYourFirstTimeEntry;
+            TapToEditItLabel.Text = Resources.TapToEditIt;
+            StartTimerBubbleLabel.Text = Resources.TapToStartTimer;
+            TapToStopTimerLabel.Text = Resources.TapToStopTimer;
+            FeedbackSentSuccessTitleLabel.Text = Resources.DoneWithExclamationMark.ToUpper();
+            FeedbackSentDescriptionLabel.Text = Resources.ThankYouForTheFeedback;
 
             prepareViews();
             prepareOnboarding();

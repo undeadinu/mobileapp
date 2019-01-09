@@ -576,4 +576,28 @@ account is not set up</value>
     <data name="DoNotHaveAnAccountWithQuestionMark">
         <value>Don't have an account?</value>
     </data>
+    <data name="SwipeRightToContinue">
+        <value>Swipe right to continue</value>
+    </data>
+    <data name="SwipeLeftToDelete">
+        <value>Swipe left to delete</value>
+    </data>
+    <data name="YouHaveCreatedYourFirstTimeEntry">
+        <value>You've created your first time entry</value>
+    </data>
+    <data name="TapToEditIt">
+        <value>Tap to edit it</value>
+    </data>
+    <data name="TapToStartTimer">
+        <value>Tap to start timer</value>
+    </data>
+    <data name="TapToStopTimer">
+        <value>Tap to stop timer</value>
+    </data>
+    <data name="DoneWithExclamationMark">
+        <value>Done!</value>
+    </data>
+    <data name="ThankYouForTheFeedback">
+        <value>Thank you for the feedback. If you had any questions, we’ll get back to you soon.</value>
+    </data>
 </root>
