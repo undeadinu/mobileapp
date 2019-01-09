@@ -627,4 +627,12 @@ account is not set up</value>
     <data name="Next">
         <value>Next</value>
     </data>
+    <data name="AppOutdatedMessage">
+        <value>Seems you haven't updated the app
+            for quite some time...
+            Please update your app to continue.</value>
+    </data>
+    <data name="UpdateTheApp">
+        <value>Update the app</value>
+    </data>
 </root>

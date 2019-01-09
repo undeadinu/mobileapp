@@ -11,6 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OutdatedAppViewController">
             <connections>
+                <outlet property="HeadingLabel" destination="1427" id="MFH-UZ-X2Q"/>
+                <outlet property="TextLabel" destination="1428" id="B4P-zf-lTn"/>
                 <outlet property="UpdateButton" destination="1425" id="re0-Pm-an2"/>
                 <outlet property="WebsiteButton" destination="1426" id="SfR-ic-Ic7"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>

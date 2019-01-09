@@ -13,6 +13,12 @@ namespace Toggl.Daneel.ViewControllers
 	partial class OutdatedAppViewController
 	{
 		[Outlet]
+		UIKit.UILabel HeadingLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TextLabel { get; set; }
+
+		[Outlet]
 		UIKit.UIButton UpdateButton { get; set; }
 
 		[Outlet]
@@ -20,14 +26,24 @@ namespace Toggl.Daneel.ViewControllers
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (UpdateButton != null) {
+				UpdateButton.Dispose ();
+				UpdateButton = null;
+			}
+
 			if (WebsiteButton != null) {
 				WebsiteButton.Dispose ();
 				WebsiteButton = null;
 			}
 
-			if (UpdateButton != null) {
-				UpdateButton.Dispose ();
-				UpdateButton = null;
+			if (HeadingLabel != null) {
+				HeadingLabel.Dispose ();
+				HeadingLabel = null;
+			}
+
+			if (TextLabel != null) {
+				TextLabel.Dispose ();
+				TextLabel = null;
 			}
 		}
 	}
