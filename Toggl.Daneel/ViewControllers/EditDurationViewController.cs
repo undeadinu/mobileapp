@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using MvvmCross.Binding.BindingContext;
+using MvvmCross.Platforms.Ios;
 using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Extensions;
@@ -132,13 +133,13 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.BindDateTimeOffset())
                       .To(vm => vm.EditedTime);
 
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.MaximumDate)
-                      .To(vm => vm.MaximumDateTime);
+            ViewModel.MinimumDateTime
+                .Subscribe(v => DatePicker.MinimumDate = v.ToNSDate())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.MinimumDate)
-                      .To(vm => vm.MinimumDateTime);
+            ViewModel.MaximumDateTime
+                .Subscribe(v => DatePicker.MaximumDate = v.ToNSDate())
+                .DisposedBy(disposeBag);
 
             ViewModel.TimeFormat
                 .Subscribe(v => DatePicker.Locale = v.IsTwentyFourHoursFormat ? new NSLocale("en_GB") : new NSLocale("en_US"))

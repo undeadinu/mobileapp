@@ -59,7 +59,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             {
                 if (editMode.Value == EditMode.None) return;
 
-                var valueInRange = value.Clamp(MinimumDateTime, MaximumDateTime);
+                var valueInRange = value.Clamp(minimumDateTime.Value, maximumDateTime.Value);
 
                 switch (editMode.Value)
                 {
@@ -78,9 +78,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<Unit> StartTimeChanging
             => startTimeChangingSubject.AsObservable();
 
-        public DateTime MinimumDateTime { get; private set; }
-
-        public DateTime MaximumDateTime { get; private set; }
 
         public DateTimeOffset MinimumStartTime => stopTime.Value.AddHours(-MaxTimeEntryDurationInHours);
 
@@ -99,6 +96,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private BehaviorSubject<DateTimeOffset> stopTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
         private BehaviorSubject<EditMode> editMode = new BehaviorSubject<EditMode>(EditMode.None);
         private BehaviorSubject<bool> isRunning = new BehaviorSubject<bool>(false);
+        private BehaviorSubject<DateTime> minimumDateTime = new BehaviorSubject<DateTime>(default(DateTime));
+        private BehaviorSubject<DateTime> maximumDateTime = new BehaviorSubject<DateTime>(default(DateTime));
 
         public UIAction Save { get; }
         public UIAction Close { get; }
@@ -123,6 +122,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<string> DurationString { get; }
         public IObservable<TimeFormat> TimeFormat { get; }
         public IObservable<bool> IsRunning { get; }
+
+        public IObservable<DateTime> MinimumDateTime { get; }
+        public IObservable<DateTime> MaximumDateTime { get; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
@@ -175,6 +177,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             TimeFormat = timeFormat.AsDriver(schedulerProvider);
 
             IsRunning = isRunning.AsDriver(schedulerProvider);
+
+            MinimumDateTime = minimumDateTime.AsDriver(schedulerProvider);
+            MaximumDateTime = maximumDateTime.AsDriver(schedulerProvider);
         }
 
         public override void Prepare(EditDurationParameters parameter)
@@ -202,8 +207,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             startTime.OnNext(start);
             stopTime.OnNext(stop);
 
-            MinimumDateTime = start.DateTime;
-            MaximumDateTime = stop.DateTime;
+            minimumDateTime.OnNext(start.DateTime);
+            maximumDateTime.OnNext(stop.DateTime);
             IsDurationInitiallyFocused = parameter.IsDurationInitiallyFocused;
         }
 
@@ -237,8 +242,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             else
             {
                 startTimeChangingSubject.OnNext(Unit.Default);
-                MinimumDateTime = MinimumStartTime.LocalDateTime;
-                MaximumDateTime = MaximumStartTime.LocalDateTime;
+                minimumDateTime.OnNext(MinimumStartTime.LocalDateTime);
+                maximumDateTime.OnNext(MaximumStartTime.LocalDateTime);
 
                 editMode.OnNext(EditMode.StartTime);
             }
@@ -262,8 +267,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
             else
             {
-                MinimumDateTime = MinimumStopTime.LocalDateTime;
-                MaximumDateTime = MaximumStopTime.LocalDateTime;
+                minimumDateTime.OnNext(MinimumStopTime.LocalDateTime);
+                maximumDateTime.OnNext(MaximumStopTime.LocalDateTime);
 
                 editMode.OnNext(EditMode.EndTime);
             }
