@@ -374,12 +374,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void SetsTheMinimumAndMaximumDateForTheDatePicker()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var minTimeObserver = TestScheduler.CreateObserver<DateTime>();
+                var maxTimeObserver = TestScheduler.CreateObserver<DateTime>();
+                ViewModel.MinimumDateTime.Subscribe(minTimeObserver);
+                ViewModel.MaximumDateTime.Subscribe(maxTimeObserver);
 
                 ViewModel.EditStartTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.MinimumDateTime.Should().Be((parameter.Start + parameter.Duration.Value - TimeSpan.FromHours(999)).LocalDateTime);
-                ViewModel.MaximumDateTime.Should().Be((parameter.Start + parameter.Duration.Value).LocalDateTime);
+                minTimeObserver.LastValue().Should().Be((parameter.Start + parameter.Duration.Value - TimeSpan.FromHours(999)).LocalDateTime);
+                maxTimeObserver.LastValue().Should().Be((parameter.Start + parameter.Duration.Value).LocalDateTime);
             }
         }
 
@@ -474,12 +478,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void SetsTheMinimumAndMaximumDateForTheDatePicker()
             {
                 ViewModel.Prepare(new EditDurationParameters(parameter));
+                var minTimeObserver = TestScheduler.CreateObserver<DateTime>();
+                var maxTimeObserver = TestScheduler.CreateObserver<DateTime>();
+                ViewModel.MinimumDateTime.Subscribe(minTimeObserver);
+                ViewModel.MaximumDateTime.Subscribe(maxTimeObserver);
 
                 ViewModel.EditStopTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.MinimumDateTime.Should().Be(parameter.Start.LocalDateTime);
-                ViewModel.MaximumDateTime.Should().Be((parameter.Start + TimeSpan.FromHours(999)).LocalDateTime);
+                minTimeObserver.LastValue().Should().Be(parameter.Start.LocalDateTime);
+                maxTimeObserver.LastValue().Should().Be((parameter.Start + TimeSpan.FromHours(999)).LocalDateTime);
             }
 
             [Fact]
@@ -637,16 +645,18 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare(new EditDurationParameters(parameter));
                 var startObserver = TestScheduler.CreateObserver<DateTimeOffset>();
                 var stopObserver = TestScheduler.CreateObserver<DateTimeOffset>();
+                var maxTimeObserver = TestScheduler.CreateObserver<DateTime>();
                 ViewModel.StartTime.Subscribe(startObserver);
                 ViewModel.StopTime.Subscribe(stopObserver);
+                ViewModel.MaximumDateTime.Subscribe(maxTimeObserver);
 
                 ViewModel.EditStartTime.Execute();
                 ViewModel.EditedTime = editedValue;
 
                 TestScheduler.Start();
-                ViewModel.EditedTime.Should().Be(ViewModel.MaximumDateTime);
-                startObserver.LastValue().Should().Be(ViewModel.MaximumDateTime);
-                stopObserver.LastValue().Should().Be(ViewModel.MaximumDateTime);
+                ViewModel.EditedTime.Should().Be(maxTimeObserver.LastValue());
+                startObserver.LastValue().Should().Be(maxTimeObserver.LastValue());
+                stopObserver.LastValue().Should().Be(maxTimeObserver.LastValue());
             }
 
             [Fact]
@@ -656,16 +666,18 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare(new EditDurationParameters(parameter));
                 var startObserver = TestScheduler.CreateObserver<DateTimeOffset>();
                 var stopObserver = TestScheduler.CreateObserver<DateTimeOffset>();
+                var minTimeObserver = TestScheduler.CreateObserver<DateTime>();
                 ViewModel.StartTime.Subscribe(startObserver);
                 ViewModel.StopTime.Subscribe(stopObserver);
+                ViewModel.MinimumDateTime.Subscribe(minTimeObserver);
 
                 ViewModel.EditStartTime.Execute();
                 ViewModel.EditedTime = editedValue;
 
                 TestScheduler.Start();
-                ViewModel.EditedTime.Should().Be(ViewModel.MinimumDateTime);
-                startObserver.LastValue().Should().Be(ViewModel.MinimumDateTime);
-                stopObserver.LastValue().Should().NotBe(ViewModel.MinimumDateTime);
+                ViewModel.EditedTime.Should().Be(minTimeObserver.LastValue());
+                startObserver.LastValue().Should().Be(minTimeObserver.LastValue());
+                stopObserver.LastValue().Should().NotBe(minTimeObserver.LastValue());
             }
 
             [Fact]
@@ -693,14 +705,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var editedValue = parameter.Start.AddHours(1000);
                 ViewModel.Prepare(new EditDurationParameters(parameter));
                 var stopObserver = TestScheduler.CreateObserver<DateTimeOffset>();
+                var maxTimeObserver = TestScheduler.CreateObserver<DateTime>();
                 ViewModel.StopTime.Subscribe(stopObserver);
+                ViewModel.MaximumDateTime.Subscribe(maxTimeObserver);
 
                 ViewModel.EditStopTime.Execute();
                 ViewModel.EditedTime = editedValue;
 
                 TestScheduler.Start();
-                ViewModel.EditedTime.Should().Be(ViewModel.MaximumDateTime);
-                stopObserver.LastValue().Should().Be(ViewModel.MaximumDateTime);
+                ViewModel.EditedTime.Should().Be(maxTimeObserver.LastValue());
+                stopObserver.LastValue().Should().Be(maxTimeObserver.LastValue());
             }
 
             [Fact]
@@ -709,14 +723,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var editedValue = parameter.Start.AddHours(-1);
                 ViewModel.Prepare(new EditDurationParameters(parameter));
                 var stopObserver = TestScheduler.CreateObserver<DateTimeOffset>();
+                var minTimeObserver = TestScheduler.CreateObserver<DateTime>();
                 ViewModel.StopTime.Subscribe(stopObserver);
+                ViewModel.MinimumDateTime.Subscribe(minTimeObserver );
 
                 ViewModel.EditStopTime.Execute();
                 ViewModel.EditedTime = editedValue;
 
                 TestScheduler.Start();
-                ViewModel.EditedTime.Should().Be(ViewModel.MinimumDateTime);
-                stopObserver.LastValue().Should().Be(ViewModel.MinimumDateTime);
+                ViewModel.EditedTime.Should().Be(minTimeObserver.LastValue());
+                stopObserver.LastValue().Should().Be(minTimeObserver.LastValue());
             }
         }
 
