@@ -7,14 +7,12 @@ using CoreGraphics;
 using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios;
-using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Presentation.Attributes;
 using Toggl.Daneel.Views.EditDuration;
 using Toggl.Foundation.Analytics;
-using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
@@ -45,8 +43,6 @@ namespace Toggl.Daneel.ViewControllers
 
             prepareViews();
 
-            var inverseBoolConverter = new BoolToConstantValueConverter<bool>(false, true);
-
             var bindingSet = this.CreateBindingSet<EditDurationViewController, EditDurationViewModel>();
 
             // Actions
@@ -57,7 +53,6 @@ namespace Toggl.Daneel.ViewControllers
             CloseButton.Rx()
                 .BindAction(ViewModel.Close)
                 .DisposedBy(disposeBag);
-
 
             // Start and stop date/time
             ViewModel.StartTimeString
