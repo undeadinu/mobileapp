@@ -89,7 +89,7 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(disposeBag);
 
             // Visibility
-            ViewModel.IsRunningOb
+            ViewModel.IsRunning
                 .Subscribe(running =>
                 {
                     SetEndButton.Hidden = !running;
@@ -199,7 +199,7 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(v => WheelView.EndTime = v)
                 .DisposedBy(disposeBag);
 
-            ViewModel.IsRunningOb
+            ViewModel.IsRunning
                 .Subscribe(v => WheelView.IsRunning = v)
                 .DisposedBy(disposeBag);
 

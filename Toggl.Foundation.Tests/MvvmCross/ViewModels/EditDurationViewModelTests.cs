@@ -188,10 +188,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 var start = new DateTimeOffset(2018, 01, 15, 12, 34, 56, TimeSpan.Zero);
                 var parameter = DurationParameter.WithStartAndDuration(start, null);
+                var observer = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsRunning.Subscribe(observer);
 
                 ViewModel.Prepare(new EditDurationParameters(parameter));
 
-                ViewModel.IsRunning.Should().BeTrue();
+                TestScheduler.Start();
+                observer.LastValue().Should().BeTrue();
             }
 
             [Fact, LogIfTooSlow]
@@ -200,10 +203,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var start = new DateTimeOffset(2018, 01, 15, 12, 34, 56, TimeSpan.Zero);
                 var duration = TimeSpan.FromMinutes(20);
                 var parameter = DurationParameter.WithStartAndDuration(start, duration);
+                var observer = TestScheduler.CreateObserver<bool>();
+                ViewModel.IsRunning.Subscribe(observer);
 
                 ViewModel.Prepare(new EditDurationParameters(parameter));
 
-                ViewModel.IsRunning.Should().BeFalse();
+                TestScheduler.Start();
+                observer.LastValue().Should().BeFalse();
             }
         }
 
@@ -484,12 +490,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare(new EditDurationParameters(runningTEParameter));
                 TimeService.CurrentDateTime.Returns(now);
                 var stopObserver = TestScheduler.CreateObserver<DateTimeOffset>();
+                var isRunningObserver = TestScheduler.CreateObserver<bool>();
                 ViewModel.StopTime.Subscribe(stopObserver);
+                ViewModel.IsRunning.Subscribe(isRunningObserver);
+
 
                 ViewModel.EditStopTime.Execute();
 
                 TestScheduler.Start();
-                ViewModel.IsRunning.Should().BeFalse();
+                isRunningObserver.LastValue().Should().BeFalse();
                 stopObserver.LastValue().Should().Be(now);
             }
 

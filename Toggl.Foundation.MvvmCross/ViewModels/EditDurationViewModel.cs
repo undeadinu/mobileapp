@@ -122,7 +122,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<string> StopTimeString { get; }
         public IObservable<string> DurationString { get; }
         public IObservable<TimeFormat> TimeFormat { get; }
-        public IObservable<bool> IsRunningOb { get; }
+        public IObservable<bool> IsRunning { get; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
@@ -174,7 +174,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             DurationString = Observable.CombineLatest(duration, durationFormat, toFormattedString);
             TimeFormat = timeFormat.AsDriver(schedulerProvider);
 
-            IsRunningOb = isRunning.AsDriver(schedulerProvider);
+            IsRunning = isRunning.AsDriver(schedulerProvider);
         }
 
         public override void Prepare(EditDurationParameters parameter)
