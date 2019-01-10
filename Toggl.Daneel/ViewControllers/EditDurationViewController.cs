@@ -84,23 +84,19 @@ namespace Toggl.Daneel.ViewControllers
                 .BindAction(ViewModel.EditStopTime)
                 .DisposedBy(disposeBag);
 
-            bindingSet.Bind(SetEndButton)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsRunning)
-                      .WithConversion(inverseBoolConverter);
-
             SetEndButton.Rx()
                 .BindAction(ViewModel.EditStopTime)
                 .DisposedBy(disposeBag);
 
             // Visibility
-            bindingSet.Bind(EndTimeLabel)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsRunning);
-
-            bindingSet.Bind(EndDateLabel)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsRunning);
+            ViewModel.IsRunningOb
+                .Subscribe(running =>
+                {
+                    SetEndButton.Hidden = !running;
+                    EndTimeLabel.Hidden = running;
+                    EndDateLabel.Hidden = running;
+                })
+                .DisposedBy(disposeBag);
 
             // Stard and end colors
             ViewModel.IsEditingStartTime
@@ -203,9 +199,9 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(v => WheelView.EndTime = v)
                 .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.IsRunning)
-                      .To(vm => vm.IsRunning);
+            ViewModel.IsRunningOb
+                .Subscribe(v => WheelView.IsRunning = v)
+                .DisposedBy(disposeBag);
 
             bindingSet.Apply();
 

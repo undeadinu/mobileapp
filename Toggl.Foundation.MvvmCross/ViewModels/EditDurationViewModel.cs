@@ -34,8 +34,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private EditDurationEvent analyticsEvent;
 
-        public bool IsRunning { get; private set; }
-
         public bool IsDurationInitiallyFocused { get; private set; }
 
         public DateTimeOffset EditedTime
@@ -100,6 +98,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private BehaviorSubject<DateTimeOffset> startTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
         private BehaviorSubject<DateTimeOffset> stopTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
         private BehaviorSubject<EditMode> editMode = new BehaviorSubject<EditMode>(EditMode.None);
+        private BehaviorSubject<bool> isRunning = new BehaviorSubject<bool>(false);
 
         public UIAction Save { get; }
         public UIAction Close { get; }
@@ -123,6 +122,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<string> StopTimeString { get; }
         public IObservable<string> DurationString { get; }
         public IObservable<TimeFormat> TimeFormat { get; }
+        public IObservable<bool> IsRunningOb { get; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
@@ -173,19 +173,21 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .AsDriver(schedulerProvider);
             DurationString = Observable.CombineLatest(duration, durationFormat, toFormattedString);
             TimeFormat = timeFormat.AsDriver(schedulerProvider);
+
+            IsRunningOb = isRunning.AsDriver(schedulerProvider);
         }
 
         public override void Prepare(EditDurationParameters parameter)
         {
             defaultResult = parameter.DurationParam;
-            IsRunning = defaultResult.Duration.HasValue == false;
+            isRunning.OnNext(defaultResult.Duration.HasValue == false);
 
-            analyticsEvent = new EditDurationEvent(IsRunning,
+            analyticsEvent = new EditDurationEvent(isRunning.Value,
                 parameter.IsStartingNewEntry
                     ? EditDurationEvent.NavigationOrigin.Start
                     : EditDurationEvent.NavigationOrigin.Edit);
 
-            if (IsRunning)
+            if (isRunning.Value)
             {
                 runningTimeEntryDisposable = timeService.CurrentDateTimeObservable
                            .Subscribe(currentTime => stopTime.OnNext(currentTime));
@@ -222,7 +224,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             analyticsEvent = analyticsEvent.With(result: EditDurationEvent.Result.Save);
             analyticsService.Track(analyticsEvent);
             var duration = stopTime.Value - startTime.Value;
-            var result = DurationParameter.WithStartAndDuration(startTime.Value, IsRunning ? (TimeSpan?)null : duration);
+            var result = DurationParameter.WithStartAndDuration(startTime.Value, isRunning.Value ? (TimeSpan?)null : duration);
             return navigationService.Close(this, result);
         }
 
@@ -246,11 +248,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void editStopTime()
         {
-            if (IsRunning)
+            if (isRunning.Value)
             {
                 runningTimeEntryDisposable?.Dispose();
                 stopTime.OnNext(timeService.CurrentDateTime);
-                IsRunning = false;
+                isRunning.OnNext(false);
                 analyticsEvent = analyticsEvent.With(stoppedRunningEntry: true);
             }
 
@@ -281,7 +283,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void changeDuration(TimeSpan changedDuration)
         {
-            if (IsRunning)
+            if (isRunning.Value)
                 startTime.OnNext(timeService.CurrentDateTime - changedDuration);
 
             stopTime.OnNext(startTime.Value + changedDuration);
