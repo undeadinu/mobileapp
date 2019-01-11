@@ -1294,9 +1294,9 @@ namespace Toggl.Foundation {
             }
         }
         
-        public static string RatingCTATitle {
+        public static string RatingCallToActionTitle {
             get {
-                return ResourceManager.GetString("RatingCTATitle", resourceCulture);
+                return ResourceManager.GetString("RatingCallToActionTitle", resourceCulture);
             }
         }
         

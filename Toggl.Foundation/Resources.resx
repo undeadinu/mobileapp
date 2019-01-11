@@ -640,7 +640,7 @@ Please update your app to continue.</value>
     <data name="UpdateTheApp">
         <value>Update the app</value>
     </data>
-    <data name="RatingCTATitle">
+    <data name="RatingCallToActionTitle">
         <value>Sure, take me there</value>
     </data>
     <data name="NoThanks">
@@ -715,7 +715,7 @@ Use them to add keywords to your time entries.</value>
         <value>Format settings</value>
     </data>
     <data name="Use24HourClock">
-        <value>Use 24-hour Clock</value>
+        <value>Use 24-hour clock</value>
     </data>
     <data name="ManualMode">
         <value>Manual mode</value>
@@ -724,10 +724,10 @@ Use them to add keywords to your time entries.</value>
         <value>You can add your data manually, instead of tracking in real time.</value>
     </data>
     <data name="SmartAlerts">
-        <value>Smart Alerts</value>
+        <value>Smart alerts</value>
     </data>
     <data name="SubmitFeedback">
-        <value>Submit Feedback</value>
+        <value>Submit feedback</value>
     </data>
     <data name="LoggingOutSecurely">
         <value>Logging you out securely...</value>

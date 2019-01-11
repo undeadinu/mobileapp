@@ -123,7 +123,7 @@ namespace Toggl.Daneel
         {
             base.LayoutSubviews();
 
-            CtaButton.SetTitle(Resources.RatingCTATitle, UIControlState.Normal);
+            CtaButton.SetTitle(Resources.RatingCallToActionTitle, UIControlState.Normal);
             DismissButton.SetTitle(Resources.NoThanks, UIControlState.Normal);
 
             SetupAsCard(QuestionView);
