@@ -634,7 +634,7 @@ Start the timer and your most used time entries will appear here.</value>
         <value>Next</value>
     </data>
     <data name="AppOutdatedMessage">
-        <value>Seems you haven't updated the for quite some time...
+        <value>Seems you haven't updated the app for quite some time...
 Please update your app to continue.</value>
     </data>
     <data name="UpdateTheApp">
