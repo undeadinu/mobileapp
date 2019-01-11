@@ -123,7 +123,7 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(disposeBag);
 
             DatePicker.Rx().Date()
-                .Subscribe(v => ViewModel.EditedTime = v)
+                .Subscribe(ViewModel.ChangeActiveTime.Inputs)
                 .DisposedBy(disposeBag);
 
             var startTime = ViewModel.IsEditingStartTime

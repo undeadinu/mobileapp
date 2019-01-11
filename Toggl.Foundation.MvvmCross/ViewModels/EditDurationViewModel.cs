@@ -36,44 +36,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public bool IsDurationInitiallyFocused { get; private set; }
 
-        public DateTimeOffset EditedTime
-        {
-            get
-            {
-                switch (editMode.Value)
-                {
-                    case EditMode.StartTime:
-                        return startTime.Value;
-
-                    case EditMode.EndTime:
-                        return stopTime.Value;
-
-                    default:
-                        // any value between start and end time can be returned here
-                        // this constraint is to avoid invalid dates with the date picker
-                        return startTime.Value;
-                }
-            }
-
-            set
-            {
-                if (editMode.Value == EditMode.None) return;
-
-                var valueInRange = value.Clamp(minimumDateTime.Value, maximumDateTime.Value);
-
-                switch (editMode.Value)
-                {
-                    case EditMode.StartTime:
-                        startTime.OnNext(valueInRange);
-                        break;
-
-                    case EditMode.EndTime:
-                        stopTime.OnNext(valueInRange);
-                        break;
-                }
-            }
-        }
-
         private Subject<Unit> startTimeChangingSubject = new Subject<Unit>();
         public IObservable<Unit> StartTimeChanging
             => startTimeChangingSubject.AsObservable();
@@ -100,6 +62,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public UIAction StopEditingTime { get; }
         public InputAction<DateTimeOffset> ChangeStartTime { get; }
         public InputAction<DateTimeOffset> ChangeStopTime { get; }
+        public InputAction<DateTimeOffset> ChangeActiveTime { get; }
         public InputAction<TimeSpan> ChangeDuration { get; }
 
         public IObservable<DateTimeOffset> StartTime { get; }
@@ -145,6 +108,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             StopEditingTime = rxActionFactory.FromAction(stopEditingTime);
             ChangeStartTime = rxActionFactory.FromAction<DateTimeOffset>(startTime.OnNext);
             ChangeStopTime = rxActionFactory.FromAction<DateTimeOffset>(stopTime.OnNext);
+            ChangeActiveTime = rxActionFactory.FromAction<DateTimeOffset>(changeActiveTime);
             ChangeDuration = rxActionFactory.FromAction<TimeSpan>(changeDuration);
 
             var start = startTime.Where(v => v != default(DateTimeOffset));
@@ -251,8 +215,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
                 editMode.OnNext(EditMode.StartTime);
             }
-
-            RaisePropertyChanged(nameof(EditedTime));
         }
 
         private void editStopTime()
@@ -276,8 +238,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
                 editMode.OnNext(EditMode.EndTime);
             }
-
-            RaisePropertyChanged(nameof(EditedTime));
         }
 
         private void stopEditingTime()
@@ -288,6 +248,22 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
 
             editMode.OnNext(EditMode.None);
+        }
+
+        private void changeActiveTime(DateTimeOffset newTime)
+        {
+            var valueInRange = newTime.Clamp(minimumDateTime.Value, maximumDateTime.Value);
+
+            switch (editMode.Value)
+            {
+                case EditMode.StartTime:
+                    startTime.OnNext(valueInRange);
+                    break;
+
+                case EditMode.EndTime:
+                    stopTime.OnNext(valueInRange);
+                    break;
+            }
         }
 
         private void changeDuration(TimeSpan changedDuration)
