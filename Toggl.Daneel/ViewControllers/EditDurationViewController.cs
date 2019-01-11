@@ -43,8 +43,6 @@ namespace Toggl.Daneel.ViewControllers
 
             prepareViews();
 
-            var bindingSet = this.CreateBindingSet<EditDurationViewController, EditDurationViewModel>();
-
             // Actions
             SaveButton.Rx()
                 .BindAction(ViewModel.Save)
@@ -124,9 +122,27 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(DatePickerContainer.Rx().AnimatedIsVisible())
                 .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.BindDateTimeOffset())
-                      .To(vm => vm.EditedTime);
+            DatePicker.Rx().Date()
+                .Subscribe(v => ViewModel.EditedTime = v)
+                .DisposedBy(disposeBag);
+
+            var startTime = ViewModel.IsEditingStartTime
+                    .Where(CommonFunctions.Identity)
+                    .SelectMany(_ => ViewModel.StartTime);
+
+            var stopTime = ViewModel.IsEditingStopTime
+                    .Where(CommonFunctions.Identity)
+                    .SelectMany(_ => ViewModel.StopTime);
+
+            Observable.Merge(startTime, stopTime)
+                .Subscribe(v => DatePicker.SetDate(v.ToNSDate(), false))
+                .DisposedBy(disposeBag);
+
+            ViewModel.IsEditingStartTime
+                .Where(CommonFunctions.Identity)
+                .SelectMany(_ => ViewModel.StartTime)
+                .Subscribe(v => DatePicker.SetDate(v.ToNSDate(), false))
+                .DisposedBy(disposeBag);
 
             ViewModel.MinimumDateTime
                 .Subscribe(v => DatePicker.MinimumDate = v.ToNSDate())
@@ -159,21 +175,21 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(v => WheelView.UserInteractionEnabled = v)
                 .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MaximumStartTime)
-                      .To(vm => vm.MaximumStartTime);
+            ViewModel.MinimumStartTime
+                .Subscribe(v => WheelView.MinimumStartTime = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MinimumStartTime)
-                      .To(vm => vm.MinimumStartTime);
+            ViewModel.MaximumStartTime
+                .Subscribe(v => WheelView.MaximumStartTime = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MaximumEndTime)
-                      .To(vm => vm.MaximumStopTime);
+            ViewModel.MinimumStopTime
+                .Subscribe(v => WheelView.MinimumEndTime= v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MinimumEndTime)
-                      .To(vm => vm.MinimumStopTime);
+            ViewModel.MaximumStopTime
+                .Subscribe(v => WheelView.MaximumEndTime = v)
+                .DisposedBy(disposeBag);
 
             Observable
                 .FromEventPattern(e => WheelView.StartTimeChanged += e, e => WheelView.StartTimeChanged -= e)
@@ -198,8 +214,6 @@ namespace Toggl.Daneel.ViewControllers
             ViewModel.IsRunning
                 .Subscribe(v => WheelView.IsRunning = v)
                 .DisposedBy(disposeBag);
-
-            bindingSet.Apply();
 
             // Interaction observables for analytics
 

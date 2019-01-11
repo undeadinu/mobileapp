@@ -79,13 +79,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             => startTimeChangingSubject.AsObservable();
 
 
-        public DateTimeOffset MinimumStartTime => stopTime.Value.AddHours(-MaxTimeEntryDurationInHours);
-
-        public DateTimeOffset MaximumStartTime => stopTime.Value;
-
-        public DateTimeOffset MinimumStopTime => startTime.Value;
-
-        public DateTimeOffset MaximumStopTime => startTime.Value.AddHours(MaxTimeEntryDurationInHours);
 
 
 
@@ -96,6 +89,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private BehaviorSubject<DateTimeOffset> stopTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
         private BehaviorSubject<EditMode> editMode = new BehaviorSubject<EditMode>(EditMode.None);
         private BehaviorSubject<bool> isRunning = new BehaviorSubject<bool>(false);
+
         private BehaviorSubject<DateTime> minimumDateTime = new BehaviorSubject<DateTime>(default(DateTime));
         private BehaviorSubject<DateTime> maximumDateTime = new BehaviorSubject<DateTime>(default(DateTime));
 
@@ -125,6 +119,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IObservable<DateTime> MinimumDateTime { get; }
         public IObservable<DateTime> MaximumDateTime { get; }
+
+        public IObservable<DateTimeOffset> MinimumStartTime { get; }
+        public IObservable<DateTimeOffset> MaximumStartTime { get; }
+        public IObservable<DateTimeOffset> MinimumStopTime { get; }
+        public IObservable<DateTimeOffset> MaximumStopTime { get; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
@@ -180,6 +179,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             MinimumDateTime = minimumDateTime.AsDriver(schedulerProvider);
             MaximumDateTime = maximumDateTime.AsDriver(schedulerProvider);
+
+            MinimumStartTime = stopTime.Select(v => v.AddHours(-MaxTimeEntryDurationInHours)).AsDriver(schedulerProvider);
+            MaximumStartTime = stopTime.AsDriver(schedulerProvider);
+            MinimumStopTime = startTime.AsDriver(schedulerProvider);
+            MaximumStopTime = startTime.Select(v => v.AddHours(MaxTimeEntryDurationInHours)).AsDriver(schedulerProvider);
         }
 
         public override void Prepare(EditDurationParameters parameter)
