@@ -20,12 +20,10 @@
 with a single tap</value>
     </data>
     <data name="OnboardingMostUsedPageCopy">
-        <value>Resume tracking
-what you do most often</value>
+        <value>Resume tracking what you do most often</value>
     </data>
     <data name="OnboardingReportsPageCopy">
-        <value>Get an instant summary
-of your time with reports</value>
+        <value>Get an instant summary of your time with reports</value>
     </data>
     <data name="LoginTitle">
         <value>Log in</value>
@@ -144,8 +142,7 @@ Please try again.</value>
     </data>
     <data name="LogEmptyStateText">
         <value>You haven’t tracked time for a while.
-Start the timer and your most used
-time entries will appear here.</value>
+Start the timer and your most used time entries will appear here.</value>
     </data>
     <data name="DifferentWorkspaceAlertTitle">
         <value>You've selected a project from another workspace.</value>
@@ -271,12 +268,10 @@ time entries will appear here.</value>
         <value>Of</value>
     </data>
     <data name="NoTagsInfoMessage">
-        <value>Add keywords to your
-time entries with # tags.</value>
+        <value>Add keywords to your time entries with # tags.</value>
     </data>
     <data name="NoProjectsInfoMessage">
-        <value>Create a project @ and
-categorize your tracked time.</value>
+        <value>Create a project @ and categorize your tracked time.</value>
     </data>
     <data name="MondayInitial">
         <value>M</value>
@@ -321,8 +316,7 @@ categorize your tracked time.</value>
         <value>Most recent entry</value>
     </data>
     <data name="NoEmailErrorTitle">
-        <value>Oops! Seems like your email
-account is not set up</value>
+        <value>Oops! Seems like your email account is not set up</value>
     </data>
     <data name="NoEmailErrorMessage">
         <value>Go to “Settings > Mail > Add Account” to set up an email account or send us your feedback to support@toggl.com</value>
@@ -640,8 +634,7 @@ account is not set up</value>
         <value>Next</value>
     </data>
     <data name="AppOutdatedMessage">
-        <value>Seems you haven't updated the
-for quite some time...
+        <value>Seems you haven't updated the for quite some time...
 Please update your app to continue.</value>
     </data>
     <data name="UpdateTheApp">
