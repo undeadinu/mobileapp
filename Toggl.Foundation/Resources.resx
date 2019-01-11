@@ -640,9 +640,9 @@ account is not set up</value>
         <value>Next</value>
     </data>
     <data name="AppOutdatedMessage">
-        <value>Seems you haven't updated the app
-            for quite some time...
-            Please update your app to continue.</value>
+        <value>Seems you haven't updated the
+for quite some time...
+Please update your app to continue.</value>
     </data>
     <data name="UpdateTheApp">
         <value>Update the app</value>
@@ -685,15 +685,14 @@ account is not set up</value>
     </data>
     <data name="EmptyProjectText">
         <value>Your projects will show up here.
-            Use them to categorize your time.</value>
+Use them to categorize your time.</value>
     </data>
     <data name="Tags">
         <value>Tags</value>
     </data>
     <data name="EmptyTagText">
         <value>Your tags will show up here.
-            Use them to add keywords
-            to your time entries.</value>
+Use them to add keywords to your time entries.</value>
     </data>
     <data name="SelectCalendars">
         <value>Select calendars</value>
@@ -756,7 +755,7 @@ account is not set up</value>
         <value>I agree</value>
     </data>
     <data name="TokenResetInstruction">
-        <value>Enter your password to log back in to your</value>
+        <value>Enter your password to log back in to your account</value>
     </data>
     <data name="OrSignOut">
         <value>or Sign out</value>
