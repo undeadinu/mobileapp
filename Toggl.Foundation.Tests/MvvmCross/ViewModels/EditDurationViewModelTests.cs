@@ -376,23 +376,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
-        public sealed class TheStartTimeChangingProperty : EditDurationViewModelTest
-        {
-            [Fact, LogIfTooSlow]
-            public void EmitsNewUnitWhenEditStartTimeCommandIsExecuted()
-            {
-                var parameter = DurationParameter.WithStartAndDuration(new DateTimeOffset(2018, 1, 2, 3, 4, 5, TimeSpan.Zero), TimeSpan.Zero);
-                ViewModel.Prepare(new EditDurationParameters(parameter));
-                var observer = Substitute.For<IObserver<Unit>>();
-                ViewModel.StartTimeChanging.Subscribe(observer);
-
-                ViewModel.EditStartTime.Execute();
-
-                TestScheduler.Start();
-                observer.Received().OnNext(Unit.Default);
-            }
-        }
-
         public sealed class TheEditStopTimeCommand : EditDurationViewModelTest
         {
             private static DurationParameter parameter = DurationParameter.WithStartAndDuration(
