@@ -3,8 +3,6 @@ using System.Linq;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Multivac;
-using Toggl.PrimeRadiant.Models;
-using Toggl.Foundation.Helper;
 
 namespace Toggl.Foundation.Autocomplete.Suggestions
 {
@@ -42,7 +40,7 @@ namespace Toggl.Foundation.Autocomplete.Suggestions
         {
             ProjectId = NoProjectId;
             ClientName = "";
-            ProjectColor = Color.NoProject;
+            ProjectColor = Helper.Color.NoProject;
             ProjectName = Resources.NoProject;
             WorkspaceId = workspaceId;
             WorkspaceName = workspaceName;

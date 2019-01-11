@@ -10,12 +10,12 @@ using MvvmCross.ViewModels;
 using MvvmCross.UI;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross.Extensions;
-using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Settings;
 using Math = System.Math;
+using Color = Toggl.Foundation.MvvmCross.Helper.Color;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {

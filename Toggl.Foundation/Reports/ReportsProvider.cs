@@ -118,7 +118,7 @@ namespace Toggl.Foundation.Reports
             var billableSeconds = summary.BillableSeconds ?? 0;
 
             return project == null
-                ? new ChartSegment(Resources.NoProject, null, percentage, summary.TrackedSeconds, billableSeconds, Color.NoProject)
+                ? new ChartSegment(Resources.NoProject, null, percentage, summary.TrackedSeconds, billableSeconds, Helper.Color.NoProject)
                 : new ChartSegment(project.Name, client?.Name, percentage, summary.TrackedSeconds, billableSeconds, project.Color);
         }
 

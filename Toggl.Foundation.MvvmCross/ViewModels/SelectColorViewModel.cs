@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -9,11 +8,11 @@ using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using MvvmCross.UI;
 using Toggl.Foundation.MvvmCross.Extensions;
-using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
+using Color = Toggl.Foundation.MvvmCross.Helper.Color;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {

@@ -15,7 +15,7 @@ namespace Toggl.Foundation.Suggestions
 
         public long? TaskId { get; } = null;
 
-        public string ProjectColor { get; } = Color.NoProject;
+        public string ProjectColor { get; } = Helper.Color.NoProject;
 
         public string ProjectName { get; } = "";
 
