@@ -96,6 +96,10 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(ViewModel.SetIsShowPasswordButtonVisible)
                 .DisposedBy(DisposeBag);
 
+            ViewModel.LoginEnabled
+                .Subscribe(LoginButton.Rx().Enabled())
+                .DisposedBy(DisposeBag);
+
             //Commands
             SignupCard.Rx()
                 .BindAction(ViewModel.Signup)
