@@ -26,8 +26,6 @@ namespace Toggl.Daneel.ViewControllers
         private const int additionalVerticalContentSize = 100;
         private const int stackViewSpacing = 26;
 
-        private IDisposable startTimeChangingSubscription;
-
         private CompositeDisposable disposeBag = new CompositeDisposable();
         private CGRect frameBeforeShowingKeyboard;
 
@@ -38,8 +36,6 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-
-            startTimeChangingSubscription = ViewModel.StartTimeChanging.Subscribe(startTimeChanging);
 
             prepareViews();
 
@@ -254,8 +250,6 @@ namespace Toggl.Daneel.ViewControllers
             if (!disposing) return;
 
             disposeBag?.Dispose();
-
-            startTimeChangingSubscription?.Dispose();
         }
 
         public override void ViewDidAppear(bool animated)
@@ -332,11 +326,6 @@ namespace Toggl.Daneel.ViewControllers
 
 
             ViewModel.StopEditingTime.Execute();
-        }
-
-        private void startTimeChanging(Unit _)
-        {
-            // => DatePicker.Date = ViewModel.StartTime.Add(ViewModel.Duration).ToNSDate();
         }
     }
 }

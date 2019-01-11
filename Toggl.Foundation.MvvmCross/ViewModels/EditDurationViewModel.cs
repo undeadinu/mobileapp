@@ -5,11 +5,9 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
-using PropertyChanged;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Extensions;
-using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Transformations;
@@ -28,24 +26,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IAnalyticsService analyticsService;
 
         private IDisposable runningTimeEntryDisposable;
-        private IDisposable preferencesDisposable;
-
         private DurationParameter defaultResult;
-
         private EditDurationEvent analyticsEvent;
-
-        public bool IsDurationInitiallyFocused { get; private set; }
-
-        private Subject<Unit> startTimeChangingSubject = new Subject<Unit>();
-        public IObservable<Unit> StartTimeChanging
-            => startTimeChangingSubject.AsObservable();
-
-
-
-
-
-
-
 
         private BehaviorSubject<DateTimeOffset> startTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
         private BehaviorSubject<DateTimeOffset> stopTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
@@ -87,6 +69,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<DateTimeOffset> MaximumStartTime { get; }
         public IObservable<DateTimeOffset> MinimumStopTime { get; }
         public IObservable<DateTimeOffset> MaximumStopTime { get; }
+
+        public bool IsDurationInitiallyFocused { get; private set; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
@@ -163,9 +147,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             if (isRunning.Value)
             {
                 runningTimeEntryDisposable = timeService.CurrentDateTimeObservable
-                           .Subscribe(currentTime => stopTime.OnNext(currentTime));
+                   .Subscribe(currentTime => stopTime.OnNext(currentTime));
             }
-
 
             var start = parameter.DurationParam.Start;
             var stop = parameter.DurationParam.Duration.HasValue
@@ -209,7 +192,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
             else
             {
-                startTimeChangingSubject.OnNext(Unit.Default);
                 minimumDateTime.OnNext(stopTime.Value.AddHours(-MaxTimeEntryDurationInHours).DateTime);
                 maximumDateTime.OnNext(stopTime.Value.DateTime);
 
@@ -293,7 +275,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             base.ViewDestroy(viewFinishing);
             runningTimeEntryDisposable?.Dispose();
-            preferencesDisposable?.Dispose();
         }
 
         private enum EditMode
