@@ -246,8 +246,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             else
             {
                 startTimeChangingSubject.OnNext(Unit.Default);
-                minimumDateTime.OnNext(MinimumStartTime.LocalDateTime);
-                maximumDateTime.OnNext(MaximumStartTime.LocalDateTime);
+                minimumDateTime.OnNext(stopTime.Value.AddHours(-MaxTimeEntryDurationInHours).LocalDateTime);
+                maximumDateTime.OnNext(stopTime.Value.LocalDateTime);
 
                 editMode.OnNext(EditMode.StartTime);
             }
@@ -271,8 +271,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
             else
             {
-                minimumDateTime.OnNext(MinimumStopTime.LocalDateTime);
-                maximumDateTime.OnNext(MaximumStopTime.LocalDateTime);
+                minimumDateTime.OnNext(startTime.Value.LocalDateTime);
+                maximumDateTime.OnNext(startTime.Value.AddHours(MaxTimeEntryDurationInHours).LocalDateTime);
 
                 editMode.OnNext(EditMode.EndTime);
             }
