@@ -1,5 +1,6 @@
-﻿using System;
-using CoreGraphics;
+﻿using CoreGraphics;
+using Toggl.Multivac;
+using UIKit;
 
 namespace Toggl.Daneel.Extensions
 {
@@ -13,5 +14,8 @@ namespace Toggl.Daneel.Extensions
 
             return $"#{r:X02}{g:X02}{b:X02}";
         }
+
+        public static UIColor ToNativeColor(this Color color)
+            => UIColor.FromRGBA(color.Red, color.Green, color.Blue, color.Alpha);
     }
 }

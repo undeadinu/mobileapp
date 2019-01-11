@@ -536,6 +536,7 @@
     <Compile Include="Services\BackgroundSyncJobSchedulerService.cs" />
     <Compile Include="Adapters\SelectDateFormatRecyclerAdapter.cs" />
     <Compile Include="ViewHolders\SelectDateFormatViewHolder.cs" />
+    <Compile Include="Extensions\ColorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
