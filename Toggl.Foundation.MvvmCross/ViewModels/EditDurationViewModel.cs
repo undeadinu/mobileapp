@@ -298,15 +298,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             stopTime.OnNext(startTime.Value + changedDuration);
         }
 
-        private Func<DateTimeOffset, string> toStringWithFormat(TimeZoneInfo timeZone, string format)
-        {
-            return value =>
-            {
-                var corrected = value == default(DateTimeOffset) ? value : TimeZoneInfo.ConvertTime(value, timeZone);
-                return corrected.ToString(format);
-            };
-        }
-
         private string toFormattedString(DateTimeOffset dateTimeOffset, TimeFormat timeFormat)
         {
             return DateTimeToFormattedString.Convert(dateTimeOffset, timeFormat.Format);
