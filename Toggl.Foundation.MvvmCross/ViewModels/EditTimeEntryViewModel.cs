@@ -57,9 +57,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private BehaviorSubject<bool> hasProjectSubject = new BehaviorSubject<bool>(false);
         private BehaviorSubject<Unit> projectTaskClientSubject = new BehaviorSubject<Unit>(Unit.Default);
-       
+
         [Obsolete("This observable should be converted into separate observables for project, task and client as part of RXFactor.")]
-        public IObservable<Unit> ProjectTaskOrClientChanged { get; } 
+        public IObservable<Unit> ProjectTaskOrClientChanged { get; }
 
         public IObservable<bool> HasProject { get; }
 
@@ -279,7 +279,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             stopwatchFromMainLog = stopwatchProvider.Get(MeasuredOperation.EditTimeEntryFromMainLog);
             stopwatchProvider.Remove(MeasuredOperation.EditTimeEntryFromMainLog);
 
-            var timeEntry = await dataSource.TimeEntries.GetById(Id);
+            var timeEntry = await interactorFactory.GetTimeEntryById(Id).Execute();
             originalTimeEntry = timeEntry;
 
             Description = timeEntry.Description;
@@ -524,14 +524,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 return;
             }
 
-            var project = await dataSource.Projects.GetById(projectId.Value);
+            var project = await interactorFactory.GetProjectById(projectId.Value).Execute();
             clearTagsIfNeeded(workspaceId, project.WorkspaceId);
             Project = project.DisplayName();
             Client = project.Client?.Name;
             ProjectColor = project.DisplayColor();
             workspaceId = project.WorkspaceId;
 
-            Task = taskId.HasValue ? (await dataSource.Tasks.GetById(taskId.Value)).Name : "";
+            Task = taskId.HasValue ? (await interactorFactory.GetTaskById(taskId.Value).Execute()).Name : "";
 
             projectTaskClientSubject.OnNext(Unit.Default);
 

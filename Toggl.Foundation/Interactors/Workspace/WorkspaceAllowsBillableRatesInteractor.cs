@@ -8,8 +8,8 @@ namespace Toggl.Foundation.Interactors
     {
         private readonly long workspaceId;
 
-        public WorkspaceAllowsBillableRatesInteractor(ITogglDataSource dataSource, long workspaceId)
-            : base(dataSource)
+        public WorkspaceAllowsBillableRatesInteractor(IInteractorFactory interactorFactory, long workspaceId)
+            : base(interactorFactory)
         {
             this.workspaceId = workspaceId;
         }

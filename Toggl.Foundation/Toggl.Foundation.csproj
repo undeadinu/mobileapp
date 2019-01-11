@@ -38,6 +38,7 @@
     <Folder Include="Serialization\" />
     <Folder Include="Experiments\" />
     <Folder Include="Conversions\" />
+    <Folder Include="Interactors\Generic\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />

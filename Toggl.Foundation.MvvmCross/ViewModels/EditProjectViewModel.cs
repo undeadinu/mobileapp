@@ -235,7 +235,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 return;
             }
 
-            var client = await dataSource.Clients.GetById(selectedClientId.Value);
+            var client = await interactorFactory.GetClientById(selectedClientId.Value).Execute();
             clientId = client.Id;
             ClientName = client.Name;
         }

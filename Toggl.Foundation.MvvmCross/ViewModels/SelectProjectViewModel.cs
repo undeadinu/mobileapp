@@ -226,7 +226,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var createdProjectId = await navigationService.Navigate<EditProjectViewModel, string, long?>(Text.Trim());
             if (createdProjectId == null) return;
 
-            var project = await dataSource.Projects.GetById(createdProjectId.Value);
+            var project = await interactorFactory.GetProjectById(createdProjectId.Value).Execute();
             var parameter = SelectProjectParameter.WithIds(project.Id, null, project.WorkspaceId);
             await navigationService.Close(this, parameter);
         }

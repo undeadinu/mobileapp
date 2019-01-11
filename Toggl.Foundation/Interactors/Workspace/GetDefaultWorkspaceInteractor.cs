@@ -13,19 +13,25 @@ namespace Toggl.Foundation.Interactors
     internal sealed class GetDefaultWorkspaceInteractor : TrackableInteractor, IInteractor<IObservable<IThreadSafeWorkspace>>
     {
         private readonly ITogglDataSource dataSource;
+        private readonly IInteractorFactory interactorFactory;
 
-        public GetDefaultWorkspaceInteractor(ITogglDataSource dataSource, IAnalyticsService analyticsService) : base(analyticsService)
+        public GetDefaultWorkspaceInteractor(
+            ITogglDataSource dataSource,
+            IInteractorFactory interactorFactory,
+            IAnalyticsService analyticsService) : base(analyticsService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
 
             this.dataSource = dataSource;
+            this.interactorFactory = interactorFactory;
         }
 
         public IObservable<IThreadSafeWorkspace> Execute()
             => dataSource.User
                 .Get()
                 .SelectMany(user => user.DefaultWorkspaceId.HasValue
-                    ? dataSource.Workspaces.GetById(user.DefaultWorkspaceId.Value)
+                    ? interactorFactory.GetWorkspaceById(user.DefaultWorkspaceId.Value).Execute()
                     : chooseWorkspace())
                 .Catch((InvalidOperationException exception) => chooseWorkspace())
                 .Select(Workspace.From);

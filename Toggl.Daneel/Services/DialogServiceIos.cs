@@ -111,7 +111,6 @@ namespace Toggl.Daneel.Services
         }
 
         public IObservable<T> Select<T>(string title, IEnumerable<(string ItemName, T Item)> options, int initialSelectionIndex)
-            where T : class
         {
             return Observable.Create<T>(observer =>
             {
@@ -133,7 +132,7 @@ namespace Toggl.Daneel.Services
 
                 var cancelAction = UIAlertAction.Create(Resources.Cancel, UIAlertActionStyle.Cancel, _ =>
                 {
-                    observer.OnNext(null);
+                    observer.OnNext(default(T));
                     observer.OnCompleted();
                 });
 

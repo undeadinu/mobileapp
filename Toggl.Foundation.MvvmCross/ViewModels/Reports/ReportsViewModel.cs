@@ -165,7 +165,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Reports
 
             WorkspaceHasBillableFeatureEnabled = workspaceSubject
                 .Where(workspace => workspace != null)
-                .SelectMany(workspace => dataSource.WorkspaceFeatures.GetById(workspace.Id))
+                .SelectMany(workspace => interactorFactory.GetWorkspaceFeaturesById(workspace.Id).Execute())
                 .Select(workspaceFeatures => workspaceFeatures.IsEnabled(WorkspaceFeatureId.Pro))
                 .StartWith(false)
                 .DistinctUntilChanged()

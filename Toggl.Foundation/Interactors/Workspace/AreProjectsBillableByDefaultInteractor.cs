@@ -11,8 +11,8 @@ namespace Toggl.Foundation.Interactors
     {
         private readonly long workspaceId;
 
-        public AreProjectsBillableByDefaultInteractor(ITogglDataSource dataSource, long workspaceId)
-            : base(dataSource)
+        public AreProjectsBillableByDefaultInteractor(IInteractorFactory interactorFactory, long workspaceId)
+            : base(interactorFactory)
         {
             this.workspaceId = workspaceId;
         }
@@ -24,8 +24,8 @@ namespace Toggl.Foundation.Interactors
                     if (!isPro)
                         return Observable.Return<bool?>(null);
 
-                    return DataSource.Workspaces
-                        .GetById(workspaceId)
+                    return InteractorFactory.GetWorkspaceById(workspaceId)
+                        .Execute()
                         .Select<IDatabaseWorkspace, bool?>(workspace => workspace.ProjectsBillableByDefault);
                 });
 

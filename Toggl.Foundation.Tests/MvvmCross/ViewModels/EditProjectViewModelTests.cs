@@ -791,7 +791,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .GetDefaultWorkspace()
                     .Execute()
                     .Returns(Observable.Return(Workspace));
-                DataSource.Clients.GetById(expectedId.Value).Returns(Observable.Return(client));
+                InteractorFactory.GetClientById(expectedId.Value)
+                    .Execute()
+                    .Returns(Observable.Return(client));
                 Workspace.Id.Returns(DefaultWorkspaceId);
                 ViewModel.Prepare("Some name");
 
@@ -815,7 +817,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .GetDefaultWorkspace()
                     .Execute()
                     .Returns(Observable.Return(Workspace));
-                DataSource.Clients.GetById(expectedId.Value).Returns(Observable.Return(client));
+                InteractorFactory.GetClientById(expectedId.Value)
+                    .Execute()
+                    .Returns(Observable.Return(client));
                 Workspace.Id.Returns(DefaultWorkspaceId);
                 ViewModel.Prepare("Some name");
                 await ViewModel.PickClientCommand.ExecuteAsync();

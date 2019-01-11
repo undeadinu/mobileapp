@@ -21,12 +21,12 @@ namespace Toggl.Foundation.Tests.Interactors
                 var workspace = new MockWorkspace { ProjectsBillableByDefault = billableByDefault };
                 var feature = new MockWorkspaceFeature { Enabled = true, FeatureId = WorkspaceFeatureId.Pro };
                 var featureCollection = new MockWorkspaceFeatureCollection { Features = new[] { feature } };
-                DataSource.WorkspaceFeatures
-                    .GetById(workspaceId)
+                InteractorFactory.GetWorkspaceFeaturesById(workspaceId)
+                    .Execute()
                     .Returns(Observable.Return(featureCollection));
-                DataSource.Workspaces
-                    .GetById(workspaceId)
-                       .Returns(Observable.Return(workspace));
+                InteractorFactory.GetWorkspaceById(workspaceId)
+                    .Execute()
+                    .Returns(Observable.Return(workspace));
 
                 var projectsAreBillableByDefault =
                     await InteractorFactory.AreProjectsBillableByDefault(workspaceId).Execute();
@@ -43,12 +43,12 @@ namespace Toggl.Foundation.Tests.Interactors
                 var workspace = new MockWorkspace { ProjectsBillableByDefault = billableByDefault };
                 var feature = new MockWorkspaceFeature { Enabled = false, FeatureId = WorkspaceFeatureId.Pro };
                 var featureCollection = new MockWorkspaceFeatureCollection { Features = new[] { feature } };
-                DataSource.WorkspaceFeatures
-                    .GetById(workspaceId)
+                InteractorFactory.GetWorkspaceFeaturesById(workspaceId)
+                    .Execute()
                     .Returns(Observable.Return(featureCollection));
-                DataSource.Workspaces
-                    .GetById(workspaceId)
-                       .Returns(Observable.Return(workspace));
+                InteractorFactory.GetWorkspaceById(workspaceId)
+                    .Execute()
+                    .Returns(Observable.Return(workspace));
 
                 var projectsAreBillableByDefault =
                     await InteractorFactory.AreProjectsBillableByDefault(workspaceId).Execute();

@@ -835,8 +835,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     Start = calendarItem.StartTime,
                     Duration = (long)calendarItem.Duration.Value.TotalSeconds + 10
                 };
-                DataSource.TimeEntries
-                    .GetById(Arg.Any<long>())
+                InteractorFactory.GetTimeEntryById(Arg.Any<long>())
+                    .Execute()
                     .Returns(Observable.Return(timeEntry));
 
                 ViewModel.OnUpdateTimeEntry.Execute(calendarItem);
@@ -852,8 +852,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     Start = calendarItem.StartTime.Add(TimeSpan.FromHours(1)),
                     Duration = (long)calendarItem.Duration.Value.TotalSeconds
                 };
-                DataSource.TimeEntries
-                    .GetById(Arg.Any<long>())
+                InteractorFactory.GetTimeEntryById(Arg.Any<long>())
+                    .Execute()
                     .Returns(Observable.Return(timeEntry));
 
                 ViewModel.OnUpdateTimeEntry.Execute(calendarItem);
@@ -869,14 +869,119 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     Start = calendarItem.StartTime.Add(TimeSpan.FromHours(1)),
                     Duration = (long)calendarItem.Duration.Value.TotalSeconds + 10
                 };
-                DataSource.TimeEntries
-                    .GetById(Arg.Any<long>())
+                InteractorFactory.GetTimeEntryById(Arg.Any<long>())
+                    .Execute()
                     .Returns(Observable.Return(timeEntry));
 
                 ViewModel.OnUpdateTimeEntry.Execute(calendarItem);
 
                 AnalyticsService.TimeEntryChangedFromCalendar.Received().Track(CalendarChangeEvent.Duration);
                 AnalyticsService.TimeEntryChangedFromCalendar.Received().Track(CalendarChangeEvent.StartTime);
+            }
+        }
+
+        public sealed class TheCalendarEventLongPressedAction : CalendarViewModelTest
+        {
+            private CalendarItem calendarEvent = new CalendarItem(
+                "id",
+                CalendarItemSource.Calendar,
+                new DateTimeOffset(2018, 8, 20, 10, 0, 0, TimeSpan.Zero),
+                new TimeSpan(45),
+                "This is a calendar event",
+                CalendarIconKind.None,
+                color: "#ff0000",
+                timeEntryId: TimeEntryId,
+                calendarId: "abcd-1234-abcd-1234");
+
+            [Fact, LogIfTooSlow]
+            public async Task PresentsTwoOptionsToTheUserWhenTheEventStartsInTheFuture()
+            {
+                TimeService.CurrentDateTime.Returns(calendarEvent.StartTime - TimeSpan.FromHours(1));
+
+                ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
+
+                await DialogService.Received().Select(
+                    Arg.Any<string>(),
+                    Arg.Is<IEnumerable<(string, CalendarItem?)>>(options => options.Count() == 2),
+                    Arg.Any<int>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task PresentsThreeOptionsToTheUserWhenTheEventStartsInThePast()
+            {
+                TimeService.CurrentDateTime.Returns(calendarEvent.StartTime + TimeSpan.FromHours(1));
+
+                ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
+
+                await DialogService.Received().Select(
+                    Arg.Any<string>(),
+                    Arg.Is<IEnumerable<(string, CalendarItem?)>>(options => options.Count() == 3),
+                    Arg.Any<int>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public void DoesNotCreateAnyTimeEntryWhenUserSelectsTheCancelOption()
+            {
+                DialogService.Select<CalendarItem?>(null, null, 0)
+                    .ReturnsForAnyArgs(Observable.Return<CalendarItem?>(null));
+
+                ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
+
+                InteractorFactory
+                    .DidNotReceive()
+                    .CreateTimeEntry(Arg.Any<ITimeEntryPrototype>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public void AllowsCopyingOfTheCalendarEventIntoATimeEntry()
+            {
+                selectOptionByOptionText(Resources.CalendarCopyEventToTimeEntry);
+
+                ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
+
+                InteractorFactory
+                    .Received()
+                    .CreateTimeEntry(Arg.Is<ITimeEntryPrototype>(
+                        te => te.StartTime == calendarEvent.StartTime && te.Duration == calendarEvent.Duration));
+            }
+
+            [Fact, LogIfTooSlow]
+            public void AllowsStartingTheCalendarEventWithTheStartTimeSetToNow()
+            {
+                selectOptionByOptionText(Resources.CalendarStartNow);
+
+                ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
+
+                InteractorFactory
+                    .Received()
+                    .CreateTimeEntry(Arg.Is<ITimeEntryPrototype>(
+                        te => te.StartTime == Now && te.Duration == null));
+            }
+
+            [Fact, LogIfTooSlow]
+            public void AllowsStartingTheCalendarEventWithTheStartTimeSetToTheCalendarEventStartWhenItStartsInThePast()
+            {
+                TimeService.CurrentDateTime.Returns(calendarEvent.StartTime + TimeSpan.FromMinutes(37));
+                selectOptionByOptionText(Resources.CalendarStartWhenTheEventStarts);
+
+                ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
+
+                InteractorFactory
+                    .Received()
+                    .CreateTimeEntry(Arg.Is<ITimeEntryPrototype>(
+                        te => te.StartTime == calendarEvent.StartTime && te.Duration == null));
+            }
+
+            private void selectOptionByOptionText(string text)
+            {
+                DialogService.Select<CalendarItem?>(null, null, 0)
+                    .ReturnsForAnyArgs(callInfo =>
+                    {
+                        var copyOption = callInfo.Arg<IEnumerable<(string, CalendarItem?)>>()
+                            .Single(option => option.Item1 == text)
+                            .Item2;
+                        return Observable.Return(copyOption);
+                    });
             }
         }
     }

@@ -438,7 +438,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 {
                     var project = Substitute.For<IThreadSafeProject>();
                     project.Id.Returns(10);
-                    DataSource.Projects.GetById(Arg.Any<long>()).Returns(Observable.Return(project));
+                    InteractorFactory.GetProjectById(Arg.Any<long>()).Execute().Returns(Observable.Return(project));
                     ViewModel.OnTextFieldInfoFromView(
                         new QueryTextSpan($"@{currentQuery}", 15)
                     ).GetAwaiter().GetResult();
@@ -476,7 +476,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     var project = Substitute.For<IThreadSafeProject>();
                     project.Id.Returns(projectId);
                     project.Name.Returns(currentQuery);
-                    DataSource.Projects.GetById(Arg.Is(projectId)).Returns(Observable.Return(project));
+                    InteractorFactory.GetProjectById(Arg.Is(projectId)).Execute().Returns(Observable.Return(project));
 
                     await ViewModel.CreateCommand.ExecuteAsync();
 
@@ -522,7 +522,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         Id = projectId,
                         WorkspaceId = workspaceId
                     };
-                    DataSource.Projects.GetById(Arg.Is(projectId)).Returns(Observable.Return(project));
+                    InteractorFactory.GetProjectById(Arg.Is(projectId)).Execute().Returns(Observable.Return(project));
                     await ViewModel.SelectSuggestionCommand.ExecuteAsync(new ProjectSuggestion(project));
                     await ViewModel.OnTextFieldInfoFromView(
                         querySpan, new ProjectSpan(projectId, "Project", "0000AF", null, null)
@@ -1236,8 +1236,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     DataSource.User.Current
                         .Returns(Observable.Return(user));
 
-                    DataSource.Projects
-                         .GetById(projectId)
+                    InteractorFactory
+                         .GetProjectById(projectId)
+                         .Execute()
                          .Returns(Observable.Return(project));
 
                     var parameter = new StartTimeEntryParameters(startDate, "", null, null);
@@ -1483,7 +1484,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 public async Task DisablesBillableIfTheWorkspaceOfTheSelectedProjectDoesNotAllowIt(bool? billableValue)
                 {
                     Project.Billable.Returns(billableValue);
-                    DataSource.Projects.GetById(ProjectId).Returns(Observable.Return(Project));
+                    InteractorFactory.GetProjectById(ProjectId).Execute().Returns(Observable.Return(Project));
                     InteractorFactory.GetWorkspaceById(WorkspaceId).Execute().Returns(Observable.Return(Workspace));
                     InteractorFactory
                         .IsBillableAvailableForWorkspace(10)

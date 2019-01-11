@@ -334,7 +334,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 if (initialParameters.ProjectId != null) {
                     try
                     {
-                        var project = await dataSource.Projects.GetById((long)initialParameters.ProjectId);
+                        var project = await interactorFactory.GetProjectById((long)initialParameters.ProjectId).Execute();
                         spans.Add(new ProjectSpan(project));
                     }
                     catch
@@ -346,7 +346,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     try
                     {
                         var tags = initialParameters.TagIds.ToObservable()
-                            .SelectMany<long, IThreadSafeTag>(tagId => dataSource.Tags.GetById(tagId))
+                            .SelectMany<long, IThreadSafeTag>(tagId => interactorFactory.GetTagById(tagId).Execute())
                             .ToEnumerable();
                         spans.AddRange(tags.Select(tag => new TagSpan(tag)));
                     }
@@ -496,7 +496,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var projectId = await navigationService.Navigate<EditProjectViewModel, string, long?>(CurrentQuery);
             if (projectId == null) return;
 
-            var project = await dataSource.Projects.GetById(projectId.Value);
+            var project = await interactorFactory.GetProjectById(projectId.Value).Execute();
             var projectSuggestion = new ProjectSuggestion(project);
 
             updateUiWith(textFieldInfo.FromProjectSuggestion(projectSuggestion));

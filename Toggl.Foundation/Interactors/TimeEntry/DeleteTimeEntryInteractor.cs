@@ -16,21 +16,26 @@ namespace Toggl.Foundation.Interactors
         private readonly long id;
         private readonly ITimeService timeService;
         private readonly IObservableDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource;
+        private readonly IInteractorFactory interactorFactory;
 
         public DeleteTimeEntryInteractor(
             ITimeService timeService,
             IObservableDataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource,
+            IInteractorFactory interactorFactory,
             long id)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
 
             this.id = id;
             this.dataSource = dataSource;
             this.timeService = timeService;
+            this.interactorFactory = interactorFactory;
         }
 
         public IObservable<Unit> Execute()
-            => dataSource.GetById(id)
+            => interactorFactory.GetTimeEntryById(id)
+                .Execute()
                 .Select(TimeEntry.DirtyDeleted)
                 .Select(te => te.UpdatedAt(timeService.CurrentDateTime))
                 .SelectMany(dataSource.Update)

@@ -9,18 +9,18 @@ namespace Toggl.Foundation.Interactors
 {
     internal abstract class WorkspaceHasFeatureInteractor<TValue> : IInteractor<IObservable<TValue>>
     {
-        protected ITogglDataSource DataSource { get; }
+        protected IInteractorFactory InteractorFactory { get; }
 
-        public WorkspaceHasFeatureInteractor(ITogglDataSource dataSource)
+        public WorkspaceHasFeatureInteractor(IInteractorFactory interactorFactory)
         {
-            Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
 
-            DataSource = dataSource;
+            InteractorFactory = interactorFactory;
         }
 
         public IObservable<bool> CheckIfFeatureIsEnabled(long workspaceId, WorkspaceFeatureId featureId)
-            => DataSource.WorkspaceFeatures
-                .GetById(workspaceId)
+            => InteractorFactory.GetWorkspaceFeaturesById(workspaceId)
+                .Execute()
                 .Select(featureCollection => featureCollection.IsEnabled(featureId));
 
         public abstract IObservable<TValue> Execute();

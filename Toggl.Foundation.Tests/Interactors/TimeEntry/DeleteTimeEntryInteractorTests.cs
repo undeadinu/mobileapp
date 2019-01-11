@@ -27,12 +27,13 @@ namespace Toggl.Foundation.Tests.Interactors
                 Id = 12
             };
 
-            DataSource.TimeEntries.GetById(timeEntry.Id)
+            InteractorFactory.GetTimeEntryById(timeEntry.Id)
+                .Execute()
                 .Returns(Observable.Return(timeEntry));
             DataSource.TimeEntries.Update(Arg.Any<IThreadSafeTimeEntry>())
                 .Returns(callInfo => Observable.Return(callInfo.Arg<IThreadSafeTimeEntry>()));
 
-            interactor = new DeleteTimeEntryInteractor(TimeService, DataSource.TimeEntries, timeEntry.Id);
+            interactor = new DeleteTimeEntryInteractor(TimeService, DataSource.TimeEntries, InteractorFactory, timeEntry.Id);
         }
 
         [Fact, LogIfTooSlow]
@@ -95,7 +96,9 @@ namespace Toggl.Foundation.Tests.Interactors
 
             var timeEntryObservable = Observable.Return(failingTimeEntry);
             var errorObservable = Observable.Throw<IThreadSafeTimeEntry>(new DatabaseOperationException<IDatabaseTimeEntry>(new Exception()));
-            DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id)).Returns(timeEntryObservable);
+            InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                .Execute()
+                .Returns(timeEntryObservable);
             DataSource.TimeEntries.Update(Arg.Any<IThreadSafeTimeEntry>()).Returns(errorObservable);
             var observer = Substitute.For<IObserver<Unit>>();
 

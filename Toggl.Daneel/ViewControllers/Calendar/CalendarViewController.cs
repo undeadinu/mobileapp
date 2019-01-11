@@ -86,6 +86,10 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(ViewModel.OnUpdateTimeEntry.Inputs)
                 .DisposedBy(DisposeBag);
 
+            editItemHelper.LongPressCalendarEvent
+                .Subscribe(ViewModel.OnCalendarEventLongPressed.Inputs)
+                .DisposedBy(DisposeBag);
+
             ViewModel.SettingsAreVisible
                 .Subscribe(settingsButton.Rx().IsVisible())
                 .DisposedBy(DisposeBag);

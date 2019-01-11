@@ -33,6 +33,7 @@
     <Folder Include="Interactors\Workspace\" />
     <Folder Include="Interactors\Sync\" />
     <Folder Include="Interactors\Tag\" />
+    <Folder Include="Interactors\Generic\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">

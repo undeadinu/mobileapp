@@ -21,7 +21,9 @@ namespace Toggl.Foundation.Tests.Interactors
                 var workspace = new MockWorkspace { Id = workspaceId };
                 var user = new MockUser { DefaultWorkspaceId = workspaceId };
                 DataSource.User.Get().Returns(Observable.Return(user));
-                DataSource.Workspaces.GetById(workspaceId).Returns(Observable.Return(workspace));
+                InteractorFactory.GetWorkspaceById(workspaceId)
+                    .Execute()
+                    .Returns(Observable.Return(workspace));
 
                 var defaultWorkspace = await InteractorFactory.GetDefaultWorkspace().Execute();
 
@@ -50,7 +52,8 @@ namespace Toggl.Foundation.Tests.Interactors
                 var workspaces = new[] { new MockWorkspace { Id = workspaceId + 2 }, new MockWorkspace { Id = workspaceId }, new MockWorkspace { Id = workspaceId + 1 } };
                 var user = new MockUser { DefaultWorkspaceId = workspaceId + 3 };
                 DataSource.User.Get().Returns(Observable.Return(user));
-                DataSource.Workspaces.GetById(workspaceId + 3)
+                InteractorFactory.GetWorkspaceById(workspaceId + 3)
+                    .Execute()
                     .Returns(Observable.Throw<IThreadSafeWorkspace>(new InvalidOperationException()));
                 DataSource.Workspaces.GetAll(Arg.Any<Func<IDatabaseWorkspace, bool>>())
                     .Returns(Observable.Return(workspaces));

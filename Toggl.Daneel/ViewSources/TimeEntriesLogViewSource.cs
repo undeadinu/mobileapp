@@ -20,7 +20,6 @@ namespace Toggl.Daneel.ViewSources
     {
         private const int rowHeight = 64;
         private const int headerHeight = 48;
-        private const int spaceBetweenSections = 20;
 
         private readonly ITimeService timeService;
         private readonly ISchedulerProvider schedulerProvider;
@@ -32,6 +31,8 @@ namespace Toggl.Daneel.ViewSources
 
         //Using the old API so that delete action would work on pre iOS 11 devices
         private readonly UITableViewRowAction deleteTableViewRowAction;
+
+        public const int SpaceBetweenSections = 20;
 
         public bool IsEmptyState { get; set; }
 
@@ -72,11 +73,11 @@ namespace Toggl.Daneel.ViewSources
         }
 
         public override UIView GetViewForFooter(UITableView tableView, nint section)
-            => new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, spaceBetweenSections));
+            => new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, SpaceBetweenSections));
 
         public override nfloat GetHeightForHeader(UITableView tableView, nint section) => headerHeight;
 
-        public override nfloat GetHeightForFooter(UITableView tableView, nint section) => spaceBetweenSections;
+        public override nfloat GetHeightForFooter(UITableView tableView, nint section) => SpaceBetweenSections;
 
         public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => rowHeight;
 

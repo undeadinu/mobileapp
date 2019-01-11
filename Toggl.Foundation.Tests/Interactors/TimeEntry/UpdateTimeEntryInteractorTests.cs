@@ -32,7 +32,9 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         private EditTimeEntryDto prepareTest()
         {
             var observable = Observable.Return(timeEntry);
-            DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id)).Returns(observable);
+            InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                .Execute()
+                .Returns(observable);
 
             var dto = new EditTimeEntryDto
             {
@@ -59,7 +61,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         {
             var dto = prepareTest();
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => te.Description == dto.Description));
         }
@@ -69,7 +71,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         {
             var dto = prepareTest();
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => te.SyncStatus == SyncStatus.SyncNeeded));
         }
@@ -80,7 +82,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
             var dto = prepareTest();
             TimeService.CurrentDateTime.Returns(DateTimeOffset.UtcNow);
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => te.At > timeEntry.At));
         }
@@ -90,7 +92,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         {
             var dto = prepareTest();
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => te.ProjectId == dto.ProjectId));
         }
@@ -100,7 +102,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         {
             var dto = prepareTest();
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => te.Billable == dto.Billable));
         }
@@ -110,7 +112,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         {
             var dto = prepareTest();
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => te.TagIds.SequenceEqual(dto.TagIds)));
         }
@@ -120,7 +122,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         {
             var dto = prepareTest();
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => te.WorkspaceId == dto.WorkspaceId));
         }
@@ -130,7 +132,7 @@ namespace Toggl.Foundation.Tests.Interactors.TimeEntry
         {
             var dto = prepareTest();
 
-            await new UpdateTimeEntryInteractor(TimeService, DataSource, dto).Execute();
+            await new UpdateTimeEntryInteractor(TimeService, DataSource, InteractorFactory, dto).Execute();
 
             await DataSource.Received().TimeEntries.Update(Arg.Is<IThreadSafeTimeEntry>(te => ensurePropertiesDidNotChange(te)));
         }

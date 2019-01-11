@@ -64,7 +64,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 var observable = Observable.Return(TheTimeEntry);
 
-                DataSource.TimeEntries.GetById(Arg.Is(Id)).Returns(observable);
+                InteractorFactory.GetTimeEntryById(Arg.Is(Id)).Execute().Returns(observable);
 
                 TimeService.CurrentDateTime.Returns(now);
             }
@@ -521,13 +521,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 timeEntry.Id.Returns(10);
                 timeEntry.WorkspaceId.Returns(11);
                 timeEntry.ProjectId.Returns(12);
-                DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id))
-                  .Returns(Observable.Return(timeEntry));
+                InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                    .Execute()
+                    .Returns(Observable.Return(timeEntry));
                 var newProjectId = 20;
                 var project = Substitute.For<IThreadSafeProject>();
                 project.Id.Returns(newProjectId);
                 project.WorkspaceId.Returns(21);
-                DataSource.Projects.GetById(project.Id)
+                InteractorFactory.GetProjectById(project.Id)
+                    .Execute()
                     .Returns(Observable.Return(project));
                 ViewModel.Prepare(timeEntry.Id);
                 await ViewModel.Initialize();
@@ -552,13 +554,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 timeEntry.Id.Returns(10);
                 timeEntry.WorkspaceId.Returns(workspaceId);
                 timeEntry.ProjectId.Returns(12);
-                DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id))
-                  .Returns(Observable.Return(timeEntry));
+                InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                    .Execute()
+                    .Returns(Observable.Return(timeEntry));
                 var newProjectId = 20;
                 var project = Substitute.For<IThreadSafeProject>();
                 project.Id.Returns(newProjectId);
                 project.WorkspaceId.Returns(workspaceId);
-                DataSource.Projects.GetById(project.Id)
+                InteractorFactory.GetProjectById(project.Id)
+                    .Execute()
                     .Returns(Observable.Return(project));
                 ViewModel.Prepare(timeEntry.Id);
                 await ViewModel.Initialize();
@@ -584,8 +588,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 timeEntry.Id.Returns(10);
                 timeEntry.WorkspaceId.Returns(oldWorkspaceId);
                 timeEntry.ProjectId.Returns(12);
-                DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id))
-                  .Returns(Observable.Return(timeEntry));
+                InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                    .Execute()
+                    .Returns(Observable.Return(timeEntry));
                 ViewModel.Prepare(timeEntry.Id);
                 await ViewModel.Initialize();
                 NavigationService.Navigate<SelectProjectViewModel, SelectProjectParameter, SelectProjectParameter>(
@@ -606,8 +611,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
                 timeEntry.Id.Returns(1);
-                DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id))
-                  .Returns(Observable.Return(timeEntry));
+                InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                    .Execute()
+                    .Returns(Observable.Return(timeEntry));
                 ViewModel.Prepare(timeEntry.Id);
                 await ViewModel.Initialize();
 
@@ -662,7 +668,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
                 timeEntry.Id.Returns(1);
-                DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id))
+                InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                    .Execute()
                     .Returns(Observable.Return(timeEntry));
                 ViewModel.Prepare(timeEntry.Id);
                 await ViewModel.Initialize();
@@ -716,7 +723,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
                 timeEntry.Id.Returns(id);
                 timeEntry.TagIds.Returns(tagIds);
-                DataSource.TimeEntries.GetById(Arg.Is(id)).Returns(Observable.Return(timeEntry));
+                InteractorFactory.GetTimeEntryById(Arg.Is(id))
+                    .Execute()
+                    .Returns(Observable.Return(timeEntry));
                 ViewModel.Prepare(id);
                 ViewModel.Initialize().Wait();
 
@@ -739,7 +748,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
                 timeEntry.Id.Returns(14);
                 timeEntry.WorkspaceId.Returns(workspaceId);
-                DataSource.TimeEntries.GetById(Arg.Any<long>())
+                InteractorFactory.GetTimeEntryById(Arg.Any<long>())
+                    .Execute()
                     .Returns(Observable.Return(timeEntry));
                 ViewModel.Prepare(timeEntry.Id);
                 await ViewModel.Initialize();
@@ -835,7 +845,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
                 timeEntry.Id.Returns(id);
                 timeEntry.LastSyncErrorMessage.Returns(errorMessage);
-                DataSource.TimeEntries.GetById(Arg.Is<long>(id)).Returns(Observable.Return(timeEntry));
+                InteractorFactory.GetTimeEntryById(Arg.Is<long>(id))
+                    .Execute()
+                    .Returns(Observable.Return(timeEntry));
                 ViewModel.Prepare(id);
                 await ViewModel.Initialize();
 
@@ -853,7 +865,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 timeEntry = Substitute.For<IThreadSafeTimeEntry>();
                 timeEntry.Id.Returns(Id);
-                DataSource.TimeEntries.GetById(Arg.Is<long>(Id)).Returns(Observable.Return(timeEntry));
+                InteractorFactory.GetTimeEntryById(Arg.Is<long>(Id))
+                    .Execute()
+                    .Returns(Observable.Return(timeEntry));
             }
 
             [Property]
@@ -916,7 +930,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var mockedTimeEntry = mockTimeEntry(id, workspaceId, projectId, taskId, billable, start, duration,
                     description.Get, uniqueTagIds);
                 var observable = Observable.Return(mockedTimeEntry);
-                DataSource.TimeEntries.GetById(id).Returns(observable);
+                InteractorFactory.GetTimeEntryById(id)
+                    .Execute()
+                    .Returns(observable);
 
                 viewModel.Prepare(id);
                 viewModel.Initialize().Wait();
@@ -1017,7 +1033,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 timeEntry.Project.Color.Returns(Guid.NewGuid().ToString());
                 timeEntry.Task.Name.Returns(Guid.NewGuid().ToString());
                 timeEntry.Project.Client.Name.Returns(Guid.NewGuid().ToString());
-                DataSource.TimeEntries.GetById(Arg.Is(id))
+                InteractorFactory.GetTimeEntryById(Arg.Is(id))
+                    .Execute()
                     .Returns(Observable.Return(timeEntry));
                 return timeEntry;
             }
@@ -1032,7 +1049,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 project.Client.Name.Returns(clientName);
                 project.WorkspaceId.Returns(workspaceId);
                 project.Active.Returns(active);
-                DataSource.Projects.GetById(Arg.Is(projectId))
+                InteractorFactory.GetProjectById(Arg.Is(projectId))
+                    .Execute()
                     .Returns(Observable.Return(project));
                 return project;
             }
@@ -1042,7 +1060,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var task = Substitute.For<IThreadSafeTask>();
                 task.Id.Returns(taskId);
                 task.Name.Returns(taskName);
-                DataSource.Tasks.GetById(Arg.Is(task.Id))
+                InteractorFactory.GetTaskById(Arg.Is(task.Id))
+                    .Execute()
                     .Returns(Observable.Return(task));
             }
 
@@ -1211,7 +1230,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 timeEntry.Id.Returns(13);
                 timeEntry.Tags.Returns(new IThreadSafeTag[] { tag });
 
-                DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id))
+                InteractorFactory.GetTimeEntryById(Arg.Is(timeEntry.Id))
+                    .Execute()
                     .Returns(Observable.Return(timeEntry));
 
                 ViewModel.Prepare(timeEntry.Id);

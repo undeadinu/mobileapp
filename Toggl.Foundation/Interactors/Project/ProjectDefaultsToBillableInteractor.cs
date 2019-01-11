@@ -9,19 +9,19 @@ namespace Toggl.Foundation.Interactors
     internal sealed class ProjectDefaultsToBillableInteractor : IInteractor<IObservable<bool>>
     {
         private readonly long projectId;
-        private readonly ITogglDataSource dataSource;
+        private readonly IInteractorFactory interactorFactory;
 
-        public ProjectDefaultsToBillableInteractor(ITogglDataSource dataSource, long projectId)
+        public ProjectDefaultsToBillableInteractor(IInteractorFactory interactorFactory, long projectId)
         {
-            Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
 
             this.projectId = projectId;
-            this.dataSource = dataSource;
+            this.interactorFactory = interactorFactory;
         }
 
         public IObservable<bool> Execute()
-            => dataSource.Projects
-                .GetById(projectId)
+            => interactorFactory.GetProjectById(projectId)
+                .Execute()
                 .Select(project => project.Billable ?? false);
     }
 }

@@ -16,7 +16,7 @@ namespace Toggl.Foundation.MvvmCross.Services
 
         IObservable<bool> ConfirmDestructiveAction(ActionType type);
 
-        IObservable<T> Select<T>(string title, IEnumerable<(string ItemName, T Item)> options, int initialSelectionIndex) where T : class;
+        IObservable<T> Select<T>(string title, IEnumerable<(string ItemName, T Item)> options, int initialSelectionIndex);
     }
 
     public enum ActionType

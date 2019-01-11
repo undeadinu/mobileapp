@@ -78,7 +78,6 @@ namespace Toggl.Giskard.Services
         }
 
         public IObservable<T> Select<T>(string title, IEnumerable<(string ItemName, T Item)> options, int initialSelectionIndex = 0)
-            where T : class
         {
             var activity = Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity;
 

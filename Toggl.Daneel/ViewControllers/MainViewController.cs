@@ -340,6 +340,8 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLayoutSubviews();
 
+            TimeEntriesLogTableView.ContentInset = new UIEdgeInsets(0, 0, StartTimeEntryButton.Frame.Height - TimeEntriesLogViewSource.SpaceBetweenSections, 0);
+
             if (TimeEntriesLogTableView.TableHeaderView != null)
             {
                 var header = TimeEntriesLogTableView.TableHeaderView;

@@ -995,6 +995,30 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string CalendarWhatToDoWithCalendarEvent {
+            get {
+                return ResourceManager.GetString("CalendarWhatToDoWithCalendarEvent", resourceCulture);
+            }
+        }
+        
+        public static string CalendarStartNow {
+            get {
+                return ResourceManager.GetString("CalendarStartNow", resourceCulture);
+            }
+        }
+        
+        public static string CalendarStartWhenTheEventStarts {
+            get {
+                return ResourceManager.GetString("CalendarStartWhenTheEventStarts", resourceCulture);
+            }
+        }
+        
+        public static string CalendarCopyEventToTimeEntry {
+            get {
+                return ResourceManager.GetString("CalendarCopyEventToTimeEntry", resourceCulture);
+            }
+        }
+        
         public static string CreateClient {
             get {
                 return ResourceManager.GetString("CreateClient", resourceCulture);

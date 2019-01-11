@@ -60,6 +60,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
 
         public InputAction<CalendarItem> OnItemTapped { get; }
 
+        public InputAction<CalendarItem> OnCalendarEventLongPressed { get; }
+
         public InputAction<(DateTimeOffset, TimeSpan)> OnDurationSelected { get; }
 
         public InputAction<CalendarItem> OnUpdateTimeEntry { get; }
@@ -124,6 +126,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
 
             GetStarted = rxActionFactory.FromAsync(getStarted);
             OnItemTapped = rxActionFactory.FromAsync<CalendarItem>(handleCalendarItem);
+            OnCalendarEventLongPressed = rxActionFactory.FromAsync<CalendarItem>(handleCalendarEventLongPressed);
 
             SettingsAreVisible = onboardingObservable
                 .SelectMany(_ => permissionsService.CalendarPermissionGranted)
@@ -251,14 +254,46 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
                     break;
 
                 case CalendarItemSource.Calendar:
-                    var workspace = await interactorFactory.GetDefaultWorkspace()
-                        .TrackException<InvalidOperationException, IThreadSafeWorkspace>("CalendarViewModel.handleCalendarItem")
-                        .Execute();
-                    var prototype = calendarItem.AsTimeEntryPrototype(workspace.Id);
-                    analyticsService.TimeEntryStarted.Track(TimeEntryStartOrigin.CalendarEvent);
-                    await interactorFactory.CreateTimeEntry(prototype).Execute();
+                    await createTimeEntryFromCalendarItem(calendarItem);
                     break;
             }
+        }
+
+        private async Task handleCalendarEventLongPressed(CalendarItem calendarItem)
+        {
+            var runningStartedNow =
+                calendarItem
+                    .WithStartTime(timeService.CurrentDateTime)
+                    .WithDuration(null);
+
+            var options = new List<(string, CalendarItem?)>
+            {
+                (Resources.CalendarCopyEventToTimeEntry, calendarItem),
+                (Resources.CalendarStartNow, runningStartedNow)
+            };
+
+            if (timeService.CurrentDateTime >= calendarItem.StartTime)
+            {
+                var runningStartingAtTheEventStart = calendarItem.WithDuration(null);
+                var option = (Resources.CalendarStartWhenTheEventStarts, runningStartingAtTheEventStart);
+                options.Add(option);
+            }
+
+            var selectedOption = await dialogService.Select(Resources.CalendarWhatToDoWithCalendarEvent, options, initialSelectionIndex: 0);
+            if (selectedOption.HasValue)
+            {
+                await createTimeEntryFromCalendarItem(selectedOption.Value);
+            }
+        }
+
+        private async Task createTimeEntryFromCalendarItem(CalendarItem calendarItem)
+        {
+            var workspace = await interactorFactory.GetDefaultWorkspace()
+                .TrackException<InvalidOperationException, IThreadSafeWorkspace>("CalendarViewModel.handleCalendarItem")
+                .Execute();
+            var prototype = calendarItem.AsTimeEntryPrototype(workspace.Id);
+            analyticsService.TimeEntryStarted.Track(TimeEntryStartOrigin.CalendarEvent);
+            await interactorFactory.CreateTimeEntry(prototype).Execute();
         }
 
         private async Task durationSelected(DateTimeOffset startTime, TimeSpan duration)
@@ -278,7 +313,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
             if (!calendarItem.IsEditable() || calendarItem.TimeEntryId == null)
                 return;
 
-            var timeEntry = await dataSource.TimeEntries.GetById(calendarItem.TimeEntryId.Value);
+            var timeEntry = await interactorFactory.GetTimeEntryById(calendarItem.TimeEntryId.Value).Execute();
 
             var dto = new DTOs.EditTimeEntryDto
             {
@@ -293,8 +328,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
                 TagIds = timeEntry.TagIds
             };
 
-            var duration = calendarItem.Duration.HasValue 
-                ? calendarItem.Duration.Value.TotalSeconds 
+            var duration = calendarItem.Duration.HasValue
+                ? calendarItem.Duration.Value.TotalSeconds
                 : (timeService.CurrentDateTime - calendarItem.StartTime.LocalDateTime).TotalSeconds;
 
             if (timeEntry.Duration != duration)

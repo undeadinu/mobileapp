@@ -16,7 +16,9 @@ namespace Toggl.Foundation.Tests.Interactors
             {
                 const long workspaceId = 10;
                 var workspace = new MockWorkspace();
-                DataSource.Workspaces.GetById(workspaceId).Returns(Observable.Return(workspace));
+                InteractorFactory.GetWorkspaceById(workspaceId)
+                    .Execute()
+                    .Returns(Observable.Return(workspace));
 
                 var returnedWorkspace = await InteractorFactory.GetWorkspaceById(workspaceId).Execute();
 

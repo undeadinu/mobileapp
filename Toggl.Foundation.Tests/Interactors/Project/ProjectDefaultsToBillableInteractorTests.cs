@@ -18,8 +18,8 @@ namespace Toggl.Foundation.Tests.Interactors
             {
                 const long projectId = 10;
                 var project = new MockProject { Billable = isBillable };
-                DataSource.Projects
-                    .GetById(Arg.Is(projectId))
+                InteractorFactory.GetProjectById(Arg.Is(projectId))
+                    .Execute()
                     .Returns(Observable.Return(project));
 
                 var defaultsToBillable = await InteractorFactory.ProjectDefaultsToBillable(projectId).Execute();

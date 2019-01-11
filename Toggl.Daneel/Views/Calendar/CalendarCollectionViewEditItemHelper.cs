@@ -50,7 +50,10 @@ namespace Toggl.Daneel.Views.Calendar
         private bool didDragDown;
 
         private readonly ISubject<CalendarItem> editCalendarItemSuject = new Subject<CalendarItem>();
+        private readonly ISubject<CalendarItem> longPressCalendarEventSubject = new Subject<CalendarItem>();
+
         public IObservable<CalendarItem> EditCalendarItem => editCalendarItemSuject.AsObservable();
+        public IObservable<CalendarItem> LongPressCalendarEvent => longPressCalendarEventSubject.AsObservable();
 
         public CalendarCollectionViewEditItemHelper(
             UICollectionView CollectionView,
@@ -148,6 +151,13 @@ namespace Toggl.Daneel.Views.Calendar
                 return;
 
             calendarItem = itemAtPoint.Value;
+
+            if (calendarItem.Source == CalendarItemSource.Calendar)
+            {
+                longPressCalendarEventSubject.OnNext(calendarItem);
+                return;
+            }
+
             if (!calendarItem.IsEditable())
                 return;
 

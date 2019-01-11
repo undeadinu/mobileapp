@@ -421,7 +421,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 var project = Substitute.For<IThreadSafeProject>();
                 project.Id.Returns(returnedId.Value);
-                DataSource.Projects.GetById(returnedId.Value).Returns(Observable.Return(project));
+                InteractorFactory.GetProjectById(returnedId.Value).Execute().Returns(Observable.Return(project));
             }
         }
 

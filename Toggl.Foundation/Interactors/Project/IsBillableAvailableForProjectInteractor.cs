@@ -9,14 +9,15 @@ namespace Toggl.Foundation.Interactors
     {
         private readonly long projectId;
 
-        public IsBillableAvailableForProjectInteractor(ITogglDataSource dataSource, long projectId)
-            : base (dataSource)
+        public IsBillableAvailableForProjectInteractor(IInteractorFactory interactorFactory, long projectId)
+            : base (interactorFactory)
         {
             this.projectId = projectId;
         }
 
         public override IObservable<bool> Execute()
-            => DataSource.Projects.GetById(projectId)
+            => InteractorFactory.GetProjectById(projectId)
+                .Execute()
                 .SelectMany(project => CheckIfFeatureIsEnabled(project.WorkspaceId, Pro));
     }
 }

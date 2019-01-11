@@ -16,23 +16,28 @@ namespace Toggl.Foundation.Interactors
         private readonly EditTimeEntryDto dto;
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
+        private readonly IInteractorFactory interactorFactory;
 
         public UpdateTimeEntryInteractor(
-            ITimeService timeService, 
-            ITogglDataSource dataSource, 
+            ITimeService timeService,
+            ITogglDataSource dataSource,
+            IInteractorFactory interactorFactory,
             EditTimeEntryDto dto)
         {
             Ensure.Argument.IsNotNull(dto, nameof(dto));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
 
             this.dto = dto;
             this.dataSource = dataSource;
             this.timeService = timeService;
+            this.interactorFactory = interactorFactory;
         }
 
         public IObservable<IThreadSafeTimeEntry> Execute()
-            => dataSource.TimeEntries.GetById(dto.Id)
+            => interactorFactory.GetTimeEntryById(dto.Id)
+                .Execute()
                 .Select(createUpdatedTimeEntry)
                 .SelectMany(dataSource.TimeEntries.Update)
                 .Do(dataSource.SyncManager.InitiatePushSync);

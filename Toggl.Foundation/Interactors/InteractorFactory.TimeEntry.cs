@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Reactive;
 using Toggl.Foundation.Analytics;
+using Toggl.Foundation.DataSources.Interfaces;
 using Toggl.Foundation.DTOs;
+using Toggl.Foundation.Interactors.Generic;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Suggestions;
+using Toggl.PrimeRadiant.Models;
 
 namespace Toggl.Foundation.Interactors
 {
@@ -54,13 +57,16 @@ namespace Toggl.Foundation.Interactors
                 analyticsService);
 
         public IInteractor<IObservable<Unit>> DeleteTimeEntry(long id)
-            => new DeleteTimeEntryInteractor(timeService, dataSource.TimeEntries, id);
+            => new DeleteTimeEntryInteractor(timeService, dataSource.TimeEntries, this, id);
+
+        public IInteractor<IObservable<IThreadSafeTimeEntry>> GetTimeEntryById(long id)
+            => new GetByIdInteractor<IThreadSafeTimeEntry, IDatabaseTimeEntry>(dataSource.TimeEntries, id);
 
         public IInteractor<IObservable<IEnumerable<IThreadSafeTimeEntry>>> GetAllTimeEntriesVisibleToTheUser()
             => new GetAllTimeEntriesVisibleToTheUserInteractor(dataSource.TimeEntries);
 
         public IInteractor<IObservable<IThreadSafeTimeEntry>> UpdateTimeEntry(EditTimeEntryDto dto)
-            => new UpdateTimeEntryInteractor(timeService, dataSource, dto);
+            => new UpdateTimeEntryInteractor(timeService, dataSource, this, dto);
 
         public IInteractor<IObservable<IThreadSafeTimeEntry>> StopTimeEntry(DateTimeOffset currentDateTime, TimeEntryStopOrigin origin)
             => new StopTimeEntryInteractor(timeService, dataSource.TimeEntries, currentDateTime, analyticsService, origin);

@@ -10,8 +10,8 @@ namespace Toggl.Foundation.Interactors
     {
         private readonly long workspaceId;
 
-        public AreCustomColorsEnabledForWorkspaceInteractor(ITogglDataSource dataSource, long workspaceId)
-            : base(dataSource)
+        public AreCustomColorsEnabledForWorkspaceInteractor(IInteractorFactory interactorFactory, long workspaceId)
+            : base(interactorFactory)
         {
             this.workspaceId = workspaceId;
         }
